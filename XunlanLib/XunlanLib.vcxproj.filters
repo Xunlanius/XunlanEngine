@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="src\Common\Common.h" />
+    <ClInclude Include="src\Common\ID.h" />
+    <ClInclude Include="src\EngineAPI\Transformer.h" />
+    <ClInclude Include="src\EngineAPI\Script.h" />
+    <ClInclude Include="src\Platforms\PlatformsType.h" />
+    <ClInclude Include="src\Platforms\Window.h" />
+    <ClInclude Include="src\Renderer\Renderer.h" />
+    <ClInclude Include="src\Content\ContentLoader.h" />
+    <ClInclude Include="src\Common\DataTypes.h" />
+    <ClInclude Include="src\Utilities\MathTypes.h" />
+    <ClInclude Include="src\Utilities\Math.h" />
+    <ClInclude Include="src\Common\ECS\SparseSet.h" />
+    <ClInclude Include="src\Common\ECS\ECS.h" />
+    <ClInclude Include="src\Common\ECS\IDCore.h" />
+    <ClInclude Include="src\Renderer\GraphicsAPI.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12API.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12Core.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12Common.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12Command.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12Resource.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12Surface.h" />
+    <ClInclude Include="src\Utilities\Pool.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12Helper.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12Shader.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12GPass.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12PostProcess.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Core\Engine.cpp" />
+    <ClCompile Include="src\Core\Main.cpp" />
+    <ClCompile Include="src\EngineAPI\Transformer.cpp" />
+    <ClCompile Include="src\EngineAPI\Script.cpp" />
+    <ClCompile Include="src\Platforms\Win32Window.cpp" />
+    <ClCompile Include="src\Content\ContentLoader.cpp" />
+    <ClCompile Include="src\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12API.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12Core.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12Command.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12Resource.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12Surface.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12Helper.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12Shader.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12GPass.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12PostProcess.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Renderer\DX12\Shaders\TriangleVS.hlsl" />
+    <None Include="src\Renderer\DX12\Shaders\TrianglePS.hlsl" />
+    <None Include="src\Renderer\DX12\Shaders\PostProcessPS.hlsl" />
+    <None Include="src\Renderer\DX12\Shaders\Fractal.hlsli" />
+  </ItemGroup>
+</Project>

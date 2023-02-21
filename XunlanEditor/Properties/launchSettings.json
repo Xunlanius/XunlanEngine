@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "XunlanEditor": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
