@@ -1,0 +1,61 @@
+﻿<Window x:Class="XunlanEditor.GameCode.CreateScriptDiag"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:XunlanEditor.GameCode"
+        mc:Ignorable="d"
+        Style="{StaticResource XunlanDiagStyle}"
+        ResizeMode="NoResize"
+        ShowActivated="False"
+        WindowStartupLocation="CenterOwner"
+        Title="Create Script" Height="250" Width="400">
+    <Border CornerRadius="3"
+            Background="{StaticResource Editor.Window.GrayBrush2}"
+            HorizontalAlignment="Stretch">
+        <Grid Margin="32">
+            <TextBlock HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       Foreground="{StaticResource Editor.RedBrush}"
+                       Margin="0,10,0,0"
+                       TextWrapping="Wrap"
+                       x:Name="messageTextBlock"/>
+
+            <StackPanel VerticalAlignment="Center">
+                <DockPanel>
+                    <TextBlock Text="Script Name"
+                               Width="72"
+                               Style="{StaticResource TextBlockStyle}"/>
+                    <TextBox x:Name="scriptNameTextBox"
+                             TextChanged="On_scriptNameTextBox_TextChanged"/>
+                </DockPanel>
+            
+                <DockPanel Margin="0,5,0,0">
+                    <TextBlock Text="Path"
+                               Width="72"
+                               Style="{StaticResource TextBlockStyle}"/>
+                    <TextBox x:Name="scriptPathTextBox"
+                             TextChanged="On_scriptPathTextBox_TextChanged"/>
+                </DockPanel>
+            </StackPanel>
+            
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,0,20">
+
+                <Button Content="Create"
+                        Width="64"
+                        Margin="32,0"
+                        IsDefault="True"
+                        Click="On_CreateButton_Click"/>
+
+                <Button Content="Cancel"
+                        Width="64"
+                        Margin="32,0"
+                        IsCancel="True"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

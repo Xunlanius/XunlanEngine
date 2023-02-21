@@ -1,0 +1,148 @@
+﻿<UserControl x:Class="XunlanEditor.Editors.WorldEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:XunlanEditor.Editors"
+             xmlns:utl="clr-namespace:XunlanEditor.Utilities"
+             xmlns:surface="clr-namespace:XunlanEditor.RenderSurface"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d"
+             Focusable="True"
+             d:DesignHeight="720" d:DesignWidth="1280">
+
+    <UserControl.Resources>
+        <sys:Boolean x:Key="True">True</sys:Boolean>
+        <sys:Boolean x:Key="False">False</sys:Boolean>
+    </UserControl.Resources>
+
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding UndoCommand}" Key="Z" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding RedoCommand}" Key="Y" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding SaveCommand}" Key="S" Modifiers="Ctrl"/>
+
+        <KeyBinding Command="{Binding BuildCommand}" CommandParameter="{StaticResource True}" Key="F7"/>
+        <KeyBinding Command="{Binding StartDebugCommand}" Key="F5"/>
+        <KeyBinding Command="{Binding StartWithoutDebugCommand}" Key="F5" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding StopCommand}" Key="F5" Modifiers="Shift"/>
+    </UserControl.InputBindings>
+    
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            
+            <Button Content="Save"
+                    Height="20"
+                    Margin="3,0"
+                    Command="{Binding SaveCommand}"/>
+            
+            <Button Content="Undo"
+                    Height="20"
+                    Margin="3,0"
+                    Command="{Binding UndoCommand}"/>
+            
+            <Button Content="Redo"
+                    Height="20"
+                    Margin="3,0"
+                    Command="{Binding RedoCommand}"/>
+            
+            <Button Content="Create Script"
+                    Margin="3,0"
+                    Click="On_CreateScriptButton_Click"
+                    IsEnabled="{Binding Path=IsEnabled, ElementName=buildButton}"/>
+            
+            <Button Content="Build"
+                    x:Name="buildButton"
+                    Margin="3,0"
+                    Command="{Binding BuildCommand}"
+                    CommandParameter="{StaticResource True}"/>
+            
+            <ComboBox x:Name="runConfig"
+                      VerticalAlignment="Center"
+                      Width="72"
+                      Margin="3,0"
+                      SelectedIndex="{Binding BuildConfig}">
+                <ComboBoxItem Content="Debug"/>
+                <ComboBoxItem Content="Release"/>
+            </ComboBox>
+
+            <Button Content="Primitive mesh"
+                    Click="On_CreatePrimitiveButton_Click"
+                    Margin="3,0"/>
+
+        </StackPanel>
+        
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+        
+            <GridSplitter Grid.Column="1"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Stretch"
+                          Width="5"
+                          Background="Transparent"/>
+
+            <Grid Grid.Column="0">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <local:ProjectLayoutView Grid.Column="0"
+                                             Background="{StaticResource Editor.Window.GrayBrush2}"
+                                             Margin="0,5,0,0"/>
+
+                    <surface:RenderSurfaceView Grid.Column="1"
+                                               Margin="5,5,0,0"/>
+                </Grid>
+            
+                <GridSplitter Grid.Row="1"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Top"
+                              Height="5"
+                              Background="Transparent"/>
+
+                <TabControl Grid.Row="1"
+                            Background="{StaticResource Editor.Window.GrayBrush1}"
+                            Margin="0,5,0,0">
+                    
+                    <TabItem Header="Log">
+                        <Grid Background="{StaticResource Editor.Window.GrayBrush1}">
+                            <utl:LoggerView/>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="History">
+                        <Grid Background="{StaticResource Editor.Window.GrayBrush1}">
+                            <utl:UndoRedoView DataContext="{Binding UndoRedo}"/>
+                        </Grid>
+                    </TabItem>
+                    
+                </TabControl>
+                
+            </Grid>
+
+            <Grid Grid.Column="1"
+                  Margin="5,0,0,0">
+                <local:GameObjectView Background="{StaticResource Editor.Window.GrayBrush2}"
+                                      Margin="0,5,0,0"/>
+            </Grid>
+        </Grid>
+        
+    </Grid>
+</UserControl>

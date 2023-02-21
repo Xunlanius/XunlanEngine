@@ -1,0 +1,18 @@
+﻿<Window x:Class="XunlanEditor.EditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:XunlanEditor"
+        xmlns:editors="clr-namespace:XunlanEditor.Editors"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Name="editorWindow"
+        Title="Main Window"
+        Width="1280"
+        Height="720"
+        Style="{StaticResource XunlanWindowStyle}">
+    <Grid>
+        <editors:WorldEditorView/>
+    </Grid>
+</Window>

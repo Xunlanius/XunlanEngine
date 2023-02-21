@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="src\Common\Common.h" />
+    <ClInclude Include="src\Common\ID.h" />
+    <ClInclude Include="src\EngineAPI\Transformer.h" />
+    <ClInclude Include="src\EngineAPI\Script.h" />
+    <ClInclude Include="src\Platforms\PlatformsType.h" />
+    <ClInclude Include="src\Platforms\WindowManager.h" />
+    <ClInclude Include="src\Renderer\Renderer.h" />
+    <ClInclude Include="src\Utilities\Utilities.h" />
+    <ClInclude Include="src\Content\ContentLoader.h" />
+    <ClInclude Include="src\Common\DataTypes.h" />
+    <ClInclude Include="src\Utilities\MathTypes.h" />
+    <ClInclude Include="src\Utilities\Math.h" />
+    <ClInclude Include="src\Common\ECS\SparseSet.h" />
+    <ClInclude Include="src\Common\ECS\ECS.h" />
+    <ClInclude Include="src\Common\ECS\IDCore.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Common\ID.cpp" />
+    <ClCompile Include="src\Core\Engine.cpp" />
+    <ClCompile Include="src\Core\Main.cpp" />
+    <ClCompile Include="src\EngineAPI\Transformer.cpp" />
+    <ClCompile Include="src\EngineAPI\Script.cpp" />
+    <ClCompile Include="src\Platforms\WindowManager.cpp" />
+    <ClCompile Include="src\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Content\ContentLoader.cpp" />
+  </ItemGroup>
+</Project>
