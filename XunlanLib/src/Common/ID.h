@@ -41,4 +41,35 @@ namespace Xunlan
         //static constexpr id_type ms_invalidID = (id_type)-1;
         static constexpr uint32 ms_maxNumIdleIDs = 1024;
     };
+
+//#if defined _DEBUG
+//    namespace Internal
+//    {
+//        class IDBase
+//        {
+//        public:
+//
+//            constexpr IDBase(ID::id_type id)
+//                : id(id) {}
+//            constexpr operator ID::id_type() const { return id; }
+//
+//        private:
+//
+//            ID::id_type id;
+//        };
+//    }
+//
+//    #define DEFINE_TYPED_ID(name)                           \
+//            class name final : public Internal::IDBase      \
+//            {                                               \
+//            public:                                         \
+//                                                            \
+//                constexpr name(ID::id_type id)              \
+//                    : Internal::IDBase(id) {}               \
+//                constexpr name()                            \
+//                : Internal::IDBase(0) {}                    \
+//            };
+//#else
+//    #define DEFINE_TYPED_ID(name) typedef ID::id_type name;
+//#endif
 }

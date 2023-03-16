@@ -54,8 +54,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
             test->Run();
         }
+}
 
-        test->Shutdown();
+    test->Shutdown();
     }
 
     delete test;
