@@ -34,6 +34,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
+        <!--Buttons-->
         <StackPanel Orientation="Horizontal">
             
             <Button Content="Save"
@@ -82,12 +83,6 @@
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-        
-            <GridSplitter Grid.Column="1"
-                          HorizontalAlignment="Left"
-                          VerticalAlignment="Stretch"
-                          Width="5"
-                          Background="Transparent"/>
 
             <Grid Grid.Column="0">
 
@@ -136,6 +131,12 @@
                 </TabControl>
                 
             </Grid>
+        
+            <GridSplitter Grid.Column="1"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Stretch"
+                          Width="5"
+                          Background="Transparent"/>
 
             <Grid Grid.Column="1"
                   Margin="5,0,0,0">

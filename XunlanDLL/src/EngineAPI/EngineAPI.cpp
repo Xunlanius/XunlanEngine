@@ -56,7 +56,7 @@ EDITOR_INTERFACE Script::ScriptCreator GetScriptCreator(const char* scriptName)
 
 EDITOR_INTERFACE uint32 CreateRenderSurface(HWND parent, int width, int height)
 {
-    WindowInitDesc initDesc = {};
+    Graphics::WindowInitDesc initDesc = {};
     initDesc.parent = parent;
     initDesc.width = width;
     initDesc.height = height;
