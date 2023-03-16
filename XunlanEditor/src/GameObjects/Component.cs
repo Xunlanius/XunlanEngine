@@ -6,7 +6,9 @@ using System.Runtime.Serialization;
 
 namespace XunlanEditor.GameObjects
 {
-    interface IMultiComponent {}
+    interface IMultiComponent
+    {
+    }
 
     [DataContract]
     [KnownType(typeof(Transformer))]
@@ -18,7 +20,10 @@ namespace XunlanEditor.GameObjects
         public abstract void WriteToBinary(BinaryWriter bw);
 
         [DataMember(Order = 0)]
-        public GameObject Parent { get; private set; }
+        public GameObject Parent
+        {
+            get; private set;
+        }
 
         public Component(GameObject parent)
         {
@@ -31,7 +36,10 @@ namespace XunlanEditor.GameObjects
     {
         private bool _enableUpdate = true;
 
-        public List<T> SelectedComponents { get; private set; }
+        public List<T> SelectedComponents
+        {
+            get; private set;
+        }
 
         public MultiComponent(MultiObject multiObject)
         {
@@ -39,9 +47,10 @@ namespace XunlanEditor.GameObjects
 
             SelectedComponents = multiObject.SelectedObjects.Select(obj => obj.GetComponent<T>()).ToList();
 
-            PropertyChanged += (sender, e) =>
+            PropertyChanged += (sender,e) =>
             {
-                if (_enableUpdate) UpdateSelectedComponents(e.PropertyName);
+                if(_enableUpdate)
+                    UpdateSelectedComponents(e.PropertyName);
             };
         }
 

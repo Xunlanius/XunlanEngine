@@ -16,11 +16,11 @@ namespace XunlanEditor.GameProject
             InitializeComponent();
         }
 
-        private void OnToggleClick(object sender, RoutedEventArgs e)
+        private void OnToggleClick(object sender,RoutedEventArgs e)
         {
-            if (sender == openProjectButton)
+            if(sender == openProjectButton)
             {
-                if (!_isLeft)
+                if(!_isLeft)
                 {
                     createProjectButton.IsChecked = false;
                     _isLeft = true;
@@ -37,9 +37,9 @@ namespace XunlanEditor.GameProject
                     openProjectButton.IsChecked = true;
                 }
             }
-            else if (sender == createProjectButton)
+            else if(sender == createProjectButton)
             {
-                if (_isLeft)
+                if(_isLeft)
                 {
                     openProjectButton.IsChecked = false;
                     _isLeft = false;

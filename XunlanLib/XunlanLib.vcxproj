@@ -19,6 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Content\ContentToEngine.h" />
+    <ClInclude Include="src\Core\Engine.h" />
+    <ClInclude Include="src\ECS\Common.h" />
+    <ClInclude Include="src\ECS\ComponentContainer.h" />
+    <ClInclude Include="src\ECS\ComponentManager.h" />
+    <ClInclude Include="src\ECS\ECS.h" />
+    <ClInclude Include="src\ECS\EntityManager.h" />
+    <ClInclude Include="src\ECS\SystemManager.h" />
+    <ClInclude Include="src\ECS\TestECS.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12Asset.h" />
     <ClInclude Include="src\Renderer\DX12\DX12GPass.h" />
     <ClInclude Include="src\Renderer\DX12\DX12PostProcess.h" />
     <ClInclude Include="src\Renderer\DX12\DX12Shader.h" />
@@ -28,8 +38,8 @@
     <ClInclude Include="src\Renderer\DX12\DX12Common.h" />
     <ClInclude Include="src\Renderer\DX12\DX12Core.h" />
     <ClInclude Include="src\Renderer\DX12\DX12API.h" />
-    <ClInclude Include="src\Common\ECS\IDCore.h" />
-    <ClInclude Include="src\Common\ECS\SparseSet.h" />
+    <ClInclude Include="src\Utility\ECS_1\IDCore.h" />
+    <ClInclude Include="src\Utility\ECS_1\SparseSet.h" />
     <ClInclude Include="src\Common\Common.h" />
     <ClInclude Include="src\Common\DataTypes.h" />
     <ClInclude Include="src\Common\ID.h" />
@@ -39,14 +49,17 @@
     <ClInclude Include="src\Platforms\PlatformsType.h" />
     <ClInclude Include="src\Platforms\Window.h" />
     <ClInclude Include="src\Renderer\DX12\DX12Resource.h" />
+    <ClInclude Include="src\Renderer\DX12\DX12Upload.h" />
     <ClInclude Include="src\Renderer\GraphicsAPI.h" />
     <ClInclude Include="src\Renderer\Renderer.h" />
-    <ClInclude Include="src\Utilities\Pool.h" />
-    <ClInclude Include="src\Utilities\Math.h" />
-    <ClInclude Include="src\Utilities\MathTypes.h" />
-    <ClInclude Include="src\Common\ECS\ECS.h" />
+    <ClInclude Include="src\Utility\IO.h" />
+    <ClInclude Include="src\Utility\Pool.h" />
+    <ClInclude Include="src\Utility\Math.h" />
+    <ClInclude Include="src\Utility\MathTypes.h" />
+    <ClInclude Include="src\Utility\ECS_1\ECS.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Renderer\DX12\DX12Asset.cpp" />
     <ClCompile Include="src\Renderer\DX12\DX12GPass.cpp" />
     <ClCompile Include="src\Renderer\DX12\DX12PostProcess.cpp" />
     <ClCompile Include="src\Renderer\DX12\DX12Shader.cpp" />
@@ -59,9 +72,9 @@
     <ClCompile Include="src\Core\Engine.cpp" />
     <ClCompile Include="src\Core\Main.cpp" />
     <ClCompile Include="src\EngineAPI\Script.cpp" />
-    <ClCompile Include="src\EngineAPI\Transformer.cpp" />
     <ClCompile Include="src\Platforms\Win32Window.cpp" />
     <ClCompile Include="src\Renderer\DX12\DX12Resource.cpp" />
+    <ClCompile Include="src\Renderer\DX12\DX12Upload.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>

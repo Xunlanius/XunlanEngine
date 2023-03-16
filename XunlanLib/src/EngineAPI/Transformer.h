@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common/Common.h"
-#include "Utilities/Math.h"
+#include "Utility/Math.h"
 
 namespace Xunlan::Transformer
 {

@@ -29,13 +29,13 @@ namespace Xunlan::Graphics::DX12::PostProcess
 
             // Create Post-Process root signature
             {
-                Helper::RootSig::DescriptorRange range = {
+                Helper::RootSig::DescriptorRange range(
                     D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
                     D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND,
                     0,
                     0,
                     D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
-                };
+                );
 
                 Helper::RootSig::RootParameter params[(uint32)ParamIndex::Count] = {};
                 params[(uint32)ParamIndex::Constants].InitAsConstants(1, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);

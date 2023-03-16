@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,7 +25,7 @@ namespace {0}
     SCRIPT_DECL({1})
 }}";
 
-        private static readonly string _cppCode = 
+        private static readonly string _cppCode =
 @"#include ""{1}.h""
 
 namespace {0}
@@ -58,28 +56,27 @@ namespace {0}
             scriptPathTextBox.Text = $@"{nameof(ProjectFileInfo.ProjectFolders.GameCode)}\";
         }
 
-        private void On_scriptNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void On_scriptNameTextBox_TextChanged(object sender,TextChangedEventArgs e)
         {
             IsValid();
         }
-
-        private void On_scriptPathTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void On_scriptPathTextBox_TextChanged(object sender,TextChangedEventArgs e)
         {
             IsValid();
         }
-
-        private async void On_CreateButton_Click(object sender, RoutedEventArgs e)
+        private async void On_CreateButton_Click(object sender,RoutedEventArgs e)
         {
-            if (!IsValid()) return;
+            if(!IsValid())
+                return;
 
             IsEnabled = false;
 
             string scriptName = scriptNameTextBox.Text.Trim();
-            string scriptPath = Path.GetFullPath(Path.Combine(Project.CurrProject.ProjectDirPath, scriptPathTextBox.Text.Trim()));
+            string scriptPath = Path.GetFullPath(Path.Combine(Project.CurrProject.ProjectDirPath,scriptPathTextBox.Text.Trim()));
             string solutionPath = Project.CurrProject.SolutionPath;
             string projectName = Project.CurrProject.ProjectName;
 
-            await Task.Run(() => CreateScript(scriptName, scriptPath, solutionPath, projectName));
+            await Task.Run(() => CreateScript(scriptName,scriptPath,solutionPath,projectName));
 
             Close();
         }
@@ -106,18 +103,18 @@ namespace {0}
                 messageTextBlock.Text = "Script path cannot be empty";
                 return false;
             }
-            else if (path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+            else if(path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
             {
                 messageTextBlock.Text = "Invalid charactors used in the script path";
                 return false;
             }
-            else if (!Path.GetFullPath(Path.Combine(projectDirPath, path)).Contains(Path.Combine(projectDirPath, nameof(ProjectFileInfo.ProjectFolders.GameCode))))
+            else if(!Path.GetFullPath(Path.Combine(projectDirPath,path)).Contains(Path.Combine(projectDirPath,nameof(ProjectFileInfo.ProjectFolders.GameCode))))
             {
                 messageTextBlock.Text = $"Script must be added to (a subfolder of) {nameof(ProjectFileInfo.ProjectFolders.GameCode)}";
                 return false;
             }
-            else if (File.Exists(Path.GetFullPath(Path.Combine(Path.Combine(projectDirPath, path), $"{name}.h"))) ||
-                File.Exists(Path.GetFullPath(Path.Combine(Path.Combine(projectDirPath, path), $"{name}.cpp"))))
+            else if(File.Exists(Path.GetFullPath(Path.Combine(Path.Combine(projectDirPath,path),$"{name}.h"))) ||
+                File.Exists(Path.GetFullPath(Path.Combine(Path.Combine(projectDirPath,path),$"{name}.cpp"))))
             {
                 messageTextBlock.Text = $"Script {name} already exists in this folder";
                 return false;
@@ -128,44 +125,41 @@ namespace {0}
             return true;
         }
 
-        private void CreateScript(string scriptName, string scriptPath, string solutionPath, string projectName)
+        private void CreateScript(string scriptName,string scriptPath,string solutionPath,string projectName)
         {
             try
             {
-                if (!Directory.Exists(scriptPath)) Directory.CreateDirectory(scriptPath);
-            
-                string headerFile = Path.GetFullPath(Path.Combine(scriptPath, $"{scriptName}.h"));
-                string cppFile = Path.GetFullPath(Path.Combine(scriptPath, $"{scriptName}.cpp"));
-                
-                using (var sw = File.CreateText(headerFile))
+                if(!Directory.Exists(scriptPath))
+                    Directory.CreateDirectory(scriptPath);
+
+                string headerFile = Path.GetFullPath(Path.Combine(scriptPath,$"{scriptName}.h"));
+                string cppFile = Path.GetFullPath(Path.Combine(scriptPath,$"{scriptName}.cpp"));
+
+                using(var sw = File.CreateText(headerFile))
                 {
-                    sw.Write(string.Format(_headerCode, _namespace, scriptName));
+                    sw.Write(string.Format(_headerCode,_namespace,scriptName));
                 }
 
-                using (var sw = File.CreateText(cppFile))
+                using(var sw = File.CreateText(cppFile))
                 {
-                    sw.Write(string.Format(_cppCode, _namespace, scriptName));
+                    sw.Write(string.Format(_cppCode,_namespace,scriptName));
                 }
 
-                string[] headerAndCppFiles = new string[] { headerFile, cppFile };
+                string[] headerAndCppFiles = new string[] { headerFile,cppFile };
 
-                for (int i = 0; i < 3; ++i)
-                {
-                    if (!VisualStudio.AddFileToSolution(solutionPath, projectName, headerAndCppFiles)) System.Threading.Thread.Sleep(1000);
-                    else break;
-                }
+                Debug.Assert(VisualStudio.AddFileToSolution(solutionPath,projectName,headerAndCppFiles));
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                Logger.LogMessage(MsgType.Error, $"Failed to create script {scriptNameTextBox.Text}");
+                Logger.LogMessage(MsgType.Error,$"Failed to create script {scriptNameTextBox.Text}");
             }
         }
 
         private static string GetNamespaceFromProjectName()
         {
             string projectName = Project.CurrProject.ProjectName;
-            projectName = projectName.Replace(" ", "_");
+            projectName = projectName.Replace(" ","_");
             return projectName;
         }
     }

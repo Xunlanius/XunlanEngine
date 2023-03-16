@@ -18,7 +18,7 @@
 
     <!--DataContext: GeometryEditorViewModel-->
     <Window.DataContext>
-        <editor:GeometryEditorViewModel/>
+        <editor:GeometryEditor/>
     </Window.DataContext>
     
     <Window.Resources>
@@ -190,8 +190,8 @@
             <!--Cylinder-->
             <!--Capsule-->
 
-            <editor:GeometryView DataContext="{Binding MeshRenderer}"
-                                 Grid.Column="1"/>
+            <editor:MeshRendererView DataContext="{Binding MeshRenderer}"
+                                     Grid.Column="1"/>
 
             <StackPanel Grid.Column="1"
                         Margin="5"

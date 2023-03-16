@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="XunlanEditor.Editors.GeometryView"
+﻿<UserControl x:Class="XunlanEditor.Editors.MeshRendererView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:XunlanEditor.Editors"
-             d:DataContext="{d:DesignInstance Type=local:MeshRenderer}"
+             d:DataContext="{d:DesignInstance local:MeshRenderer}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     
@@ -21,7 +21,7 @@
             <!--Camera-->
             <Viewport3D.Camera>
                 <PerspectiveCamera FarPlaneDistance="10000"
-                                   NearPlaneDistance="0.001"
+                                   NearPlaneDistance="0.00001"
                                    FieldOfView="45"
                                    Position="{Binding OffsetCameraPos}"
                                    UpDirection="0,1,0"

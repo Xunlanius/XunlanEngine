@@ -8,7 +8,7 @@ namespace Xunlan::Graphics::DX12
     {
     public:
 
-        explicit DX12Surface(EntityID windowID);
+        explicit DX12Surface(ID windowID);
         DX12Surface(const DX12Surface& rhs) = delete;
         DX12Surface& operator =(const DX12Surface& rhs) = delete;
         ~DX12Surface() { Release(); }
@@ -16,6 +16,10 @@ namespace Xunlan::Graphics::DX12
     public:
 
         void CreateSwapChain(Factory* factory, ID3D12CommandQueue* cmdQueue, DXGI_FORMAT format = DEFAULT_RENDER_TARGET_FORMAT);
+
+        /// <summary>
+        /// Present the back buffer and update the index
+        /// </summary>
         void Present();
 
         void Resize();
@@ -41,7 +45,7 @@ namespace Xunlan::Graphics::DX12
             DescriptorHandle rtv = {};
         };
 
-        EntityID m_window = ID::INVALID_ID;
+        ID m_window = INVALID_ID;
 
         Microsoft::WRL::ComPtr<IDXGISwapChain4> m_swapChain = nullptr;
         DXGI_FORMAT m_format = DEFAULT_RENDER_TARGET_FORMAT;

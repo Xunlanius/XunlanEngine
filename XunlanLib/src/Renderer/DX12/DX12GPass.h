@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Renderer/DX12/DX12Common.h"
-#include "Utilities/MathTypes.h"
+#include "Utility/MathTypes.h"
 
 namespace Xunlan::Graphics::DX12
 {
@@ -17,7 +17,7 @@ namespace Xunlan::Graphics::DX12::GPass
     const DepthTexture& GetDepthBuffer();
 
     // Called every frame
-    void CheckSize(Math::UVector2 size);
+    void CheckSize(Math::U32Vector2 size);
 
     void AddTransitionForDepthPrepass(Helper::Barrier::BarrierContainer& container);
     void AddTransitionForGPass(Helper::Barrier::BarrierContainer& container);

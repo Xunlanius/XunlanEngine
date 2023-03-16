@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -14,9 +10,9 @@ namespace XunlanEditor.Utilities
 {
     public enum MsgType
     {
-        Info    = 1,
+        Info = 1,
         Warning = 2,
-        Error   = 4,
+        Error = 4,
     }
 
     public class LogMessage
@@ -28,9 +24,12 @@ namespace XunlanEditor.Utilities
         public string Caller { get; }
         public int Line { get; }
 
-        public string MetaData { get => $"{FileName}: {Caller}({Line})"; }
+        public string MetaData
+        {
+            get => $"{FileName}: {Caller}({Line})";
+        }
 
-        public LogMessage(MsgType type, string message, string filePath, string caller, int line)
+        public LogMessage(MsgType type,string message,string filePath,string caller,int line)
         {
             Time = DateTime.Now;
             MsgType = type;
@@ -53,7 +52,7 @@ namespace XunlanEditor.Utilities
 
         static Logger()
         {
-            FilteredMessageList.Filter += (sender, e) =>
+            FilteredMessageList.Filter += (sender,e) =>
             {
                 LogMessage message = e.Item as LogMessage;
                 e.Accepted = ((int)message.MsgType & _filter) != 0;
@@ -65,13 +64,13 @@ namespace XunlanEditor.Utilities
         public static async void LogMessage(
             MsgType type,
             string message,
-            [CallerFilePath]string filePath = "",
-            [CallerMemberName]string caller = "",
-            [CallerLineNumber]int line = 0)
+            [CallerFilePath] string filePath = "",
+            [CallerMemberName] string caller = "",
+            [CallerLineNumber] int line = 0)
         {
             await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                _messageList.Add(new LogMessage(type, message, filePath, caller, line));
+                _messageList.Add(new LogMessage(type,message,filePath,caller,line));
             }));
         }
 

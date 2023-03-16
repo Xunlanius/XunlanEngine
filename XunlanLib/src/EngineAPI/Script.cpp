@@ -1,4 +1,5 @@
 #include "Script.h"
+#include <unordered_map>
 
 namespace Xunlan::Script
 {
@@ -19,17 +20,7 @@ namespace Xunlan::Script
         return result;
     }
 
-    void OnUpdate(float deltaTime)
-    {
-        Queryer queryer(World::GetWorld());
-        std::vector<EntityID> entities = queryer.Query<Script>();
-        for (EntityID entity : entities)
-        {
-            queryer.GetComponent<Script>(entity).pScript->OnUpdate(deltaTime);
-        }
-    }
-
-    LPSAFEARRAY IGetScriptNames()
+    LPSAFEARRAY GetRuntimeScriptNames()
     {
         const size_t len = GetRegisterMap().size();
         if (len == 0) return nullptr;
@@ -45,7 +36,7 @@ namespace Xunlan::Script
 
         return names.Detach();
     }
-    ScriptCreator IGetScriptCreator(const std::string& scriptName)
+    ScriptCreator GetRuntimeScriptCreator(const std::string& scriptName)
     {
         auto find = GetRegisterMap().find(scriptName);
         assert(find != GetRegisterMap().end());

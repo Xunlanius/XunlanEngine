@@ -14,7 +14,7 @@
     <Color x:Key="Editor.Orange">#ffffd067</Color>
     <Color x:Key="Editor.Font">#ffdddddd</Color>
     <Color x:Key="Editor.Disabled.Font">#ff868686</Color>
-    <Color x:Key="Editor.Selected.Background">#606060</Color>
+    <Color x:Key="Editor.Selected.Background">#ff606060</Color>
 
 
     <SolidColorBrush x:Key="Editor.Window.GrayBrush0"

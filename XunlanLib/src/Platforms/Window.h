@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Platforms/PlatformsType.h"
-#include "Utilities/MathTypes.h"
+#include "Utility/MathTypes.h"
 
 namespace Xunlan::Graphics
 {
@@ -9,24 +9,24 @@ namespace Xunlan::Graphics
     {
     public:
 
-        [[nodiscard]] static EntityID Create(const WindowInitDesc* const pDesc = nullptr);
-        static void Remove(EntityID& windowID);
+        [[nodiscard]] static ID Create(const WindowInitDesc* const pDesc = nullptr);
+        static void Remove(ID& windowID);
 
     public:
 
-        static void* GetHandle(EntityID windowID);
+        static void* GetHandle(ID windowID);
 
-        static void SetCaption(EntityID windowID, const wchar_t* caption);
+        static void SetCaption(ID windowID, const wchar_t* caption);
 
-        static uint32 GetWidth(EntityID windowID);
-        static uint32 GetHeight(EntityID windowID);
+        static uint32 GetWidth(ID windowID);
+        static uint32 GetHeight(ID windowID);
 
-        static Math::UVector4 GetSize(EntityID windowID);
-        static void Resize(EntityID windowID, uint32 width, uint32 height);
+        static Math::U32Vector4 GetSize(ID windowID);
+        static void Resize(ID windowID, uint32 width, uint32 height);
 
-        static bool IsFullScreen(EntityID windowID);
-        static void SetFullScreen(EntityID windowID, bool isFullScreen);
+        static bool IsFullScreen(ID windowID);
+        static void SetFullScreen(ID windowID, bool isFullScreen);
 
-        [[nodiscard]] static bool IsClosed(EntityID windowID);
+        static bool IsClosed(ID windowID);
     };
 }

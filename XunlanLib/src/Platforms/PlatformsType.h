@@ -2,10 +2,9 @@
 
 #include "Common/Common.h"
 
-#if defined _WIN64
-
 namespace Xunlan::Graphics
 {
+#ifdef _WIN64
     using MsgProc = LRESULT (*)(HWND, UINT, WPARAM, LPARAM);
 
     struct WindowInitDesc
@@ -19,8 +18,7 @@ namespace Xunlan::Graphics
         int width = 1280;
         int height = 720;
     };
-}
-
 #else
 
 #endif
+}

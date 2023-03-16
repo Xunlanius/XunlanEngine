@@ -25,7 +25,7 @@ namespace
     }
     void RemoveRenderSurface(Graphics::RenderSurface& renderSurface)
     {
-        if (!ID::IsValid(renderSurface.windowID) || !ID::IsValid(renderSurface.surfaceID)) return;
+        if (!IsValid(renderSurface.windowID) || !IsValid(renderSurface.surfaceID)) return;
 
         Graphics::Surface::Remove(renderSurface.surfaceID);
         Graphics::Window::Remove(renderSurface.windowID);
@@ -70,13 +70,13 @@ namespace
     }
     void TestResize(HWND hwnd)
     {
-        EntityID windowID = (EntityID)::GetWindowLongPtr(hwnd, GWLP_USERDATA);
+        ID windowID = (ID)::GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
         for (uint32 i = 0; i < _countof(g_renderSurfaces); ++i)
         {
             if (g_renderSurfaces[i].windowID == windowID)
             {
-                EntityID surfaceID = g_renderSurfaces[i].surfaceID;
+                ID surfaceID = g_renderSurfaces[i].surfaceID;
                 Graphics::Surface::Resize(surfaceID);
                 g_resizing = false;
                 break;
@@ -94,7 +94,7 @@ namespace
 
             for (size_t i = 0; i < _countof(g_renderSurfaces); ++i)
             {
-                if (!ID::IsValid(g_renderSurfaces[i].windowID)) continue;
+                if (!IsValid(g_renderSurfaces[i].windowID)) continue;
 
                 if (Graphics::Window::IsClosed(g_renderSurfaces[i].windowID)) RemoveRenderSurface(g_renderSurfaces[i]);
                 else allClosed = false;
@@ -135,7 +135,7 @@ namespace
         case WM_SYSCHAR:
             if (wParam == VK_RETURN && (HIWORD(lParam) & KF_ALTDOWN))
             {
-                EntityID windowID = (EntityID)::GetWindowLongPtr(hwnd, GWLP_USERDATA);
+                ID windowID = (ID)::GetWindowLongPtr(hwnd, GWLP_USERDATA);
                 Graphics::Window::SetFullScreen(windowID, !Graphics::Window::IsFullScreen(windowID));
                 return 0;
             }
@@ -154,7 +154,7 @@ void TestRenderer::Run()
 
     for (size_t i = 0; i < _countof(g_renderSurfaces); ++i)
     {
-        if (ID::IsValid(g_renderSurfaces[i].surfaceID))
+        if (IsValid(g_renderSurfaces[i].surfaceID))
         {
             Graphics::Surface::Render(g_renderSurfaces[i].surfaceID);
         }

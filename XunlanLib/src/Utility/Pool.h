@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <deque>
 #include <cassert>
 
 namespace Xunlan::Utility
@@ -69,22 +70,14 @@ namespace Xunlan::Utility
             id = UINT32_MAX;
         }
 
-        [[nodiscard]] uint32 GetSize() const { return m_size; }
-        [[nodiscard]] bool IsRemoved(uint32 id)
+        uint32 GetSize() const { return m_size; }
+        bool IsRemoved(uint32 id)
         {
             if (id >= m_instances.size()) return true;
             return std::find(m_cache.begin(), m_cache.end(), id) != m_cache.end();
         }
-        [[nodiscard]] T& Get(uint32 id)
-        {
-            assert(!IsRemoved(id));
-            return *m_instances[id];
-        }
-        [[nodiscard]] const T& Get(uint32 id) const
-        {
-            assert(!IsRemoved(id));
-            return *m_instances[id];
-        }
+        T& Get(uint32 id) { assert(!IsRemoved(id)); return *m_instances[id]; }
+        const T& Get(uint32 id) const { assert(!IsRemoved(id)); return *m_instances[id]; }
 
     private:
 
@@ -107,7 +100,7 @@ namespace Xunlan::Utility
     public:
 
         template<typename... ParamType>
-        uint32 Emplace(ParamType&&... params)
+        [[nodiscard]] uint32 Emplace(ParamType&&... params)
         {
             uint32 id = UINT32_MAX;
 
@@ -138,12 +131,12 @@ namespace Xunlan::Utility
         }
 
         uint32 GetSize() const { return m_size; }
-        T& operator [](uint32 id) { return m_container[id]; }
-        const T& operator [](uint32 id) const { return m_container[id]; }
+        T& operator[](uint32 id) { return m_container[id]; }
+        const T& operator[](uint32 id) const { return m_container[id]; }
 
     private:
 
-        std::vector<T> m_container;
+        std::deque<T> m_container;
         uint32 m_size = 0;
         uint32 m_freeIndex = UINT32_MAX;
     };

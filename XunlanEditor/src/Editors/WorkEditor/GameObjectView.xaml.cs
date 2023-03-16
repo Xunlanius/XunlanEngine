@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using XunlanEditor.GameObjects;
-using XunlanEditor.GameProject;
 using XunlanEditor.Utilities;
 
 namespace XunlanEditor.Editors
@@ -24,7 +15,10 @@ namespace XunlanEditor.Editors
     /// </summary>
     public partial class GameObjectView : UserControl
     {
-        public static GameObjectView Instance { get; private set; }
+        public static GameObjectView Instance
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Name of the changed property
@@ -39,11 +33,11 @@ namespace XunlanEditor.Editors
             InitializeComponent();
             Instance = this;
             DataContext = null;
-            DataContextChanged += (_, __) =>
+            DataContextChanged += (_,__) =>
             {
-                if (DataContext != null)
+                if(DataContext != null)
                 {
-                    (DataContext as MultiObject).PropertyChanged += (sender, e) => _propertyName = e.PropertyName;
+                    (DataContext as MultiObject).PropertyChanged += (sender,e) => _propertyName = e.PropertyName;
                 }
             };
         }
@@ -75,19 +69,19 @@ namespace XunlanEditor.Editors
             });
         }
 
-        private void OnRename_TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void OnRename_TextBox_GotKeyboardFocus(object sender,KeyboardFocusChangedEventArgs e)
         {
             _propertyName = string.Empty;
             _undoAction = GetRenameAction();
         }
 
-        private void OnRename_TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void OnRename_TextBox_LostKeyboardFocus(object sender,KeyboardFocusChangedEventArgs e)
         {
-            if (_propertyName == nameof(MultiObject.Name) && _undoAction != null)
+            if(_propertyName == nameof(MultiObject.Name) && _undoAction != null)
             {
                 _redoAction = GetRenameAction();
 
-                Project.CurrProject.UndoRedo.AddUndoRedoAction(new UndoRedoAction("Rename GameObject", _undoAction, _redoAction));
+                UndoRedo.AddUndoRedoAction(new UndoRedoAction("Rename GameObject",_undoAction,_redoAction));
 
                 _propertyName = null;
             }
@@ -96,7 +90,7 @@ namespace XunlanEditor.Editors
             _redoAction = null;
         }
 
-        private void OnIsEnabled_CheckBox_Click(object sender, RoutedEventArgs e)
+        private void OnIsEnabled_CheckBox_Click(object sender,RoutedEventArgs e)
         {
             MultiObject viewModel = DataContext as MultiObject;
 
@@ -104,10 +98,10 @@ namespace XunlanEditor.Editors
             viewModel.IsEnabled = (sender as CheckBox).IsChecked == true;
             Action redoAction = GetIsEnabledAction();
 
-            Project.CurrProject.UndoRedo.AddUndoRedoAction(new UndoRedoAction("Enable/Disable Object", undoAction, redoAction));
+            UndoRedo.AddUndoRedoAction(new UndoRedoAction("Enable/Disable Object",undoAction,redoAction));
         }
 
-        private void OnAddComponent_Button_PreviewMouse_LBD(object sender, MouseButtonEventArgs e)
+        private void OnAddComponent_Button_PreviewMouse_LBD(object sender,MouseButtonEventArgs e)
         {
             ContextMenu menu = FindResource("addComponentMenu") as ContextMenu;
             ToggleButton btn = sender as ToggleButton;
@@ -119,35 +113,36 @@ namespace XunlanEditor.Editors
             menu.IsOpen = true;
         }
 
-        private void OnAddScriptComponent(object sender, RoutedEventArgs e)
+        private void OnAddScriptComponent(object sender,RoutedEventArgs e)
         {
-            AddComponent(ComponentType.Script, (sender as MenuItem).Header.ToString());
+            AddComponent(ComponentType.Script,(sender as MenuItem).Header.ToString());
         }
 
-        private void AddComponent(ComponentType componentType, object data)
+        private void AddComponent(ComponentType componentType,object data)
         {
             var creationFunc = ComponentFactory.GetCreationFunc(componentType);
             var changedGameObjects = new List<(GameObject gameObject, Component component)>();
             MultiObject vm = DataContext as MultiObject;
 
-            foreach (GameObject gameObject in vm.SelectedObjects)
+            foreach(GameObject gameObject in vm.SelectedObjects)
             {
-                Component component = creationFunc(gameObject, data);
-                if (gameObject.AddComponent(component)) changedGameObjects.Add((gameObject, component));
+                Component component = creationFunc(gameObject,data);
+                if(gameObject.AddComponent(component))
+                    changedGameObjects.Add((gameObject, component));
             }
 
-            if (changedGameObjects.Any())
+            if(changedGameObjects.Any())
             {
                 vm.ReFresh();
 
-                Project.CurrProject.UndoRedo.AddUndoRedoAction(new UndoRedoAction(
+                UndoRedo.AddUndoRedoAction(new UndoRedoAction(
                     $"Add {componentType} component",
                     () =>
                     {
                         changedGameObjects.ForEach(x => x.gameObject.RemoveComponent(x.component));
                         vm.ReFresh();
                     },
-                    () => 
+                    () =>
                     {
                         changedGameObjects.ForEach(x => x.gameObject.AddComponent(x.component));
                         vm.ReFresh();

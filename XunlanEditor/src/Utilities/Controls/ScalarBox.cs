@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 
 namespace XunlanEditor.Utilities.Controls
 {
@@ -10,7 +6,7 @@ namespace XunlanEditor.Utilities.Controls
     {
         static ScalarBox()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(ScalarBox), new FrameworkPropertyMetadata(typeof(ScalarBox)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(ScalarBox),new FrameworkPropertyMetadata(typeof(ScalarBox)));
         }
     }
 }

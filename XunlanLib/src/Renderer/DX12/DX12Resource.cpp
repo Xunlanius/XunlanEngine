@@ -141,7 +141,7 @@ namespace Xunlan::Graphics::DX12
             assert(initDesc.resourceDesc);
 
             Check(device.CreateCommittedResource(
-                &Helper::Heap::DEFAULT_FORMAT,
+                &Helper::Heap::DEFAULT_HEAP,
                 D3D12_HEAP_FLAG_NONE,
                 resourceDesc,
                 initDesc.initState,

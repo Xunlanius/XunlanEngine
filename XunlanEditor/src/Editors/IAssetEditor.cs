@@ -4,7 +4,10 @@ namespace XunlanEditor.Editors
 {
     interface IAssetEditor
     {
-        Asset Asset { get; }
-        void SetAsset(Asset asset);
+        Asset Asset
+        {
+            get;
+        }
+        void SetAsset(AssetInfo info);
     }
 }

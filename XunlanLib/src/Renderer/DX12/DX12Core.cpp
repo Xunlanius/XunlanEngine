@@ -1,6 +1,7 @@
 #include "DX12Core.h"
-#include "Utilities/Pool.h"
+#include "Utility/Pool.h"
 #include "Renderer/DX12/DX12Command.h"
+#include "Renderer/DX12/DX12Upload.h"
 #include "Renderer/DX12/DX12Surface.h"
 #include "Renderer/DX12/DX12Shader.h"
 #include "Renderer/DX12/DX12GPass.h"
@@ -30,15 +31,15 @@ namespace Xunlan::Graphics::DX12::Core
 
         void EnableDebugLayer()
         {
-#if defined (_DEBUG)
+        #if defined (_DEBUG)
             ComPtr<ID3D12Debug3> debugInterface;
             Check(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
 
             debugInterface->EnableDebugLayer();
-#if 0
+        #if 0
             debugInterface->SetEnableGPUBasedValidation(TRUE);
-#endif
-#endif
+        #endif
+        #endif
         }
         void CreateDevice()
         {
@@ -46,9 +47,9 @@ namespace Xunlan::Graphics::DX12::Core
             //IDXGIAdapter指显示适配器，可通过IDXGIFactory的EnumAdapters函数来获取
 
             uint32 factoryFlags = 0;
-#if defined _DEBUG
+        #if defined _DEBUG
             factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-#endif
+        #endif
 
             Check(CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&g_factory)));
 
@@ -143,11 +144,13 @@ namespace Xunlan::Graphics::DX12::Core
         if (!PostProcess::Initialize()) return false;
 
         g_command = std::make_unique<DX12Command>(*g_device.Get(), D3D12_COMMAND_LIST_TYPE_DIRECT);
+        if (!Upload::Initialize()) return false;
 
         return true;
     }
     void Shutdown()
     {
+        Upload::Shutdown();
         g_command->Release();
 
         PostProcess::Shutdown();
@@ -155,29 +158,29 @@ namespace Xunlan::Graphics::DX12::Core
         Shader::Shutdown();
         ReleaseHeapsAndDeferredResources();
 
-#if defined _DEBUG
+    #if defined _DEBUG
         ComPtr<ID3D12DebugDevice2> debugDevice;
         Check(g_device.As(&debugDevice));
         g_device.Reset();
         debugDevice->ReportLiveDeviceObjects(D3D12_RLDO_SUMMARY | D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
         debugDevice.Reset();
-#endif
+    #endif
         g_factory.Reset();
     }
 
-    EntityID CreateSurface(EntityID windowID)
+    ID CreateSurface(ID windowID)
     {
-        EntityID surfaceID = g_surfaces.Emplace(windowID);
+        ID surfaceID = g_surfaces.Emplace(windowID);
         DX12Surface& surface = g_surfaces.Get(surfaceID);
         surface.CreateSwapChain(g_factory.Get(), g_command->GetCommandQueue());
         return surfaceID;
     }
-    void RemoveSurface(EntityID& surfaceID)
+    void RemoveSurface(ID& surfaceID)
     {
         g_command->Flush();
         g_surfaces.Remove(surfaceID);
     }
-    void RenderSurface(EntityID surfaceID)
+    void RenderSurface(ID surfaceID)
     {
         g_command->OnFrameBegin();
 
@@ -253,9 +256,9 @@ namespace Xunlan::Graphics::DX12::Core
     DescriptorHeap& GetUAVHeap() { return *g_uavHeap; }
     DXGI_FORMAT GetRenderTargetFormat() { return DX12Surface::DEFAULT_RENDER_TARGET_FORMAT; }
 
-    uint32 GetSurfaceWidth(EntityID surfaceID) { return g_surfaces.Get(surfaceID).GetWidth(); }
-    uint32 GetSurfaceHeight(EntityID surfaceID) { return g_surfaces.Get(surfaceID).GetHeight(); }
-    void ResizeSurface(EntityID surfaceID)
+    uint32 GetSurfaceWidth(ID surfaceID) { return g_surfaces.Get(surfaceID).GetWidth(); }
+    uint32 GetSurfaceHeight(ID surfaceID) { return g_surfaces.Get(surfaceID).GetHeight(); }
+    void ResizeSurface(ID surfaceID)
     {
         g_command->Flush();
         g_surfaces.Get(surfaceID).Resize();

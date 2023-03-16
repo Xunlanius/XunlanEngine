@@ -3,10 +3,12 @@
   <ItemGroup>
     <ClCompile Include="src\PrimitiveMesh.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
+    <ClCompile Include="src\FBXImporter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\AssertToolCommon.h" />
+    <ClInclude Include="src\AssetToolCommon.h" />
     <ClInclude Include="src\PrimitiveMesh.h" />
     <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\FBXImporter.h" />
   </ItemGroup>
 </Project>

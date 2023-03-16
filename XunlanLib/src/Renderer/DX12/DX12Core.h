@@ -16,9 +16,9 @@ namespace Xunlan::Graphics::DX12::Core
     bool Initialize();
     void Shutdown();
 
-    [[nodiscard]] EntityID CreateSurface(EntityID windowID);
-    void RemoveSurface(EntityID& surfaceID);
-    void RenderSurface(EntityID surfaceID);
+    [[nodiscard]] ID CreateSurface(ID windowID);
+    void RemoveSurface(ID& surfaceID);
+    void RenderSurface(ID surfaceID);
 
     void DeferredRelease(Microsoft::WRL::ComPtr<IUnknown>& resource);
     template<typename T>
@@ -43,7 +43,7 @@ namespace Xunlan::Graphics::DX12::Core
     DescriptorHeap& GetUAVHeap();
     DXGI_FORMAT GetRenderTargetFormat();
 
-    uint32 GetSurfaceWidth(EntityID surfaceID);
-    uint32 GetSurfaceHeight(EntityID surfaceID);
-    void ResizeSurface(EntityID surfaceID);
+    uint32 GetSurfaceWidth(ID surfaceID);
+    uint32 GetSurfaceHeight(ID surfaceID);
+    void ResizeSurface(ID surfaceID);
 }

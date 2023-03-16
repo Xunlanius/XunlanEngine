@@ -1,26 +1,23 @@
 #pragma once
 
+#include <array>
 #include <vector>
-#include <list>
-#include <queue>
-#include <stack>
-#include <unordered_map>
-#include <unordered_set>
+
 #include <tuple>
+#include <string>
+
+#include <utility>
+#include <algorithm>
 
 #include <iostream>
-#include <string>
 #include <memory>
 #include <cstdint>
-#include <utility>
-#include <typeinfo>
-#include <algorithm>
 #include <cassert>
 
 #if defined _WIN64
 
 #ifndef WIN32_LEAN_AND_MEAN
-    #define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #endif
 
 #ifndef NOMINMAX
@@ -36,4 +33,4 @@
 
 #include "Common/ID.h"
 #include "Common/DataTypes.h"
-#include "Common/ECS/ECS.h"
+#include "ECS/ECS.h"

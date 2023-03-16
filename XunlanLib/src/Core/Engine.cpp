@@ -1,4 +1,4 @@
-#include "EngineAPI/Script.h"
+#include "Engine.h"
 #include "Platforms/Window.h"
 #include "Renderer/Renderer.h"
 #include "Content/ContentLoader.h"
@@ -13,7 +13,7 @@ namespace
 
     LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
-        EntityID windowID = g_renderSurface.windowID;
+        ID windowID = g_renderSurface.windowID;
 
         switch (msg)
         {
@@ -53,14 +53,19 @@ bool EngineInitialize()
     g_renderSurface.windowID = Graphics::Window::Create(&desc);
     g_renderSurface.surfaceID = Graphics::Surface::Create(g_renderSurface.windowID);
 
-    if (!ID::IsValid(g_renderSurface.windowID) || !ID::IsValid(g_renderSurface.surfaceID)) return false;
+    if (!IsValid(g_renderSurface.windowID) || !IsValid(g_renderSurface.surfaceID)) return false;
+
+    RegisterECS();
 
     return true;
 }
 void EngineOnTick()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    Script::OnUpdate(10.0f);
+
+    Script::ScriptSystem* scriptSystem = ECS::GetSystem<Script::ScriptSystem>();
+    scriptSystem->OnUpdate(10.0f);
+
     Graphics::Surface::Render(g_renderSurface.surfaceID);
 }
 void EngineShutdown()
@@ -68,6 +73,5 @@ void EngineShutdown()
     Graphics::Surface::Remove(g_renderSurface.surfaceID);
     Graphics::Window::Remove(g_renderSurface.windowID);
     Graphics::Shutdown();
-    World::GetWorld().Shutdown();
     ContentLoader::UnloadGame();
 }

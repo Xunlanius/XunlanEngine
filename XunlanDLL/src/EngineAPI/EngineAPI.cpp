@@ -27,8 +27,8 @@ EDITOR_INTERFACE uint32 LoadGameCodeDLL(const char* dllPath)
     assert(g_gameCodeDLL);
 
     // Get the address of the DLL exported functions
-    g_getNames = (GetNames)GetProcAddress(g_gameCodeDLL, "IGetScriptNames");
-    g_getCreator = (GetCreator)GetProcAddress(g_gameCodeDLL, "IGetScriptCreator");
+    g_getNames = (GetNames)GetProcAddress(g_gameCodeDLL, "GetRuntimeScriptNames");
+    g_getCreator = (GetCreator)GetProcAddress(g_gameCodeDLL, "GetRuntimeScriptCreator");
     assert(g_getNames);
     assert(g_getCreator);
 
@@ -63,25 +63,24 @@ EDITOR_INTERFACE uint32 CreateRenderSurface(HWND parent, int width, int height)
 
     Graphics::RenderSurface renderSurface = {};
     renderSurface.windowID = Graphics::Window::Create(&initDesc);
-    renderSurface.surfaceID = {};
 
-    assert(ID::IsValid(renderSurface.windowID));
+    assert(IsValid(renderSurface.windowID));
 
     g_renderSurfaces.push_back(renderSurface);
     return (uint32)g_renderSurfaces.size() - 1;
 }
-EDITOR_INTERFACE void RemoveRenderSurface(uint32 surfaceID)
+EDITOR_INTERFACE void RemoveRenderSurface(uint32 index)
 {
-    assert(surfaceID < g_renderSurfaces.size());
-    Graphics::Window::Remove(g_renderSurfaces[surfaceID].windowID);
+    assert(index < g_renderSurfaces.size());
+    Graphics::Window::Remove(g_renderSurfaces[index].windowID);
 }
-EDITOR_INTERFACE HWND GetWindowHandle(uint32 surfaceID)
+EDITOR_INTERFACE HWND GetWindowHandle(uint32 index)
 {
-    assert(surfaceID < g_renderSurfaces.size());
-    return (HWND)Graphics::Window::GetHandle(g_renderSurfaces[surfaceID].windowID);
+    assert(index < g_renderSurfaces.size());
+    return (HWND)Graphics::Window::GetHandle(g_renderSurfaces[index].windowID);
 }
-EDITOR_INTERFACE void ResizeRenderSurface(uint32 surfaceID)
+EDITOR_INTERFACE void ResizeRenderSurface(uint32 index)
 {
-    assert(surfaceID < g_renderSurfaces.size());
-    Graphics::Window::Resize(g_renderSurfaces[surfaceID].windowID, 0, 0);
+    assert(index < g_renderSurfaces.size());
+    Graphics::Window::Resize(g_renderSurfaces[index].windowID, 0, 0);
 }

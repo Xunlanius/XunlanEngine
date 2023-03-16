@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace XunlanEditor.Utilities
 {
@@ -13,7 +10,10 @@ namespace XunlanEditor.Utilities
     /// </summary>
     public interface IUndoRedo
     {
-        public string Name { get; }
+        public string Name
+        {
+            get;
+        }
 
         public void Undo();
         public void Redo();
@@ -21,7 +21,10 @@ namespace XunlanEditor.Utilities
 
     public class UndoRedoAction : IUndoRedo
     {
-        public string Name { get; }
+        public string Name
+        {
+            get;
+        }
 
         private Action _undo;
         private Action _redo;
@@ -29,7 +32,7 @@ namespace XunlanEditor.Utilities
         public void Undo() => _undo();
         public void Redo() => _redo();
 
-        public UndoRedoAction(string name, Action undo, Action redo)
+        public UndoRedoAction(string name,Action undo,Action redo)
         {
             Debug.Assert(undo != null && redo != null);
 
@@ -39,39 +42,33 @@ namespace XunlanEditor.Utilities
         }
     }
 
-    public class UndoRedo
+    static class UndoRedo
     {
-        private readonly ObservableCollection<IUndoRedo> _undoList = new ObservableCollection<IUndoRedo>();
-        private readonly ObservableCollection<IUndoRedo> _redoList = new ObservableCollection<IUndoRedo>();
-        public ReadOnlyObservableCollection<IUndoRedo> UndoList { get; }
-        public ReadOnlyObservableCollection<IUndoRedo> RedoList { get; }
+        private static readonly ObservableCollection<IUndoRedo> _undoList = new ObservableCollection<IUndoRedo>();
+        private static readonly ObservableCollection<IUndoRedo> _redoList = new ObservableCollection<IUndoRedo>();
+        public static ReadOnlyObservableCollection<IUndoRedo> UndoList { get; } = new ReadOnlyObservableCollection<IUndoRedo>(_undoList);
+        public static ReadOnlyObservableCollection<IUndoRedo> RedoList { get; } = new ReadOnlyObservableCollection<IUndoRedo>(_redoList);
 
         /// <summary>
         /// Prevents <see cref="AddUndoRedoAction"/> being called indirectly by <see cref="Undo"/> or <see cref="Redo"/>
         /// </summary>
-        private bool _isEnabled = true;
-
-        public UndoRedo()
-        {
-            UndoList = new ReadOnlyObservableCollection<IUndoRedo>(_undoList);
-            RedoList = new ReadOnlyObservableCollection<IUndoRedo>(_redoList);
-        }
+        private static bool _isEnabled = true;
 
         /// <summary>
         /// Adds a <see cref="IUndoRedo"/> command that supports undo and redo
         /// </summary>
         /// <param name="cmd"></param>
-        public void AddUndoRedoAction(IUndoRedo cmd)
+        public static void AddUndoRedoAction(IUndoRedo cmd)
         {
-            if (_isEnabled)
+            if(_isEnabled)
             {
                 _undoList.Add(cmd);
                 _redoList.Clear();
             }
         }
-        public void Undo()
+        public static void Undo()
         {
-            if (_undoList.Any())
+            if(_undoList.Any())
             {
                 IUndoRedo cmd = _undoList.Last();
                 _undoList.RemoveAt(_undoList.Count - 1);
@@ -80,12 +77,12 @@ namespace XunlanEditor.Utilities
                 cmd.Undo();
                 _isEnabled = true;
 
-                _redoList.Insert(0, cmd);
+                _redoList.Insert(0,cmd);
             }
         }
-        public void Redo()
+        public static void Redo()
         {
-            if (_redoList.Any())
+            if(_redoList.Any())
             {
                 IUndoRedo cmd = _redoList.First();
                 _redoList.RemoveAt(0);
@@ -97,7 +94,7 @@ namespace XunlanEditor.Utilities
                 _undoList.Add(cmd);
             }
         }
-        public void Reset()
+        public static void Reset()
         {
             _undoList.Clear();
             _redoList.Clear();

@@ -1,11 +1,9 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Diagnostics;
-using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using XunlanEditor.AssertToolStruct;
+using XunlanEditor.AssetToolStruct;
 using XunlanEditor.DLLInterface;
 using XunlanEditor.Editors;
 using XunlanEditor.GameProject;
@@ -25,19 +23,19 @@ namespace XunlanEditor.Content
         }
 
         private void On_PrimitiveMeshDiag_Loaded(object sender,RoutedEventArgs e) => UpdatePrimitiveMesh();
-        private void On_PrimitiveTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdatePrimitiveMesh();
-        private void On_Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => UpdatePrimitiveMesh();
-        private void On_ScalarBox_ValueChanged(object sender, RoutedEventArgs e) => UpdatePrimitiveMesh();
+        private void On_PrimitiveTypeComboBox_SelectionChanged(object sender,SelectionChangedEventArgs e) => UpdatePrimitiveMesh();
+        private void On_Slider_ValueChanged(object sender,RoutedPropertyChangedEventArgs<double> e) => UpdatePrimitiveMesh();
+        private void On_ScalarBox_ValueChanged(object sender,RoutedEventArgs e) => UpdatePrimitiveMesh();
 
-        private void OnSave_Button_Click(object sender, RoutedEventArgs e)
+        private void OnSave_Button_Click(object sender,RoutedEventArgs e)
         {
             var dlg = new SaveFileDialog()
             {
-                InitialDirectory = Project.CurrProject.ContentDirPath,
+                InitialDirectory = Project.CurrProject.AssetsDirPath,
                 Filter = "Asset file (*.asset)|*.asset",
             };
 
-            if (dlg.ShowDialog() == true)
+            if(dlg.ShowDialog() == true)
             {
                 Debug.Assert(!string.IsNullOrEmpty(dlg.FileName));
                 var asset = (DataContext as IAssetEditor).Asset;
@@ -46,26 +44,27 @@ namespace XunlanEditor.Content
             }
         }
 
-        private float Value(ScalarBox scalarBox, float min)
+        private float Value(ScalarBox scalarBox,float min)
         {
-            float.TryParse(scalarBox.Value, out var result);
-            return Math.Max(result, min);
+            float.TryParse(scalarBox.Value,out var result);
+            return Math.Max(result,min);
         }
 
         private void UpdatePrimitiveMesh()
         {
-            if (!IsInitialized) return;
+            if(!IsInitialized)
+                return;
 
             PrimitiveMeshType meshType = (PrimitiveMeshType)primitiveTypeComboBox.SelectedItem;
             var info = new PrimitiveMeshInitInfo(meshType);
 
-            switch (meshType)
+            switch(meshType)
             {
                 case PrimitiveMeshType.Plane:
                     info.SegmentX = (uint)xSliderPlane.Value;
                     info.SegmentZ = (uint)zSliderPlane.Value;
-                    info.Size.X = Value(widthScalarBoxPlane, 0.001f);
-                    info.Size.Z = Value(lengthScalarBoxPlane, 0.001f);
+                    info.Size.X = Value(widthScalarBoxPlane,0.001f);
+                    info.Size.Z = Value(lengthScalarBoxPlane,0.001f);
                     break;
                 case PrimitiveMeshType.Cube:
                     return;
@@ -81,9 +80,9 @@ namespace XunlanEditor.Content
                     return;
             }
 
-            Geometry geometry = AssertToolAPI.CreateMesh(info);
-            Debug.Assert(geometry != null);
-            (DataContext as GeometryEditorViewModel).SetAsset(geometry);
+            Geometry geometry = new Geometry();
+            AssetToolAPI.CreatePrimitiveMesh(geometry,info);
+            (DataContext as GeometryEditor).SetAsset(geometry);
         }
     }
 }

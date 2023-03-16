@@ -4,6 +4,7 @@
 #include "EngineAPI/Transformer.h"
 #include "EngineAPI/Script.h"
 #include "Renderer/Renderer.h"
+#include "Utility/IO.h"
 
 #include <fstream>
 #include <filesystem>
@@ -31,14 +32,6 @@ namespace Xunlan
 
             fileStream.close();
             return true;
-        }
-
-        template<typename T>
-        T Read(const byte*& at)
-        {
-            T date = *at;
-            at += sizeof(T);
-            return date;
         }
 
         enum ComponentType
@@ -84,7 +77,7 @@ namespace Xunlan
         {
             Script::Script& script = initInfo.script;
 
-            const uint32 nameLen = Read<uint32>(pData);
+            const uint32 nameLen = Utility::Read<uint32>(pData);
 
             assert(nameLen > 0);
             assert(nameLen < 256);
@@ -93,7 +86,7 @@ namespace Xunlan
             memcpy(scriptName, pData, nameLen);
             pData += nameLen;
 
-            Script::ScriptCreator creator = Script::IGetScriptCreator(scriptName);
+            Script::ScriptCreator creator = Script::GetRuntimeScriptCreator(scriptName);
             if (creator == nullptr)
             {
                 assert(false);
@@ -111,8 +104,6 @@ namespace Xunlan
             ReadScript,
         };
         static_assert(_countof(g_componentReaders) == ComponentType::Count);
-
-        std::vector<EntityID> g_entities;
     }
 
     bool ContentLoader::LoadGame()
@@ -123,12 +114,12 @@ namespace Xunlan
 
         const byte* at = pGameData.get();
 
-        const uint32 numEntities = Read<uint32>(at);
+        const uint32 numEntities = Utility::Read<uint32>(at);
 
         for (uint32 entityIndex = 0; entityIndex < numEntities; ++entityIndex)
         {
-            const uint32 gameObjectType = Read<uint32>(at);
-            const uint32 numComponents = Read<uint32>(at);
+            const uint32 gameObjectType = Utility::Read<uint32>(at);
+            const uint32 numComponents = Utility::Read<uint32>(at);
 
             if (numComponents == 0) { assert(false); return false; }
 
@@ -136,27 +127,15 @@ namespace Xunlan
 
             for (uint32 comIndex = 0; comIndex < numComponents; ++comIndex)
             {
-                const uint32 componentType = Read<uint32>(at);
+                const uint32 componentType = Utility::Read<uint32>(at);
                 assert(componentType < ComponentType::Count);
                 if (!g_componentReaders[componentType](at, initDesc)) return false;
             }
 
-            Command cmd(World::GetWorld());
-            EntityID entity = -1;
+            ECS::EntityID entity = ECS::CreateEntity();
 
-            if (initDesc.script.pScript)
-            {
-                entity = cmd.Create<Transformer::Transformer, Script::Script>(
-                    std::forward<Transformer::Transformer>(initDesc.transformer),
-                    std::forward<Script::Script>(initDesc.script));
-            }
-            else
-            {
-                entity = cmd.Create<Transformer::Transformer>(
-                    std::forward<Transformer::Transformer>(initDesc.transformer));
-            }
-
-            g_entities.push_back(entity);
+            ECS::AddComponent<Transformer::Transformer>(entity, initDesc.transformer);
+            if (initDesc.script.pScript) ECS::AddComponent<Script::Script>(entity, initDesc.script);
         }
 
         assert(at == pGameData.get() + byteSize);

@@ -23,10 +23,7 @@ namespace Xunlan::Graphics::DX12
 
     inline void Check(HRESULT hr)
     {
-        if (FAILED(hr))
-        {
-            throw std::exception();
-        }
+        if (FAILED(hr)) throw std::exception();
     }
 
     inline std::wstring ToWString(const char* str)
@@ -37,17 +34,24 @@ namespace Xunlan::Graphics::DX12
 
 #ifdef _DEBUG
 
-#define NAME_OBJECT(obj, name) obj->SetName(name);                                      \
-                               OutputDebugString(L"________D3D12 Object Created: ");    \
-                               OutputDebugString(name);                                 \
-                               OutputDebugString(L"\n");
+#define NAME_OBJECT(obj, name)                                      \
+        {                                                           \
+            (obj)->SetName(name);                                   \
+            OutputDebugString(L"________D3D12 Object Created: ");   \
+            OutputDebugString(name);                                \
+            OutputDebugString(L"\n");                               \
+        }
 
-#define NAME_OBJECT_INDEX(obj, name, index) std::wstring indexName = name;                          \
-                                            indexName += L" " + std::to_wstring(i);                 \
-                                            obj->SetName(indexName.c_str());                        \
-                                            OutputDebugString(L"________D3D12 Object Created: ");   \
-                                            OutputDebugString(indexName.c_str());                   \
-                                            OutputDebugString(L"\n");
+#define NAME_OBJECT_INDEX(obj, name, index)                         \
+        {                                                           \
+            std::wstring indexName = name;                          \
+            indexName += L" " + std::to_wstring(index);             \
+            (obj)->SetName(indexName.c_str());                      \
+            OutputDebugString(L"________D3D12 Object Created: ");   \
+            OutputDebugString(indexName.c_str());                   \
+            OutputDebugString(L"\n");                               \
+        }
+
 #else
 
 #define NAME_OBJECT(obj, name)

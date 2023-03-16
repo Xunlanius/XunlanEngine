@@ -13,39 +13,39 @@ namespace XunlanEditor.RenderSurface
         private readonly int _width = 800;
         private readonly int _height = 600;
 
-        public UInt32 SurfaceID { get; private set; } = ID.InvalidID;
+        public UInt32 RenderSurfaceID { get; private set; } = ID.InvalidID;
 
         private DelayEventTimer _resizeDelayTimer;
 
-        public RenderSurfaceHost(double width, double height)
+        public RenderSurfaceHost(double width,double height)
         {
             _width = (int)width;
             _height = (int)height;
 
             _resizeDelayTimer = new DelayEventTimer(TimeSpan.FromMilliseconds(250.0));
             _resizeDelayTimer.Handler += Resize;
-            SizeChanged += (s, e) => _resizeDelayTimer.Enable();
+            SizeChanged += (s,e) => _resizeDelayTimer.Trigger();
         }
 
-        private void Resize(object sender, DelayEventTimerArgs e)
+        private void Resize(object sender,DelayEventTimerArgs e)
         {
-            EngineAPI.ResizeRenderSurface(SurfaceID);
+            EngineAPI.ResizeRenderSurface(RenderSurfaceID);
         }
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            SurfaceID = EngineAPI.CreateRenderSurface(hwndParent.Handle, _width, _height);
-            Debug.Assert(ID.IsValid(SurfaceID));
+            RenderSurfaceID = EngineAPI.CreateRenderSurface(hwndParent.Handle,_width,_height);
+            Debug.Assert(ID.IsValid(RenderSurfaceID));
 
-            _renderWindowHandle = EngineAPI.GetWindowHandle(SurfaceID);
+            _renderWindowHandle = EngineAPI.GetWindowHandle(RenderSurfaceID);
             Debug.Assert(_renderWindowHandle != IntPtr.Zero);
 
-            return new HandleRef(this, _renderWindowHandle);
+            return new HandleRef(this,_renderWindowHandle);
         }
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            EngineAPI.RemoveRenderSurface(SurfaceID);
-            SurfaceID = ID.InvalidID;
+            EngineAPI.RemoveRenderSurface(RenderSurfaceID);
+            RenderSurfaceID = ID.InvalidID;
             _renderWindowHandle = IntPtr.Zero;
         }
     }

@@ -5,6 +5,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
+using XunlanEditor.DLLInterface;
+using XunlanEditor.GameProject;
 using XunlanEditor.Utilities;
 
 namespace XunlanEditor.Content
@@ -19,18 +22,28 @@ namespace XunlanEditor.Content
         Capsule,
     }
 
+    enum ElementType
+    {
+        Position = 0,
+        Normals = 1,
+        TSpace = 3,
+        Colors = 4,
+        Joints = 8,
+    }
+
     class Mesh : ViewModelBase
     {
-        private int _vertexByteSize;
-        public int VertexByteSize
+        public static int PositionSize = sizeof(float) * 3;
+
+        private string _name;
+        public string Name
         {
-            get => _vertexByteSize;
+            get => _name;
             set
             {
-                if (_vertexByteSize == value) return;
-
-                _vertexByteSize = value;
-                OnPropertyChanged(nameof(VertexByteSize));
+                if(_name == value) return;
+                _name = value;
+                OnPropertyChanged(nameof(Name));
             }
         }
 
@@ -40,23 +53,9 @@ namespace XunlanEditor.Content
             get => _numVertices;
             set
             {
-                if (_numVertices == value) return;
-
+                if(_numVertices == value) return;
                 _numVertices = value;
                 OnPropertyChanged(nameof(NumVertices));
-            }
-        }
-
-        private int _indexByteSize;
-        public int IndexByteSize
-        {
-            get => _indexByteSize;
-            set
-            {
-                if (_indexByteSize == value) return;
-
-                _indexByteSize = value;
-                OnPropertyChanged(nameof(IndexByteSize));
             }
         }
 
@@ -66,19 +65,33 @@ namespace XunlanEditor.Content
             get => _numIndices;
             set
             {
-                if (_numIndices == value) return;
-
+                if(_numIndices == value) return;
                 _numIndices = value;
                 OnPropertyChanged(nameof(NumIndices));
             }
         }
 
-        public byte[] VerticesBuffer { get; set; }
-        public byte[] IndicesBuffer { get; set; }
+        public ElementType ElementType { get; set; }
+
+        private int _elementSize;
+        public int ElementSize
+        {
+            get => _elementSize;
+            set
+            {
+                if(_elementSize == value) return;
+                _elementSize = value;
+                OnPropertyChanged(nameof(ElementSize));
+            }
+        }
+
+        public byte[] PositionBuffer { get; set; }
+        public byte[] IndexBuffer { get; set; }
+        public byte[] ElementBuffer { get; set; }
     }
-    
+
     /// <summary>
-    /// All meshes in <see cref="MeshLOD"/> have the same LOD ID
+    /// All <see cref="Mesh"/>es in a <see cref="MeshLOD"/> have the same LOD ID
     /// </summary>
     class MeshLOD : ViewModelBase
     {
@@ -88,8 +101,7 @@ namespace XunlanEditor.Content
             get => _name;
             set
             {
-                if (_name == value) return;
-
+                if(_name == value) return;
                 _name = value;
                 OnPropertyChanged(nameof(Name));
             }
@@ -101,8 +113,7 @@ namespace XunlanEditor.Content
             get => _lodThreshold;
             set
             {
-                if (_lodThreshold == value) return;
-
+                if(_lodThreshold == value) return;
                 _lodThreshold = value;
                 OnPropertyChanged(nameof(LodThreshold));
             }
@@ -111,7 +122,7 @@ namespace XunlanEditor.Content
         public ObservableCollection<Mesh> Meshes { get; } = new ObservableCollection<Mesh>();
     }
 
-    class LodGroup : ViewModelBase
+    class LODGroup : ViewModelBase
     {
         private string _name;
         public string Name
@@ -119,8 +130,7 @@ namespace XunlanEditor.Content
             get => _name;
             set
             {
-                if (_name == value) return;
-
+                if(_name == value) return;
                 _name = value;
                 OnPropertyChanged(nameof(Name));
             }
@@ -131,13 +141,25 @@ namespace XunlanEditor.Content
 
     class GeometryImportSettings : ViewModelBase
     {
+        private float _smoothingAngle;
+        public float SmoothingAngle
+        {
+            get => _smoothingAngle;
+            set
+            {
+                if(_smoothingAngle == value) return;
+                _smoothingAngle = value;
+                OnPropertyChanged(nameof(SmoothingAngle));
+            }
+        }
+
         private bool _calculateNormals;
         public bool CalculateNormals
         {
             get => _calculateNormals;
             set
             {
-                if (_calculateNormals == value) return;
+                if(_calculateNormals == value) return;
                 _calculateNormals = value;
                 OnPropertyChanged(nameof(CalculateNormals));
             }
@@ -149,21 +171,9 @@ namespace XunlanEditor.Content
             get => _calculateTangents;
             set
             {
-                if (_calculateTangents == value) return;
+                if(_calculateTangents == value) return;
                 _calculateTangents = value;
                 OnPropertyChanged(nameof(CalculateTangents));
-            }
-        }
-
-        private float _smoothingAngle;
-        public float SmoothingAngle
-        {
-            get => _smoothingAngle;
-            set
-            {
-                if (_smoothingAngle == value) return;
-                _smoothingAngle = value;
-                OnPropertyChanged(nameof(SmoothingAngle));
             }
         }
 
@@ -173,41 +183,84 @@ namespace XunlanEditor.Content
             get => _reverseHandedness;
             set
             {
-                if (_reverseHandedness == value) return;
+                if(_reverseHandedness == value) return;
                 _reverseHandedness = value;
                 OnPropertyChanged(nameof(ReverseHandedness));
             }
         }
 
+        private bool _importEmbededTextures;
+        public bool ImportEmbededTextures
+        {
+            get => _importEmbededTextures;
+            set
+            {
+                if(_importEmbededTextures == value) return;
+                _importEmbededTextures = value;
+                OnPropertyChanged(nameof(ImportEmbededTextures));
+            }
+        }
+
+        private bool _importAnimations;
+        public bool ImportAnimations
+        {
+            get => _importAnimations;
+            set
+            {
+                if(_importAnimations == value) return;
+                _importAnimations = value;
+                OnPropertyChanged(nameof(ImportAnimations));
+            }
+        }
+
         public GeometryImportSettings()
         {
-            CalculateNormals = false;
-            CalculateTangents = false;
             SmoothingAngle = 178f;
+            CalculateNormals = false;
+            CalculateTangents = true;
             ReverseHandedness = false;
+            ImportEmbededTextures = true;
+            ImportAnimations = true;
         }
 
         public void ToBinary(BinaryWriter writer)
         {
+            writer.Write(SmoothingAngle);
             writer.Write(CalculateNormals);
             writer.Write(CalculateTangents);
-            writer.Write(SmoothingAngle);
             writer.Write(ReverseHandedness);
+            writer.Write(ImportEmbededTextures);
+            writer.Write(ImportAnimations);
+        }
+
+        public void FromBinary(BinaryReader reader)
+        {
+            SmoothingAngle = reader.ReadSingle();
+            CalculateNormals = reader.ReadBoolean();
+            CalculateTangents = reader.ReadBoolean();
+            ReverseHandedness = reader.ReadBoolean();
+            ImportEmbededTextures = reader.ReadBoolean();
+            ImportAnimations = reader.ReadBoolean();
         }
     }
 
     class Geometry : Asset
     {
-        private readonly List<LodGroup> _lodGroups = new List<LodGroup>();
-        public LodGroup GetLodGroupAt(int index = 0)
+        private readonly object _lock = new object();
+
+        private readonly List<LODGroup> _lodGroups = new List<LODGroup>();
+
+        public GeometryImportSettings ImportSettings { get; } = new GeometryImportSettings();
+
+        public Geometry() : base(AssetType.Mesh) { }
+
+        public LODGroup GetLodGroupAt(int index = 0)
         {
-            if (_lodGroups.Count == 0) return null;
+            if(_lodGroups.Count == 0) return null;
 
             Debug.Assert(index >= 0 && index < _lodGroups.Count);
-            return _lodGroups[index];
+            return (index >= 0 && index < _lodGroups.Count) ? _lodGroups[index] : null;
         }
-
-        public Geometry() : base(AssetType.Mesh) {}
 
         public void UnpackRawData(byte[] datas)
         {
@@ -225,22 +278,20 @@ namespace XunlanEditor.Content
 
             int numLODs = reader.ReadInt32();
             Debug.Assert(numLODs > 0);
-            for (int i = 0; i < numLODs; ++i)
+            for(int i = 0;i < numLODs;++i)
             {
                 // LOD group's name
                 int lodGroupNameLen = reader.ReadInt32();
                 string lodGroupName;
-                if(lodGroupNameLen > 0)
-                    lodGroupName = Encoding.UTF8.GetString(reader.ReadBytes(lodGroupNameLen));
-                else
-                    lodGroupName = $"LOD_{AssetHelper.GetRandomString()}";
+                if(lodGroupNameLen > 0) lodGroupName = Encoding.UTF8.GetString(reader.ReadBytes(lodGroupNameLen));
+                else lodGroupName = $"LOD_{AssetHelper.GetRandomString()}";
 
                 // number of meshes
                 int numMeshes = reader.ReadInt32();
                 Debug.Assert(numMeshes > 0);
-                List<MeshLOD> lods = ReadMeshLods(numMeshes, reader);
+                List<MeshLOD> lods = ReadMeshLods(numMeshes,reader);
 
-                LodGroup lodGroup = new LodGroup() { Name = lodGroupName };
+                LODGroup lodGroup = new LODGroup() { Name = lodGroupName };
                 lods.ForEach(lod => lodGroup.LODs.Add(lod));
 
                 _lodGroups.Add(lodGroup);
@@ -252,9 +303,9 @@ namespace XunlanEditor.Content
             List<uint> lodIDs = new List<uint>();
             List<MeshLOD> lodList = new List<MeshLOD>();
 
-            for (int i = 0; i < numMeshes; ++i)
+            for(int i = 0;i < numMeshes;++i)
             {
-                ReadMesh(reader, lodIDs, lodList);
+                ReadMesh(reader,lodIDs,lodList);
             }
 
             return lodList;
@@ -264,36 +315,37 @@ namespace XunlanEditor.Content
             // mesh's name
             int nameLen = reader.ReadInt32();
             string meshName;
-            if(nameLen > 0)
-                meshName = Encoding.UTF8.GetString(reader.ReadBytes(nameLen));
-            else
-                meshName = $"Mesh_{AssetHelper.GetRandomString()}";
+            if(nameLen > 0) meshName = Encoding.UTF8.GetString(reader.ReadBytes(nameLen));
+            else meshName = $"Mesh_{AssetHelper.GetRandomString()}";
 
-            Mesh mesh = new Mesh();
+            Mesh mesh = new Mesh() { Name = meshName };
+
+            // Number of vertices
+            mesh.NumVertices = reader.ReadInt32();
+
+            // Number of indices
+            mesh.NumIndices = reader.ReadInt32();
+
+            // Element type
+            mesh.ElementType = (ElementType)reader.ReadInt32();
+            // Element size
+            mesh.ElementSize = reader.ReadInt32();
 
             // LOD ID
             uint lodID = reader.ReadUInt32();
-
-            // vertex byte size
-            mesh.VertexByteSize = reader.ReadInt32();
-            // the number of vertices
-            mesh.NumVertices = reader.ReadInt32();
-            // index byte size
-            mesh.IndexByteSize = reader.ReadInt32();
-            // the number of indices
-            mesh.NumIndices = reader.ReadInt32();
-
             // LOD threshold
             float lodThreshold = reader.ReadSingle();
 
-            // vertex buffer
-            mesh.VerticesBuffer = reader.ReadBytes(mesh.VertexByteSize * mesh.NumVertices);
-            // index buffer
-            mesh.IndicesBuffer = reader.ReadBytes(mesh.IndexByteSize * mesh.NumIndices);
+            // Vertex buffer
+            mesh.PositionBuffer = reader.ReadBytes(Mesh.PositionSize * mesh.NumVertices);
+            // Index buffer
+            mesh.IndexBuffer = reader.ReadBytes(sizeof(uint) * mesh.NumIndices);
+            // Element buffer
+            mesh.ElementBuffer = reader.ReadBytes(mesh.ElementSize * mesh.NumVertices);
 
-            // determine which MeshLOD the mesh should be added to
+            // Determine which MeshLOD the mesh should be added to
             MeshLOD meshLOD;
-            if (ID.IsValid(lodID) && lodIDs.Contains(lodID))
+            if(ID.IsValid(lodID) && lodIDs.Contains(lodID))
             {
                 meshLOD = lodList[lodIDs.IndexOf(lodID)];
                 Debug.Assert(meshLOD != null);
@@ -301,7 +353,7 @@ namespace XunlanEditor.Content
             else
             {
                 lodIDs.Add(lodID);
-                meshLOD = new MeshLOD() { Name = meshName, LodThreshold = lodID };
+                meshLOD = new MeshLOD() { Name = meshName, LodThreshold = lodThreshold };
                 lodList.Add(meshLOD);
             }
 
@@ -312,34 +364,37 @@ namespace XunlanEditor.Content
         {
             List<string> savedFiles = new List<string>();
 
-            if (!_lodGroups.Any())
-            {
-                Debug.Assert(false);
-                return savedFiles;
-            }
+            if(!_lodGroups.Any()) return savedFiles;
 
             string path = Path.GetDirectoryName(filePath) + Path.DirectorySeparatorChar;
             string fileName = Path.GetFileNameWithoutExtension(filePath);
 
             try
             {
-                foreach (LodGroup group in _lodGroups)
+                foreach(LODGroup group in _lodGroups)
                 {
                     Debug.Assert(group.LODs.Any());
-                    string meshFileName = AssetHelper.SanitizeFileName(path + fileName + "_" + group.LODs[0].Name + AssetFileExtension);
+                    string meshFileName = path + fileName;
+                    if(_lodGroups.Count == 1) meshFileName = AssetHelper.SanitizeFileName(meshFileName + AssetFileExtension);
+                    else
+                    {
+                        meshFileName = meshFileName + "_";
+                        if(group.LODs.Count == 1) meshFileName = AssetHelper.SanitizeFileName(meshFileName + group.Name + AssetFileExtension);
+                        else meshFileName = AssetHelper.SanitizeFileName(meshFileName + group.LODs[0].Name + AssetFileExtension);
+                    }
 
                     Guid = Guid.NewGuid();
 
                     byte[] data = null;
-                    using (var writer = new BinaryWriter(new MemoryStream()))
+                    using(var writer = new BinaryWriter(new MemoryStream()))
                     {
                         writer.Write(group.Name);
                         writer.Write(group.LODs.Count);
 
                         List<byte> hashes = new List<byte>();
-                        foreach (MeshLOD lod in group.LODs)
+                        foreach(MeshLOD lod in group.LODs)
                         {
-                            LODToBinary(lod, writer, out byte[] hash);
+                            LODToBinary(lod,writer,out byte[] hash);
                             hashes.AddRange(hash);
                         }
 
@@ -349,21 +404,24 @@ namespace XunlanEditor.Content
 
                     Debug.Assert(data?.Length > 0);
 
-                    using (BinaryWriter writer = new BinaryWriter(File.Open(meshFileName, FileMode.Create, FileAccess.Write)))
+                    // Write .asset file
+                    using(BinaryWriter writer = new BinaryWriter(File.Open(meshFileName,FileMode.Create,FileAccess.Write)))
                     {
                         WriteAssetFileHeader(writer);
-                        //ImportSettings.ToBinary(writer);
+                        ImportSettings.ToBinary(writer);
                         writer.Write(data.Length);
                         writer.Write(data);
                     }
 
                     savedFiles.Add(meshFileName);
+
+                    Logger.LogMessage(MsgType.Info,$"Successfully saved geometry to [{meshFileName}].");
                 }
             }
             catch(Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                Logger.LogMessage(MsgType.Error, $"Failed to save geometry to [{filePath}]");
+                Logger.LogMessage(MsgType.Error,$"Failed to save geometry to [{filePath}].");
                 throw;
             }
 
@@ -377,21 +435,125 @@ namespace XunlanEditor.Content
 
             Int64 meshDataBegin = writer.BaseStream.Position;
 
-            foreach (Mesh mesh in lod.Meshes)
+            foreach(Mesh mesh in lod.Meshes)
             {
-                writer.Write(mesh.VertexByteSize);
+                writer.Write(mesh.Name);
                 writer.Write(mesh.NumVertices);
-                writer.Write(mesh.IndexByteSize);
                 writer.Write(mesh.NumIndices);
-                writer.Write(mesh.VerticesBuffer);
-                writer.Write(mesh.IndicesBuffer);
+                writer.Write((int)mesh.ElementType);
+                writer.Write(mesh.ElementSize);
+                writer.Write(mesh.PositionBuffer);
+                writer.Write(mesh.IndexBuffer);
+                writer.Write(mesh.ElementBuffer);
             }
 
             Int64 meshDataSize = writer.BaseStream.Position - meshDataBegin;
             Debug.Assert(meshDataSize > 0);
 
             byte[] buffer = (writer.BaseStream as MemoryStream).ToArray();
-            hash = AssetHelper.ComputeHash(buffer, (int)meshDataBegin, (int)meshDataSize);
+            hash = AssetHelper.ComputeHash(buffer,(int)meshDataBegin,(int)meshDataSize);
+        }
+
+        public override void Load(string filePath)
+        {
+            Debug.Assert(File.Exists(filePath));
+            Debug.Assert(Path.GetExtension(filePath) == AssetFileExtension);
+
+            try
+            {
+                byte[] data = null;
+                using(var reader = new BinaryReader(File.Open(filePath,FileMode.Open,FileAccess.Read)))
+                {
+                    ReadAssetFileHeader(reader);
+                    ImportSettings.FromBinary(reader);
+                    int dataLen = reader.ReadInt32();
+                    Debug.Assert(dataLen > 0);
+                    data = reader.ReadBytes(dataLen);
+                }
+
+                Debug.Assert(data.Length > 0);
+
+                using(var reader = new BinaryReader(new MemoryStream(data)))
+                {
+                    LODGroup lodGroup = new LODGroup() { Name = reader.ReadString() };
+
+                    int lodCount = reader.ReadInt32();
+                    for(int i = 0;i < lodCount;++i)
+                    {
+                        lodGroup.LODs.Add(BinaryToLOD(reader));
+                    }
+
+                    _lodGroups.Clear();
+                    _lodGroups.Add(lodGroup);
+                }
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Logger.LogMessage(MsgType.Error,$"Failed to load geometry asset from file: {filePath}");
+            }
+        }
+
+        private MeshLOD BinaryToLOD(BinaryReader reader)
+        {
+            MeshLOD lod = new MeshLOD();
+            lod.Name = reader.ReadString();
+            lod.LodThreshold = reader.ReadInt32();
+
+            int numMeshes = reader.ReadInt32();
+            for(int i = 0;i < numMeshes;++i)
+            {
+                Mesh mesh = new Mesh()
+                {
+                    Name = reader.ReadString(),
+                    NumVertices = reader.ReadInt32(),
+                    NumIndices = reader.ReadInt32(),
+                    ElementType = (ElementType)reader.ReadInt32(),
+                    ElementSize = reader.ReadInt32(),
+                };
+
+                mesh.PositionBuffer = reader.ReadBytes(Mesh.PositionSize * mesh.NumVertices);
+                mesh.IndexBuffer = reader.ReadBytes(sizeof(uint) * mesh.NumIndices);
+                mesh.ElementBuffer = reader.ReadBytes(mesh.ElementSize * mesh.NumVertices);
+
+                lod.Meshes.Add(mesh);
+            }
+
+            return lod;
+        }
+
+        public override void Import(string filePath)
+        {
+            Debug.Assert(File.Exists(filePath));
+            string extension = Path.GetExtension(filePath).ToLower();
+
+            try
+            {
+                if(extension == ".fbx") ImportFBX(filePath);
+
+                Logger.LogMessage(MsgType.Info,$"Successfully imported [{filePath}].");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Logger.LogMessage(MsgType.Error,$"Failed to import [{filePath}].");
+            }
+        }
+
+        private void ImportFBX(string filePath)
+        {
+            Logger.LogMessage(MsgType.Info,$"Importing FBX file [{filePath}]...");
+
+            string tempDirPath = Application.Current.Dispatcher.Invoke(() => Project.CurrProject.TempDirPath);
+
+            lock(_lock)
+            {
+                if(!Directory.Exists(tempDirPath)) Directory.CreateDirectory(tempDirPath);
+            }
+
+            string tempFilePath = $@"{tempDirPath}{AssetHelper.GetRandomString()}.fbx";
+            File.Copy(filePath,tempFilePath,true);
+            AssetToolAPI.ImportFBX(filePath,this);
         }
     }
 }

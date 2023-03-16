@@ -1,11 +1,11 @@
 #pragma once
 
-#include "AssertToolCommon.h"
+#include "AssetToolCommon.h"
 #include "Geometry.h"
 
 namespace Xunlan::Tools
 {
-    enum class PrimitiveMeshType
+    enum class PrimitiveMeshType : uint32
     {
         Plane,
         Cube,
@@ -17,6 +17,9 @@ namespace Xunlan::Tools
         Count
     };
 
+    /// <summary>
+    /// Given by editor
+    /// </summary>
     struct PrimitiveMeshInitInfo
     {
         PrimitiveMeshType meshType;

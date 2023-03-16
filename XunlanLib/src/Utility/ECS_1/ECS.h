@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Common/ECS/IDCore.h"
-#include "Common/ECS/SparseSet.h"
+#include <unordered_set>
+#include <unordered_map>
+#include "Utility/ECS/IDCore.h"
+#include "Utility/ECS/SparseSet.h"
 
 namespace Xunlan
 {

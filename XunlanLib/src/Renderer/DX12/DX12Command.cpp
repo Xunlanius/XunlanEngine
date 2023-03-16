@@ -63,14 +63,15 @@ namespace Xunlan::Graphics::DX12
     {
         Check(m_cmdList->Close());
         ID3D12CommandList* const cmdLists[] = { m_cmdList.Get() };
-        m_cmdQueue->ExecuteCommandLists(1, cmdLists);
+        m_cmdQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
         surface.Present();
 
-        ++m_fenceValue;
-        m_cmdFrames[m_currFrameIndex].fenceValue = m_fenceValue;
+        // Update fence value
+        m_cmdFrames[m_currFrameIndex].fenceValue = ++m_fenceValue;
         m_cmdQueue->Signal(m_fence.Get(), m_fenceValue);
 
+        // Update frame index
         m_currFrameIndex = (m_currFrameIndex + 1) % NUM_FRAME_BUFFERS;
     }
 

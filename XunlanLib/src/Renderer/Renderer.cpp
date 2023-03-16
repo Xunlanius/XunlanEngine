@@ -11,37 +11,37 @@ namespace Xunlan::Graphics
         {
             "./Shaders/DX12Shaders.bin"
         };
-        GraphicsAPI g_platformAPI = {};
+        GraphicsAPI g_graphicsAPI = {};
 
         bool SetPlatform(Platform platform)
         {
             switch (platform)
             {
             case Platform::DX12:
-                DX12::GetGraphicsAPI(g_platformAPI);
+                DX12::GetGraphicsAPI(g_graphicsAPI);
                 break;
 
             default:
                 return false;
             }
 
-            assert(platform == g_platformAPI.platform);
+            assert(platform == g_graphicsAPI.platform);
             return true;
         }
     }
 
-    bool Initialize(Platform platform) { return SetPlatform(platform) && g_platformAPI.initialize(); }
-    void Shutdown() { g_platformAPI.shutdown(); }
+    bool Initialize(Platform platform) { return SetPlatform(platform) && g_graphicsAPI.initialize(); }
+    void Shutdown() { g_graphicsAPI.shutdown(); }
 
-    const char* GetEngineShadersBlobPath() { return g_engineShaderPaths[(uint32)g_platformAPI.platform]; }
+    const char* GetEngineShadersBlobPath() { return g_engineShaderPaths[(uint32)g_graphicsAPI.platform]; }
     const char* GetEngineShadersBlobPath(Platform platform) { return g_engineShaderPaths[(uint32)platform]; }
 
-    EntityID Surface::Create(EntityID windowID) { return g_platformAPI.surface.create(windowID); }
-    void Surface::Remove(EntityID& surfaceID) { g_platformAPI.surface.remove(surfaceID); }
-    void Surface::Render(EntityID surfaceID) { g_platformAPI.surface.render(surfaceID); }
+    ID Surface::Create(ID windowID) { return g_graphicsAPI.surface.create(windowID); }
+    void Surface::Remove(ID& surfaceID) { g_graphicsAPI.surface.remove(surfaceID); }
+    void Surface::Render(ID surfaceID) { g_graphicsAPI.surface.render(surfaceID); }
 
-    uint32 Surface::GetWidth(EntityID surfaceID) { return g_platformAPI.surface.getWidth(surfaceID); }
-    uint32 Surface::GetHeight(EntityID surfaceID) { return g_platformAPI.surface.getHeight(surfaceID); }
+    uint32 Surface::GetWidth(ID surfaceID) { return g_graphicsAPI.surface.getWidth(surfaceID); }
+    uint32 Surface::GetHeight(ID surfaceID) { return g_graphicsAPI.surface.getHeight(surfaceID); }
 
-    void Surface::Resize(EntityID surfaceID) { g_platformAPI.surface.resize(surfaceID); }
+    void Surface::Resize(ID surfaceID) { g_graphicsAPI.surface.resize(surfaceID); }
 }

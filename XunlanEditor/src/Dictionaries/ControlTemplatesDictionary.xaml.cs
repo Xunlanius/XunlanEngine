@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -10,16 +7,17 @@ namespace XunlanEditor.Dictionaries
 {
     public partial class ControlTemplatesDictionary : ResourceDictionary
     {
-        private void OnTextBox_KeyDown(object sender, KeyEventArgs e)
+        private void OnTextBox_KeyDown(object sender,KeyEventArgs e)
         {
             TextBox textBox = sender as TextBox;
             BindingExpression bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
 
-            if (bindingExpression == null) return;
+            if(bindingExpression == null)
+                return;
 
-            if (e.Key == Key.Enter)
+            if(e.Key == Key.Enter)
             {
-                if (textBox.Tag is ICommand cmd && cmd.CanExecute(textBox.Text))
+                if(textBox.Tag is ICommand cmd && cmd.CanExecute(textBox.Text))
                 {
                     cmd.Execute(textBox.Text);
                 }
@@ -31,7 +29,7 @@ namespace XunlanEditor.Dictionaries
                 Keyboard.ClearFocus();
                 e.Handled = true;
             }
-            else if (e.Key == Key.Escape)
+            else if(e.Key == Key.Escape)
             {
                 // discard changes
                 bindingExpression.UpdateTarget();
@@ -41,16 +39,17 @@ namespace XunlanEditor.Dictionaries
             }
         }
 
-        private void OnTextBoxRename_KeyDown(object sender, KeyEventArgs e)
+        private void OnTextBoxRename_KeyDown(object sender,KeyEventArgs e)
         {
             TextBox textBox = sender as TextBox;
             BindingExpression bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
 
-            if (bindingExpression == null) return;
+            if(bindingExpression == null)
+                return;
 
-            if (e.Key == Key.Enter)
+            if(e.Key == Key.Enter)
             {
-                if (textBox.Tag is ICommand cmd && cmd.CanExecute(textBox.Text))
+                if(textBox.Tag is ICommand cmd && cmd.CanExecute(textBox.Text))
                 {
                     cmd.Execute(textBox.Text);
                 }
@@ -62,7 +61,7 @@ namespace XunlanEditor.Dictionaries
                 textBox.Visibility = Visibility.Collapsed;
                 e.Handled = true;
             }
-            else if (e.Key == Key.Escape)
+            else if(e.Key == Key.Escape)
             {
                 // discard changes
                 bindingExpression.UpdateTarget();
@@ -72,39 +71,40 @@ namespace XunlanEditor.Dictionaries
             }
         }
 
-        private void OnTextBoxRename_LostFocus(object sender, RoutedEventArgs e)
+        private void OnTextBoxRename_LostFocus(object sender,RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            if (!textBox.IsVisible) return;
+            if(!textBox.IsVisible)
+                return;
             BindingExpression bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
 
-            if (bindingExpression != null)
+            if(bindingExpression != null)
             {
                 bindingExpression.UpdateTarget();
                 textBox.Visibility = Visibility.Collapsed;
             }
         }
 
-        private void OnClose_Button_Click(object sender, RoutedEventArgs e)
+        private void OnClose_Button_Click(object sender,RoutedEventArgs e)
         {
             Window window = (Window)((FrameworkElement)sender).TemplatedParent;
             window.Close();
         }
 
-        private void OnMaximized_Button_Click(object sender, RoutedEventArgs e)
+        private void OnMaximized_Button_Click(object sender,RoutedEventArgs e)
         {
             Window window = (Window)((FrameworkElement)sender).TemplatedParent;
-            if (window.WindowState == WindowState.Maximized)
+            if(window.WindowState == WindowState.Maximized)
             {
                 window.WindowState = WindowState.Normal;
             }
-            else if (window.WindowState == WindowState.Normal)
+            else if(window.WindowState == WindowState.Normal)
             {
                 window.WindowState = WindowState.Maximized;
             }
         }
 
-        private void OnMinimized_Button_Click(object sender, RoutedEventArgs e)
+        private void OnMinimized_Button_Click(object sender,RoutedEventArgs e)
         {
             Window window = (Window)((FrameworkElement)sender).TemplatedParent;
             window.WindowState = WindowState.Minimized;

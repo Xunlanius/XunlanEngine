@@ -19,8 +19,7 @@ namespace XunlanEditor.GameObjects
             get => _objectID;
             private set
             {
-                if (_objectID == value) return;
-
+                if(_objectID == value) return;
                 _objectID = value;
                 OnPropertyChanged(nameof(ObjectID));
             }
@@ -32,16 +31,15 @@ namespace XunlanEditor.GameObjects
             get => _isAlive;
             set
             {
-                if (_isAlive == value) return;
-
+                if(_isAlive == value) return;
                 _isAlive = value;
 
-                if (_isAlive)
+                if(_isAlive)
                 {
                     ObjectID = EngineAPI.GameObjectAPI.CreateEntity(this);
                     Debug.Assert(ID.IsValid(ObjectID));
                 }
-                else if (ID.IsValid(ObjectID))
+                else if(ID.IsValid(ObjectID))
                 {
                     EngineAPI.GameObjectAPI.RemoveEntity(this);
                     ObjectID = ID.InvalidID;
@@ -51,29 +49,27 @@ namespace XunlanEditor.GameObjects
             }
         }
 
-        [DataMember(Name = nameof(Name), Order = 0)]
+        [DataMember(Name = nameof(Name),Order = 0)]
         private string _name;
         public string Name
         {
             get => _name;
             set
             {
-                if (_name == value) return;
-
+                if(_name == value) return;
                 _name = value;
                 OnPropertyChanged(nameof(Name));
             }
         }
 
-        [DataMember(Name = nameof(IsEnabled), Order=1)]
+        [DataMember(Name = nameof(IsEnabled),Order = 1)]
         private bool _isEnabled = true;
         public bool IsEnabled
         {
             get => _isEnabled;
             set
             {
-                if (_isEnabled == value) return;
-
+                if(_isEnabled == value) return;
                 _isEnabled = value;
                 OnPropertyChanged(nameof(IsEnabled));
             }
@@ -82,11 +78,11 @@ namespace XunlanEditor.GameObjects
         [DataMember(Order = 2)]
         public Scene ParentScene { get; private set; }
 
-        [DataMember(Name = nameof(ComponentList), Order = 3)]
+        [DataMember(Name = nameof(ComponentList),Order = 3)]
         private readonly ObservableCollection<Component> _componentList = new ObservableCollection<Component>();
         public ReadOnlyObservableCollection<Component> ComponentList { get; private set; }
 
-        public GameObject(string name, Scene parentScene)
+        public GameObject(string name,Scene parentScene)
         {
             Name = name;
             ParentScene = parentScene;
@@ -106,9 +102,9 @@ namespace XunlanEditor.GameObjects
         {
             Debug.Assert(component != null);
 
-            if (ComponentList.Any(com => com.GetType() == component.GetType()))
+            if(ComponentList.Any(com => com.GetType() == component.GetType()))
             {
-                Logger.LogMessage(MsgType.Warning, $"GameObject [{Name}] already has a [{component.GetType().Name}] component.");
+                Logger.LogMessage(MsgType.Warning,$"Entity [{Name}] already has a [{component.GetType().Name}] component.");
                 return false;
             }
 
@@ -123,9 +119,10 @@ namespace XunlanEditor.GameObjects
             Debug.Assert(component != null);
 
             // Transformer cannot be removed
-            if (component is Transformer) return;
+            if(component is Transformer)
+                return;
 
-            if (_componentList.Contains(component))
+            if(_componentList.Contains(component))
             {
                 IsAlive = false;
                 _componentList.Remove(component);
@@ -150,8 +147,7 @@ namespace XunlanEditor.GameObjects
             get => _name;
             set
             {
-                if (_name == value) return;
-
+                if(_name == value) return;
                 _name = value;
                 OnPropertyChanged(nameof(Name));
             }
@@ -166,8 +162,7 @@ namespace XunlanEditor.GameObjects
             get => _isEnabled;
             set
             {
-                if (_isEnabled == value) return;
-
+                if(_isEnabled == value) return;
                 _isEnabled = value;
                 OnPropertyChanged(nameof(IsEnabled));
             }
@@ -185,9 +180,9 @@ namespace XunlanEditor.GameObjects
             ComponentList = new ReadOnlyObservableCollection<IMultiComponent>(_componentList);
             SelectedObjects = selectedObjects;
 
-            PropertyChanged += (sender, e) =>
+            PropertyChanged += (sender,e) =>
             {
-                if (_enableUpdate) UpdateSelectedObjects(e.PropertyName);
+                if(_enableUpdate) UpdateSelectedObjects(e.PropertyName);
             };
         }
 
@@ -208,8 +203,8 @@ namespace XunlanEditor.GameObjects
 
         protected bool UpdateProperties()
         {
-            Name = GetMixedValue(SelectedObjects, new Func<GameObject, string>(x => x.Name));
-            IsEnabled = GetMixedValue(SelectedObjects, new Func<GameObject, bool>(x => x.IsEnabled));
+            Name = GetMixedValue(SelectedObjects,new Func<GameObject,string>(x => x.Name));
+            IsEnabled = GetMixedValue(SelectedObjects,new Func<GameObject,bool>(x => x.IsEnabled));
 
             return true;
         }
@@ -219,9 +214,10 @@ namespace XunlanEditor.GameObjects
             _componentList.Clear();
 
             var firstObject = SelectedObjects.First();
-            if (firstObject == null) return;
+            if(firstObject == null)
+                return;
 
-            foreach (Component component in firstObject.ComponentList)
+            foreach(Component component in firstObject.ComponentList)
             {
                 Type type = component.GetType();
 
@@ -232,17 +228,17 @@ namespace XunlanEditor.GameObjects
             }
         }
 
-        public static bool? GetMixedValue<T>(List<T> objectList, Func<T, bool> getProperty)
+        public static bool? GetMixedValue<T>(List<T> objectList,Func<T,bool> getProperty)
         {
             bool value = getProperty(objectList.First());
             return objectList.Any(obj => getProperty(obj) != value) ? (bool?)null : value;
         }
-        public static float? GetMixedValue<T>(List<T> objectList, Func<T, float> getProperty)
+        public static float? GetMixedValue<T>(List<T> objectList,Func<T,float> getProperty)
         {
             float value = getProperty(objectList.First());
             return objectList.Any(obj => !getProperty(obj).IsEqual(value)) ? (float?)null : value;
         }
-        public static string GetMixedValue<T>(List<T> objectList, Func<T, string> getProperty)
+        public static string GetMixedValue<T>(List<T> objectList,Func<T,string> getProperty)
         {
             string value = getProperty(objectList.First());
             return objectList.Any(obj => getProperty(obj) != value) ? null : value;
@@ -250,7 +246,7 @@ namespace XunlanEditor.GameObjects
 
         protected virtual bool UpdateSelectedObjects(string propertyName)
         {
-            switch (propertyName)
+            switch(propertyName)
             {
                 case nameof(Name):
                     SelectedObjects.ForEach(obj => obj.Name = Name);

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace XunlanEditor.GameObjects
 {
@@ -13,13 +11,13 @@ namespace XunlanEditor.GameObjects
 
     static class ComponentFactory
     {
-        private static readonly Func<GameObject, object, Component>[] _functions = new Func<GameObject, object, Component>[]
+        private static readonly Func<GameObject,object,Component>[] _functions = new Func<GameObject,object,Component>[]
         {
             (gameObject, data) => new Transformer(gameObject),
             (gameObject, data) => new Script(gameObject) { ScriptName = (string)data },
         };
 
-        public static Func<GameObject, object, Component> GetCreationFunc(ComponentType componentType)
+        public static Func<GameObject,object,Component> GetCreationFunc(ComponentType componentType)
         {
             Debug.Assert((int)componentType < _functions.Length);
             return _functions[(int)componentType];

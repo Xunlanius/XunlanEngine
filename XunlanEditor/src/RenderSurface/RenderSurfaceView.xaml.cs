@@ -27,18 +27,18 @@ namespace XunlanEditor.RenderSurface
             Loaded += OnRenderSurfaceViewLoaded;
         }
 
-        private void OnRenderSurfaceViewLoaded(object sender, RoutedEventArgs e)
+        private void OnRenderSurfaceViewLoaded(object sender,RoutedEventArgs e)
         {
             Loaded -= OnRenderSurfaceViewLoaded;
 
-            _host = new RenderSurfaceHost(ActualWidth, ActualHeight);
+            _host = new RenderSurfaceHost(ActualWidth,ActualHeight);
             _host.MessageHook += new HwndSourceHook(HostMsgFilter);
             Content = _host;
         }
 
-        private IntPtr HostMsgFilter(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        private IntPtr HostMsgFilter(IntPtr hwnd,int msg,IntPtr wParam,IntPtr lParam,ref bool handled)
         {
-            switch ((Win32Msg)msg)
+            switch((Win32Msg)msg)
             {
                 case Win32Msg.WM_SIZE:
                     break;
@@ -56,13 +56,14 @@ namespace XunlanEditor.RenderSurface
             return IntPtr.Zero;
         }
 
-    #region IDisposable support
+        #region IDisposable support
         private bool _disposedValue;
         protected virtual void Dispose(bool disposing)
         {
             if(!_disposedValue)
             {
-                if(disposing) _host.Dispose();
+                if(disposing)
+                    _host.Dispose();
 
                 _disposedValue = true;
             }
@@ -73,6 +74,6 @@ namespace XunlanEditor.RenderSurface
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-    #endregion
+        #endregion
     }
 }

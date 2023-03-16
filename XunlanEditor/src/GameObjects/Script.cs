@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
@@ -16,7 +15,8 @@ namespace XunlanEditor.GameObjects
             get => _scriptName;
             set
             {
-                if (_scriptName == value) return;
+                if(_scriptName == value)
+                    return;
 
                 _scriptName = value;
                 OnPropertyChanged(nameof(ScriptName));
@@ -24,7 +24,7 @@ namespace XunlanEditor.GameObjects
         }
 
         public Script(GameObject parent)
-            : base(parent) {}
+            : base(parent) { }
 
         public override IMultiComponent GetMultiComponent(MultiObject multiObject)
         {
@@ -47,7 +47,8 @@ namespace XunlanEditor.GameObjects
             get => _scriptName;
             set
             {
-                if (_scriptName == value) return;
+                if(_scriptName == value)
+                    return;
 
                 _scriptName = value;
                 OnPropertyChanged(nameof(ScriptName));
@@ -62,13 +63,14 @@ namespace XunlanEditor.GameObjects
 
         protected override bool UpdateProperties()
         {
-            ScriptName = MultiObject.GetMixedValue(SelectedComponents, new Func<Script, string>(x => x.ScriptName));
+            ScriptName = MultiObject.GetMixedValue(SelectedComponents,new Func<Script,string>(x => x.ScriptName));
             return true;
         }
 
         protected override bool UpdateSelectedComponents(string propertyName)
         {
-            if (propertyName != ScriptName) return false;
+            if(propertyName != ScriptName)
+                return false;
 
             SelectedComponents.ForEach(component => component.ScriptName = ScriptName);
             return true;

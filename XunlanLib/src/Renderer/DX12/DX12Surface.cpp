@@ -14,7 +14,7 @@ namespace Xunlan::Graphics::DX12
         }
     }
 
-    DX12Surface::DX12Surface(EntityID windowID) : m_window(windowID) { assert(Window::GetHandle(windowID)); }
+    DX12Surface::DX12Surface(ID windowID) : m_window(windowID) { assert(Window::GetHandle(windowID)); }
 
     void DX12Surface::CreateSwapChain(Factory* factory, ID3D12CommandQueue* cmdQueue, DXGI_FORMAT format)
     {

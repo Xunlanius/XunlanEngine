@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:XunlanEditor.Editors"
              xmlns:utl="clr-namespace:XunlanEditor.Utilities"
              xmlns:surface="clr-namespace:XunlanEditor.RenderSurface"
+             xmlns:asset="clr-namespace:XunlanEditor.Content"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              Focusable="True"
@@ -15,6 +16,12 @@
         <sys:Boolean x:Key="True">True</sys:Boolean>
         <sys:Boolean x:Key="False">False</sys:Boolean>
     </UserControl.Resources>
+
+    <UserControl.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.New" Executed="OnNewProject"/>
+        <CommandBinding Command="ApplicationCommands.Open" Executed="OnOpenProject"/>
+        <CommandBinding Command="ApplicationCommands.Close" Executed="OnCloseProject"/>
+    </UserControl.CommandBindings>
 
     <UserControl.InputBindings>
         <KeyBinding Command="{Binding UndoCommand}" Key="Z" Modifiers="Ctrl"/>
@@ -30,28 +37,35 @@
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="32"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        
+        <!--Menu-->
+        <Menu Grid.Row="0">
+            <MenuItem Header="File">
+                <MenuItem Header="New Project" Command="ApplicationCommands.New"/>
+                <MenuItem Header="Open Project" Command="ApplicationCommands.Open"/>
+                <Separator/>
+                <MenuItem Header="Save Project" Command="{Binding SaveCommand}"/>
+                <Separator/>
+                <MenuItem Header="Exit" Command="ApplicationCommands.Close"/>
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Undo" Command="{Binding UndoCommand}"/>
+                <MenuItem Header="Redo" Command="{Binding RedoCommand}"/>
+            </MenuItem>
+            <MenuItem Header="View"/>
+            <MenuItem Header="Create" IsEnabled="False"/>
+            <MenuItem Header="Window"/>
+        </Menu>
 
         <!--Buttons-->
-        <StackPanel Orientation="Horizontal">
-            
-            <Button Content="Save"
-                    Height="20"
-                    Margin="3,0"
-                    Command="{Binding SaveCommand}"/>
-            
-            <Button Content="Undo"
-                    Height="20"
-                    Margin="3,0"
-                    Command="{Binding UndoCommand}"/>
-            
-            <Button Content="Redo"
-                    Height="20"
-                    Margin="3,0"
-                    Command="{Binding RedoCommand}"/>
-            
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    Margin="5,5,5,0">
+
             <Button Content="Create Script"
                     Margin="3,0"
                     Click="On_CreateScriptButton_Click"
@@ -78,7 +92,8 @@
 
         </StackPanel>
         
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
+            
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="1*"/>
@@ -116,15 +131,24 @@
                             Background="{StaticResource Editor.Window.GrayBrush1}"
                             Margin="0,5,0,0">
                     
+                    <!--Logger-->
                     <TabItem Header="Log">
                         <Grid Background="{StaticResource Editor.Window.GrayBrush1}">
                             <utl:LoggerView/>
                         </Grid>
                     </TabItem>
 
+                    <!--AssertBrowser-->
+                    <TabItem Header="Asset">
+                        <Grid Background="{StaticResource Editor.Window.GrayBrush1}">
+                            <asset:AssetBrowserView/>
+                        </Grid>
+                    </TabItem>
+
+                    <!--History-->
                     <TabItem Header="History">
                         <Grid Background="{StaticResource Editor.Window.GrayBrush1}">
-                            <utl:UndoRedoView DataContext="{Binding UndoRedo}"/>
+                            <utl:UndoRedoView/>
                         </Grid>
                     </TabItem>
                     

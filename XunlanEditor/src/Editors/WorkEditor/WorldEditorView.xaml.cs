@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using XunlanEditor.Content;
 using XunlanEditor.GameCode;
 using XunlanEditor.GameProject;
@@ -18,7 +19,7 @@ namespace XunlanEditor.Editors
             Loaded += OnWorldEditorViewLoaded;
         }
 
-        private void OnWorldEditorViewLoaded(object sender, RoutedEventArgs e)
+        private void OnWorldEditorViewLoaded(object sender,RoutedEventArgs e)
         {
             Loaded -= OnWorldEditorViewLoaded;
 
@@ -28,14 +29,30 @@ namespace XunlanEditor.Editors
             //((INotifyCollectionChanged)project.UndoRedo.UndoList).CollectionChanged += (sender, e) => Focus();
         }
 
-        private void On_CreateScriptButton_Click(object sender, RoutedEventArgs e)
+        private void On_CreateScriptButton_Click(object sender,RoutedEventArgs e)
         {
             new CreateScriptDiag().ShowDialog();
         }
 
-        private void On_CreatePrimitiveButton_Click(object sender, RoutedEventArgs e)
+        private void On_CreatePrimitiveButton_Click(object sender,RoutedEventArgs e)
         {
-            new PrimitiveMeshDiag().ShowDialog();
+            var diag = new PrimitiveMeshDiag();
+            diag.ShowDialog();
+        }
+
+        private void OnNewProject(object sender,ExecutedRoutedEventArgs e)
+        {
+            Window engineWindow = Window.GetWindow(this);
+            engineWindow.Close();
+        }
+        private void OnOpenProject(object sender,ExecutedRoutedEventArgs e)
+        {
+            Window engineWindow = Window.GetWindow(this);
+            engineWindow.Close();
+        }
+        private void OnCloseProject(object sender,ExecutedRoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

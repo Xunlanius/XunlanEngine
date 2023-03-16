@@ -53,32 +53,16 @@ namespace
     };
 }
 
-EDITOR_INTERFACE EntityID Create(const EntityInitInfo& desc)
+EDITOR_INTERFACE ECS::EntityID Create(const EntityInitInfo& desc)
 {
-    assert(&desc);
-
     Transformer::Transformer transformer = desc.transformer.ToEngineInfo();
     Script::Script script = desc.script.ToEngineInfo();
 
-    Command cmd(World::GetWorld());
-    EntityID entity = ID::INVALID_ID;
+    ECS::EntityID entity = ECS::CreateEntity();
 
-    if (script.pScript)
-    {
-        entity = cmd.Create<Transformer::Transformer, Script::Script>(
-            std::forward<Transformer::Transformer>(transformer),
-            std::forward<Script::Script>(script));
-    }
-    else
-    {
-        entity = cmd.Create<Transformer::Transformer>(
-            std::forward<Transformer::Transformer>(transformer));
-    }
+    ECS::AddComponent<Transformer::Transformer>(entity, transformer);
+    if (script.pScript) ECS::AddComponent<Script::Script>(entity, script);
+
     return entity;
 }
-
-EDITOR_INTERFACE void Remove(EntityID entity)
-{
-    Command cmd(World::GetWorld());
-    cmd.Remove(entity);
-}
+EDITOR_INTERFACE void Remove(ECS::EntityID entity) { ECS::RemoveEntity(entity); }

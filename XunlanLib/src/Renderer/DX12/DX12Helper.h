@@ -6,14 +6,33 @@ namespace Xunlan::Graphics::DX12::Helper
 {
     namespace Heap
     {
-        constexpr D3D12_HEAP_PROPERTIES DEFAULT_FORMAT =
-        {
+        constexpr D3D12_HEAP_PROPERTIES DEFAULT_HEAP = {
             D3D12_HEAP_TYPE_DEFAULT,            // D3D12_HEAP_TYPE Type
             D3D12_CPU_PAGE_PROPERTY_UNKNOWN,    // D3D12_CPU_PAGE_PROPERTY CPUPageProperty
             D3D12_MEMORY_POOL_UNKNOWN,          // D3D12_MEMORY_POOL MemoryPoolPreference
             0,                                  // UINT CreationNodeMask
             0,                                  // UINT VisibleNodeMask
         };
+
+        constexpr D3D12_HEAP_PROPERTIES UPLOAD_HEAP = {
+            D3D12_HEAP_TYPE_UPLOAD,
+            D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+            D3D12_MEMORY_POOL_UNKNOWN,
+            0,
+            0,
+        };
+    }
+
+    namespace Resource
+    {
+        Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(
+            const void* data,
+            uint64 bufferSize,
+            bool isCPUAccessible = false,
+            D3D12_RESOURCE_STATES initState = D3D12_RESOURCE_STATE_COMMON,
+            ID3D12Heap* heap = nullptr,
+            uint64 heapOffset = 0
+        );
     }
 
     namespace RootSig
@@ -24,12 +43,13 @@ namespace Xunlan::Graphics::DX12::Helper
         {
         public:
 
-            DescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE rangeType,
-                            uint32 numDescriptors,    // can be D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND, which means boundless range
-                            uint32 baseShaderRegister,
-                            uint32 registerSpace = 0,
-                            D3D12_DESCRIPTOR_RANGE_FLAGS flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE,
-                            uint32 offsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND)
+            explicit DescriptorRange(
+                D3D12_DESCRIPTOR_RANGE_TYPE rangeType,
+                uint32 numDescriptors,    // can be D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND, which means boundless range
+                uint32 baseShaderRegister,
+                uint32 registerSpace = 0,
+                D3D12_DESCRIPTOR_RANGE_FLAGS flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE,
+                uint32 offsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND)
                 : D3D12_DESCRIPTOR_RANGE1{ rangeType, numDescriptors, baseShaderRegister, registerSpace, flags, offsetInDescriptorsFromTableStart } {}
         };
 
@@ -37,9 +57,10 @@ namespace Xunlan::Graphics::DX12::Helper
         {
         public:
 
-            void InitAsDescriptorTable(UINT numDescriptorRanges,
-                                       const DescriptorRange* pDescriptorRanges,
-                                       D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
+            void InitAsDescriptorTable(
+                UINT numDescriptorRanges,
+                const DescriptorRange* pDescriptorRanges,
+                D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
             {
                 ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
                 DescriptorTable.NumDescriptorRanges = numDescriptorRanges;
@@ -47,10 +68,11 @@ namespace Xunlan::Graphics::DX12::Helper
                 ShaderVisibility = visibility;
             }
 
-            void InitAsConstants(UINT num32BitValues,
-                                 UINT shaderRegister,
-                                 UINT registerSpace = 0,
-                                 D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
+            void InitAsConstants(
+                UINT num32BitValues,
+                UINT shaderRegister,
+                UINT registerSpace = 0,
+                D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
             {
                 ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
                 Constants.Num32BitValues = num32BitValues;
@@ -59,37 +81,41 @@ namespace Xunlan::Graphics::DX12::Helper
                 ShaderVisibility = visibility;
             }
 
-            void InitAsCBV(UINT shaderRegister,
-                           UINT registerSpace = 0,
-                           D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
-                           D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
+            void InitAsCBV(
+                UINT shaderRegister,
+                UINT registerSpace = 0,
+                D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
+                D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
             {
                 InitAsDescriptor(D3D12_ROOT_PARAMETER_TYPE_CBV, shaderRegister, registerSpace, flags, visibility);
             }
 
-            void InitAsSRV(UINT shaderRegister,
-                           UINT registerSpace = 0,
-                           D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
-                           D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
+            void InitAsSRV(
+                UINT shaderRegister,
+                UINT registerSpace = 0,
+                D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
+                D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
             {
                 InitAsDescriptor(D3D12_ROOT_PARAMETER_TYPE_SRV, shaderRegister, registerSpace, flags, visibility);
             }
 
-            void InitAsUAV(UINT shaderRegister,
-                           UINT registerSpace = 0,
-                           D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
-                           D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
+            void InitAsUAV(
+                UINT shaderRegister,
+                UINT registerSpace = 0,
+                D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
+                D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
             {
                 InitAsDescriptor(D3D12_ROOT_PARAMETER_TYPE_UAV, shaderRegister, registerSpace, flags, visibility);
             }
 
         private:
 
-            void InitAsDescriptor(D3D12_ROOT_PARAMETER_TYPE descriptorType,
-                                  UINT shaderRegister,
-                                  UINT registerSpace = 0,
-                                  D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
-                                  D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
+            void InitAsDescriptor(
+                D3D12_ROOT_PARAMETER_TYPE descriptorType,
+                UINT shaderRegister,
+                UINT registerSpace = 0,
+                D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
+                D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
             {
                 ParameterType = descriptorType;
                 Descriptor.ShaderRegister = shaderRegister;
@@ -103,17 +129,18 @@ namespace Xunlan::Graphics::DX12::Helper
         {
         public:
 
-            RootSignatureDesc(UINT numParameters,
-                              const D3D12_ROOT_PARAMETER1* pParameters,
-                              UINT numStaticSamplers = 0,
-                              const D3D12_STATIC_SAMPLER_DESC* pStaticSamplers = nullptr,
-                              D3D12_ROOT_SIGNATURE_FLAGS flags =
-                              D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |
-                              D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-                              D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-                              D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-                              D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
-                              D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS)
+            explicit RootSignatureDesc(
+                UINT numParameters,
+                const D3D12_ROOT_PARAMETER1* pParameters,
+                UINT numStaticSamplers = 0,
+                const D3D12_STATIC_SAMPLER_DESC* pStaticSamplers = nullptr,
+                D3D12_ROOT_SIGNATURE_FLAGS flags =
+                D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |
+                D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+                D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+                D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+                D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
+                D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS)
                 : D3D12_ROOT_SIGNATURE_DESC1{ numParameters, pParameters, numStaticSamplers, pStaticSamplers, flags } {}
         };
     }
@@ -254,16 +281,19 @@ namespace Xunlan::Graphics::DX12::Helper
 
         public:
 
-            void AddTransition(ID3D12Resource& resource,
-                               D3D12_RESOURCE_STATES before,
-                               D3D12_RESOURCE_STATES after,
-                               D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE,
-                               uint32 subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES);
-            void AddAliasing(ID3D12Resource& resourceBefore,
-                             ID3D12Resource& resourceAfter,
-                             D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
-            void AddUAV(ID3D12Resource& resource,
-                        D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
+            void AddTransition(
+                ID3D12Resource& resource,
+                D3D12_RESOURCE_STATES before,
+                D3D12_RESOURCE_STATES after,
+                D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE,
+                uint32 subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES);
+            void AddAliasing(
+                ID3D12Resource& resourceBefore,
+                ID3D12Resource& resourceAfter,
+                D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
+            void AddUAV(
+                ID3D12Resource& resource,
+                D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
 
             void Commit(GraphicsCommandList& cmdList);
 
@@ -275,20 +305,23 @@ namespace Xunlan::Graphics::DX12::Helper
             uint32 m_size = 0;
         };
 
-        void Transition(GraphicsCommandList& cmdList,
-                        ID3D12Resource& resource,
-                        D3D12_RESOURCE_STATES before,
-                        D3D12_RESOURCE_STATES after,
-                        uint32 subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
-                        D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
+        void Transition(
+            GraphicsCommandList& cmdList,
+            ID3D12Resource& resource,
+            D3D12_RESOURCE_STATES before,
+            D3D12_RESOURCE_STATES after,
+            uint32 subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
+            D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
 
-        void Aliasing(GraphicsCommandList& cmdList,
-                      ID3D12Resource& resourceBefore,
-                      ID3D12Resource& resourceAfter,
-                      D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
+        void Aliasing(
+            GraphicsCommandList& cmdList,
+            ID3D12Resource& resourceBefore,
+            ID3D12Resource& resourceAfter,
+            D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
 
-        void UAV(GraphicsCommandList& cmdList,
-                 ID3D12Resource& resource,
-                 D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
+        void UAV(
+            GraphicsCommandList& cmdList,
+            ID3D12Resource& resource,
+            D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE);
     }
 }

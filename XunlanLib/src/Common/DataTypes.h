@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-
 using uint64 = unsigned long long;
 using uint32 = unsigned int;
 using uint16 = unsigned short;

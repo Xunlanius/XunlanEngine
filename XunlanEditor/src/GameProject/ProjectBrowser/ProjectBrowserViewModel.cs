@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Windows;
-using XunlanEditor.GameProject;
 
 namespace XunlanEditor.GameProject
 {
@@ -11,16 +7,14 @@ namespace XunlanEditor.GameProject
     {
         public static void CreateEditorWindow(Project project)
         {
-            if (project != null)
-            {
-                Project.CurrProject = project;
+            Debug.Assert(project != null);
 
-                EditorWindow editorWindow = new EditorWindow { DataContext = project };
-                Application.Current.MainWindow.Visibility = Visibility.Hidden;
+            Project.CurrProject = project;
 
-                editorWindow.Show();
-            }
-            else Application.Current.Shutdown();
+            EditorWindow editorWindow = new EditorWindow { DataContext = project };
+            Application.Current.MainWindow.Hide();
+
+            editorWindow.ShowDialog();
         }
-    } 
+    }
 }

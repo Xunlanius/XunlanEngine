@@ -17,20 +17,20 @@ namespace Xunlan::Graphics
 
     struct RenderSurface
     {
-        EntityID windowID = ID::INVALID_ID;
-        EntityID surfaceID = ID::INVALID_ID;
+        ID windowID = INVALID_ID;
+        ID surfaceID = INVALID_ID;
     };
 
     class Surface
     {
     public:
 
-        [[nodiscard]] static EntityID Create(EntityID windowID);
-        static void Remove(EntityID& surfaceID);
-        static void Render(EntityID surfaceID);
+        [[nodiscard]] static ID Create(ID windowID);
+        static void Remove(ID& surfaceID);
+        static void Render(ID surfaceID);
 
-        static uint32 GetWidth(EntityID surfaceID);
-        static uint32 GetHeight(EntityID surfaceID);
-        static void Resize(EntityID surfaceID);
+        static uint32 GetWidth(ID surfaceID);
+        static uint32 GetHeight(ID surfaceID);
+        static void Resize(ID surfaceID);
     };
 }

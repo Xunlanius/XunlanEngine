@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Threading;
 
 namespace XunlanEditor.Utilities
 {
     class DelayEventTimerArgs : EventArgs
     {
-        //public bool IsRepeatEvent { get; set; }
-        public object Data { get; set; }
+        public IEnumerable<object> Data
+        {
+            get; set;
+        }
 
-        public DelayEventTimerArgs(object data)
+        public DelayEventTimerArgs(IEnumerable<object> data)
         {
             Data = data;
         }
@@ -21,9 +24,9 @@ namespace XunlanEditor.Utilities
         private DateTime _lastEventTime = DateTime.Now;
 
         public event EventHandler<DelayEventTimerArgs> Handler;
-        private object _data;
+        private readonly List<object> _eventArgsSet = new List<object>();
 
-        public DelayEventTimer(TimeSpan delayInterval, DispatcherPriority priority = DispatcherPriority.Normal)
+        public DelayEventTimer(TimeSpan delayInterval,DispatcherPriority priority = DispatcherPriority.Normal)
         {
             _delayInterval = delayInterval;
             _timer = new DispatcherTimer(priority)
@@ -33,23 +36,28 @@ namespace XunlanEditor.Utilities
             _timer.Tick += OnTimerTick;
         }
 
-        public void Enable(object data = null)
+        public void Trigger(object eventArgs = null)
         {
             _lastEventTime = DateTime.Now;
             _timer.IsEnabled = true;
-            _data = data;
+
+            if(eventArgs != null)
+                _eventArgsSet.Add(eventArgs);
         }
-        public void Disable() { _timer.IsEnabled = false; }
-
-        private void OnTimerTick(object sender, EventArgs e)
+        public void Disable()
         {
-            if ((DateTime.Now - _lastEventTime) < _delayInterval) return;
+            _timer.IsEnabled = false;
+        }
 
-            DelayEventTimerArgs eventArgs = new DelayEventTimerArgs(_data);
-            Handler?.Invoke(this, eventArgs);
+        private void OnTimerTick(object sender,EventArgs e)
+        {
+            if((DateTime.Now - _lastEventTime) < _delayInterval)
+                return;
+
+            DelayEventTimerArgs eventArgs = new DelayEventTimerArgs(_eventArgsSet);
+            Handler?.Invoke(this,eventArgs);
+            _eventArgsSet.Clear();
             Disable();
-
-            //if (!eventArgs.IsRepeatEvent) Disable();
         }
     }
 }

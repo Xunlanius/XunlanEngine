@@ -16,28 +16,48 @@ namespace Xunlan::Script
     using ScriptPtr = RuntimeScript*;
     using ScriptCreator = ScriptPtr (*)();
 
-    struct Script
-    {
-        ScriptPtr pScript;
-    };
-
     // Called in scripts
     template<class ScriptClass>
     ScriptPtr CreateScript() { return new ScriptClass(); }
     bool RegisterCreator(const std::string& scriptName, ScriptCreator creator);
 
-    void OnUpdate(float deltaTime);
+    struct Script
+    {
+        ScriptPtr pScript;
+    };
+
+    struct ScriptSystem : public ECS::ISystem
+    {
+        void Initialize()
+        {
+            for (ECS::EntityID entity : m_entities)
+            {
+                Script& script = ECS::GetComponent<Script>(entity);
+                script.pScript->Initialize();
+            }
+        }
+
+        void OnUpdate(float deltaTime)
+        {
+            for (ECS::EntityID entity : m_entities)
+            {
+                Script& script = ECS::GetComponent<Script>(entity);
+                script.pScript->OnUpdate(deltaTime);
+            }
+        }
+    };
 
 #if defined USE_WITH_EDITOR
-    #define EDITOR_EXPORT extern "C" __declspec(dllexport)
+#define EDITOR_EXPORT extern "C" __declspec(dllexport)
 #else
-    #define EDITOR_EXPORT
+#define EDITOR_EXPORT
 #endif
-    EDITOR_EXPORT LPSAFEARRAY IGetScriptNames();
-    EDITOR_EXPORT ScriptCreator IGetScriptCreator(const std::string& scriptName);
+
+    EDITOR_EXPORT LPSAFEARRAY GetRuntimeScriptNames();
+    EDITOR_EXPORT ScriptCreator GetRuntimeScriptCreator(const std::string& scriptName);
 
 #if !defined SCRIPT_DECL
-    #define SCRIPT_DECL(NAME)                               \
+#define SCRIPT_DECL(NAME)                                   \
     class NAME : public Xunlan::Script::RuntimeScript       \
     {                                                       \
     public:                                                 \
@@ -48,7 +68,7 @@ namespace Xunlan::Script
 #endif
 
 #if !defined SCRIPT_REGISTER
-    #define SCRIPT_REGISTER(NAME)   \
+#define SCRIPT_REGISTER(NAME)   \
     const bool g_register_##NAME = Xunlan::Script::RegisterCreator(#NAME, Xunlan::Script::CreateScript<NAME>);
 #endif
 }

@@ -17,12 +17,12 @@ namespace Xunlan::Graphics
 
         struct
         {
-            using CreateFunc = EntityID(*)(EntityID windowID);
-            using RemoveFunc = void(*)(EntityID& surfaceID);
-            using RenderFunc = void(*)(EntityID surfaceID);
-            using GetWidthFunc = uint32(*)(EntityID surfaceID);
-            using GetHeightFunc = uint32(*)(EntityID surfaceID);
-            using ResizeFunc = void(*)(EntityID surfaceID);
+            using CreateFunc = ID(*)(ID windowID);
+            using RemoveFunc = void(*)(ID& surfaceID);
+            using RenderFunc = void(*)(ID surfaceID);
+            using GetWidthFunc = uint32(*)(ID surfaceID);
+            using GetHeightFunc = uint32(*)(ID surfaceID);
+            using ResizeFunc = void(*)(ID surfaceID);
 
             CreateFunc create;
             RemoveFunc remove;

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Runtime.Serialization;
-using System.Text;
 using XunlanEditor.Utilities;
 
 namespace XunlanEditor.GameObjects
@@ -11,7 +9,7 @@ namespace XunlanEditor.GameObjects
     [DataContract]
     class Transformer : Component
     {
-        [DataMember(Name = nameof(Position), Order = 0)]
+        [DataMember(Name = nameof(Position),Order = 0)]
         private Vector3 _position = Vector3.Zero;
         public Vector3 Position
         {
@@ -26,7 +24,7 @@ namespace XunlanEditor.GameObjects
             }
         }
 
-        [DataMember(Name = nameof(Rotation), Order = 1)]
+        [DataMember(Name = nameof(Rotation),Order = 1)]
         private Vector3 _rotation = Vector3.Zero;
         public Vector3 Rotation
         {
@@ -41,7 +39,7 @@ namespace XunlanEditor.GameObjects
             }
         }
 
-        [DataMember(Name = nameof(Scale), Order = 2)]
+        [DataMember(Name = nameof(Scale),Order = 2)]
         private Vector3 _scale = Vector3.One;
         public Vector3 Scale
         {
@@ -57,7 +55,7 @@ namespace XunlanEditor.GameObjects
         }
 
         public Transformer(GameObject parent)
-            : base(parent) {}
+            : base(parent) { }
 
         public override IMultiComponent GetMultiComponent(MultiObject multiObject)
         {
@@ -86,7 +84,7 @@ namespace XunlanEditor.GameObjects
             get => _posX;
             set
             {
-                if (!_posX.IsEqual(value))
+                if(!_posX.IsEqual(value))
                 {
                     _posX = value;
                     OnPropertyChanged(nameof(PosX));
@@ -100,7 +98,7 @@ namespace XunlanEditor.GameObjects
             get => _posY;
             set
             {
-                if (!_posY.IsEqual(value))
+                if(!_posY.IsEqual(value))
                 {
                     _posY = value;
                     OnPropertyChanged(nameof(PosY));
@@ -114,7 +112,7 @@ namespace XunlanEditor.GameObjects
             get => _posZ;
             set
             {
-                if (!_posZ.IsEqual(value))
+                if(!_posZ.IsEqual(value))
                 {
                     _posZ = value;
                     OnPropertyChanged(nameof(PosZ));
@@ -128,7 +126,7 @@ namespace XunlanEditor.GameObjects
             get => _rotX;
             set
             {
-                if (!_rotX.IsEqual(value))
+                if(!_rotX.IsEqual(value))
                 {
                     _rotX = value;
                     OnPropertyChanged(nameof(RotX));
@@ -142,7 +140,7 @@ namespace XunlanEditor.GameObjects
             get => _rotY;
             set
             {
-                if (!_rotY.IsEqual(value))
+                if(!_rotY.IsEqual(value))
                 {
                     _rotY = value;
                     OnPropertyChanged(nameof(RotY));
@@ -156,7 +154,7 @@ namespace XunlanEditor.GameObjects
             get => _rotZ;
             set
             {
-                if (!_rotZ.IsEqual(value))
+                if(!_rotZ.IsEqual(value))
                 {
                     _rotZ = value;
                     OnPropertyChanged(nameof(RotZ));
@@ -170,7 +168,7 @@ namespace XunlanEditor.GameObjects
             get => _scaleX;
             set
             {
-                if (!_scaleX.IsEqual(value))
+                if(!_scaleX.IsEqual(value))
                 {
                     _scaleX = value;
                     OnPropertyChanged(nameof(ScaleX));
@@ -184,7 +182,7 @@ namespace XunlanEditor.GameObjects
             get => _scaleY;
             set
             {
-                if (!_scaleY.IsEqual(value))
+                if(!_scaleY.IsEqual(value))
                 {
                     _scaleY = value;
                     OnPropertyChanged(nameof(ScaleY));
@@ -198,7 +196,7 @@ namespace XunlanEditor.GameObjects
             get => _scaleZ;
             set
             {
-                if (!_scaleZ.IsEqual(value))
+                if(!_scaleZ.IsEqual(value))
                 {
                     _scaleZ = value;
                     OnPropertyChanged(nameof(ScaleZ));
@@ -214,23 +212,23 @@ namespace XunlanEditor.GameObjects
 
         protected override bool UpdateProperties()
         {
-            PosX = MultiObject.GetMixedValue(SelectedComponents, new Func<Transformer, float>(x => x.Position.X));
-            PosY = MultiObject.GetMixedValue(SelectedComponents, new Func<Transformer, float>(x => x.Position.Y));
-            PosZ = MultiObject.GetMixedValue(SelectedComponents, new Func<Transformer, float>(x => x.Position.Z));
+            PosX = MultiObject.GetMixedValue(SelectedComponents,new Func<Transformer,float>(x => x.Position.X));
+            PosY = MultiObject.GetMixedValue(SelectedComponents,new Func<Transformer,float>(x => x.Position.Y));
+            PosZ = MultiObject.GetMixedValue(SelectedComponents,new Func<Transformer,float>(x => x.Position.Z));
 
-            RotX = MultiObject.GetMixedValue(SelectedComponents, new Func<Transformer, float>(x => x.Rotation.X));
-            RotY = MultiObject.GetMixedValue(SelectedComponents, new Func<Transformer, float>(x => x.Rotation.Y));
-            RotZ = MultiObject.GetMixedValue(SelectedComponents, new Func<Transformer, float>(x => x.Rotation.Z));
+            RotX = MultiObject.GetMixedValue(SelectedComponents,new Func<Transformer,float>(x => x.Rotation.X));
+            RotY = MultiObject.GetMixedValue(SelectedComponents,new Func<Transformer,float>(x => x.Rotation.Y));
+            RotZ = MultiObject.GetMixedValue(SelectedComponents,new Func<Transformer,float>(x => x.Rotation.Z));
 
-            ScaleX = MultiObject.GetMixedValue(SelectedComponents, new Func<Transformer, float>(x => x.Scale.X));
-            ScaleY = MultiObject.GetMixedValue(SelectedComponents, new Func<Transformer, float>(x => x.Scale.Y));
-            ScaleZ = MultiObject.GetMixedValue(SelectedComponents, new Func<Transformer, float>(x => x.Scale.Z));
+            ScaleX = MultiObject.GetMixedValue(SelectedComponents,new Func<Transformer,float>(x => x.Scale.X));
+            ScaleY = MultiObject.GetMixedValue(SelectedComponents,new Func<Transformer,float>(x => x.Scale.Y));
+            ScaleZ = MultiObject.GetMixedValue(SelectedComponents,new Func<Transformer,float>(x => x.Scale.Z));
 
             return true;
         }
         protected override bool UpdateSelectedComponents(string propertyName)
         {
-            switch (propertyName)
+            switch(propertyName)
             {
                 case nameof(PosX):
                 case nameof(PosY):

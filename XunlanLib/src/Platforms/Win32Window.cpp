@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "Utilities/Pool.h"
+#include "Utility/Pool.h"
 
 namespace Xunlan::Graphics
 {
@@ -20,10 +20,10 @@ namespace Xunlan::Graphics
 
         Utility::ObjectPool<WindowInfo> g_windows;
 
-        WindowInfo& GetInfoFromID(EntityID windowID) { return g_windows.Get(windowID); }
+        WindowInfo& GetInfoFromID(ID windowID) { return g_windows.Get(windowID); }
         WindowInfo& GetInfoFromHandle(HWND handle)
         {
-            const EntityID windowID = (EntityID)::GetWindowLongPtr(handle, GWLP_USERDATA);
+            const ID windowID = (ID)::GetWindowLongPtr(handle, GWLP_USERDATA);
             return GetInfoFromID(windowID);
         }
 
@@ -67,11 +67,11 @@ namespace Xunlan::Graphics
             return proc ? proc(hwnd, msg, wParam, lParam) : ::DefWindowProc(hwnd, msg, wParam, lParam);
         }
 
-        HWND GetWindowHandle(EntityID windowID) { return GetInfoFromID(windowID).hwnd; }
+        HWND GetWindowHandle(ID windowID) { return GetInfoFromID(windowID).hwnd; }
 
-        void SetWindowCaption(EntityID windowID, const wchar_t* caption) { SetWindowText(GetInfoFromID(windowID).hwnd, caption); }
+        void SetWindowCaption(ID windowID, const wchar_t* caption) { SetWindowText(GetInfoFromID(windowID).hwnd, caption); }
 
-        Math::UVector4 GetWindowSize(EntityID windowID)
+        Math::U32Vector4 GetWindowSize(ID windowID)
         {
             const WindowInfo& info = GetInfoFromID(windowID);
             const RECT& area = info.isFullScreen ? info.fullScreenArea : info.clientArea;
@@ -87,7 +87,7 @@ namespace Xunlan::Graphics
 
             ::MoveWindow(info.hwnd, info.leftTop.x, info.leftTop.y, width, height, true);
         }
-        void ResizeWindow(EntityID windowID, uint32 width, uint32 height)
+        void ResizeWindow(ID windowID, uint32 width, uint32 height)
         {
             WindowInfo& info = GetInfoFromID(windowID);
 
@@ -105,8 +105,8 @@ namespace Xunlan::Graphics
             }
         }
 
-        bool IsWindowFullScreen(EntityID windowID) { return GetInfoFromID(windowID).isFullScreen; }
-        void SetWindowFullScreen(EntityID windowID, bool isFullScreen)
+        bool IsWindowFullScreen(ID windowID) { return GetInfoFromID(windowID).isFullScreen; }
+        void SetWindowFullScreen(ID windowID, bool isFullScreen)
         {
             WindowInfo& info = GetInfoFromID(windowID);
 
@@ -137,10 +137,10 @@ namespace Xunlan::Graphics
             }
         }
 
-        bool IsWindowClosed(EntityID windowID) { return GetInfoFromID(windowID).isClosed; }
+        bool IsWindowClosed(ID windowID) { return GetInfoFromID(windowID).isClosed; }
     }
 
-    EntityID Window::Create(const WindowInitDesc* const pDesc)
+    ID Window::Create(const WindowInitDesc* const pDesc)
     {
         MsgProc callback = pDesc ? pDesc->callback : nullptr;
         HWND parent = pDesc ? pDesc->parent : nullptr;
@@ -202,12 +202,12 @@ namespace Xunlan::Graphics
         );
 
         assert(info.hwnd);
-        if (!info.hwnd) return ID::INVALID_ID;
+        if (!info.hwnd) return INVALID_ID;
 
         ::SetLastError(0);
 
-        const EntityID windowID = g_windows.Emplace(info);
-        assert(ID::IsValid(windowID));
+        const ID windowID = g_windows.Emplace(info);
+        assert(IsValid(windowID));
 
         // Store windowID ID
         ::SetWindowLongPtr(info.hwnd, GWLP_USERDATA, (LONG_PTR)windowID);
@@ -221,61 +221,61 @@ namespace Xunlan::Graphics
 
         return windowID;
     }
-    void Window::Remove(EntityID& windowID)
+    void Window::Remove(ID& windowID)
     {
         HWND hwnd = GetInfoFromID(windowID).hwnd;
         ::DestroyWindow(hwnd);
         g_windows.Remove(windowID);
     }
 
-    void* Window::GetHandle(EntityID windowID)
+    void* Window::GetHandle(ID windowID)
     {
-        assert(ID::IsValid(windowID));
+        assert(IsValid(windowID));
         return GetWindowHandle(windowID);
     }
 
-    void Window::SetCaption(EntityID windowID, const wchar_t* caption)
+    void Window::SetCaption(ID windowID, const wchar_t* caption)
     {
-        assert(ID::IsValid(windowID));
+        assert(IsValid(windowID));
         SetWindowCaption(windowID, caption);
     }
 
-    uint32 Window::GetWidth(EntityID windowID)
+    uint32 Window::GetWidth(ID windowID)
     {
-        Math::UVector4 size = GetSize(windowID);
+        Math::U32Vector4 size = GetSize(windowID);
         return size.z - size.x;
     }
-    uint32 Window::GetHeight(EntityID windowID)
+    uint32 Window::GetHeight(ID windowID)
     {
-        Math::UVector4 size = GetSize(windowID);
+        Math::U32Vector4 size = GetSize(windowID);
         return size.w - size.y;
     }
 
-    Math::UVector4 Window::GetSize(EntityID windowID)
+    Math::U32Vector4 Window::GetSize(ID windowID)
     {
-        assert(ID::IsValid(windowID));
+        assert(IsValid(windowID));
         return GetWindowSize(windowID);
     }
-    void Window::Resize(EntityID windowID, uint32 width, uint32 height)
+    void Window::Resize(ID windowID, uint32 width, uint32 height)
     {
-        assert(ID::IsValid(windowID));
+        assert(IsValid(windowID));
         ResizeWindow(windowID, width, height);
     }
 
-    bool Window::IsFullScreen(EntityID windowID)
+    bool Window::IsFullScreen(ID windowID)
     {
-        assert(ID::IsValid(windowID));
+        assert(IsValid(windowID));
         return IsWindowFullScreen(windowID);
     }
-    void Window::SetFullScreen(EntityID windowID, bool isFullScreen)
+    void Window::SetFullScreen(ID windowID, bool isFullScreen)
     {
-        assert(ID::IsValid(windowID));
+        assert(IsValid(windowID));
         SetWindowFullScreen(windowID, isFullScreen);
     }
 
-    bool Window::IsClosed(EntityID windowID)
+    bool Window::IsClosed(ID windowID)
     {
-        assert(ID::IsValid(windowID));
+        assert(IsValid(windowID));
         return IsWindowClosed(windowID);
     }
 #else

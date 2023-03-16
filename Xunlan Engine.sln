@@ -14,7 +14,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XunlanDLL", "XunlanDLL\Xunl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EngineTest", "EngineTest\EngineTest.vcxproj", "{9DF207FB-0142-4B10-A807-A1A0AA61BF38}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssertToolDLL", "AssertToolDLL\AssertToolDLL.vcxproj", "{8CBE97D8-8029-481E-A969-D20C18C8EF85}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetToolDLL", "AssetToolDLL\AssetToolDLL.vcxproj", "{8CBE97D8-8029-481E-A969-D20C18C8EF85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +46,10 @@ Global
 		{F2456E50-20E0-441D-BA4A-47057BAFCFD1}.ReleaseEditor|x64.Build.0 = ReleaseEditor|x64
 		{9DF207FB-0142-4B10-A807-A1A0AA61BF38}.Debug|x64.ActiveCfg = Debug|x64
 		{9DF207FB-0142-4B10-A807-A1A0AA61BF38}.Debug|x64.Build.0 = Debug|x64
-		{9DF207FB-0142-4B10-A807-A1A0AA61BF38}.DebugEditor|x64.ActiveCfg = DebugEditor|x64
+		{9DF207FB-0142-4B10-A807-A1A0AA61BF38}.DebugEditor|x64.ActiveCfg = Debug|x64
 		{9DF207FB-0142-4B10-A807-A1A0AA61BF38}.Release|x64.ActiveCfg = Release|x64
 		{9DF207FB-0142-4B10-A807-A1A0AA61BF38}.Release|x64.Build.0 = Release|x64
-		{9DF207FB-0142-4B10-A807-A1A0AA61BF38}.ReleaseEditor|x64.ActiveCfg = ReleaseEditor|x64
+		{9DF207FB-0142-4B10-A807-A1A0AA61BF38}.ReleaseEditor|x64.ActiveCfg = Release|x64
 		{8CBE97D8-8029-481E-A969-D20C18C8EF85}.Debug|x64.ActiveCfg = DebugEditor|x64
 		{8CBE97D8-8029-481E-A969-D20C18C8EF85}.DebugEditor|x64.ActiveCfg = DebugEditor|x64
 		{8CBE97D8-8029-481E-A969-D20C18C8EF85}.DebugEditor|x64.Build.0 = DebugEditor|x64

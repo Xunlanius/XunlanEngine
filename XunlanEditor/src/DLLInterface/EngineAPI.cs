@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using XunlanEditor.EngineAPIStructs;
 using XunlanEditor.GameObjects;
-using XunlanEditor.GameProject;
 
 namespace XunlanEditor.EngineAPIStructs
 {
@@ -13,7 +11,7 @@ namespace XunlanEditor.EngineAPIStructs
     {
         public Vector3 Position;
         public Vector3 Rotation;
-        public Vector3 Scale = new Vector3(1.0f, 1.0f, 1.0f);
+        public Vector3 Scale = new Vector3(1.0f,1.0f,1.0f);
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -36,7 +34,7 @@ namespace XunlanEditor.DLLInterface
     {
         private const string _engineDLL = "XunlanDLL.dll";
 
-        [DllImport(_engineDLL, CharSet = CharSet.Ansi)]
+        [DllImport(_engineDLL,CharSet = CharSet.Ansi)]
         public static extern UInt32 LoadGameCodeDLL(string dllPath);
         [DllImport(_engineDLL)]
         public static extern UInt32 UnloadGameCodeDLL();
@@ -48,7 +46,7 @@ namespace XunlanEditor.DLLInterface
         public static extern IntPtr GetScriptCreator(string scriptName);
 
         [DllImport(_engineDLL)]
-        public static extern UInt32 CreateRenderSurface(IntPtr parent, int width, int height);
+        public static extern UInt32 CreateRenderSurface(IntPtr parent,int width,int height);
         [DllImport(_engineDLL)]
         public static extern void RemoveRenderSurface(UInt32 surfaceID);
         [DllImport(_engineDLL)]
@@ -72,7 +70,7 @@ namespace XunlanEditor.DLLInterface
 
                 Script script = obj.GetComponent<Script>();
                 ScriptInitInfo scriptInitInfo = null;
-                if (script != null)
+                if(script != null)
                 {
                     scriptInitInfo = new ScriptInitInfo() { ScriptCreator = GetScriptCreator(script.ScriptName) };
                 }

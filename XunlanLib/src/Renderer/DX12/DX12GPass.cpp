@@ -8,7 +8,7 @@ namespace Xunlan::Graphics::DX12::GPass
 
     namespace
     {
-        constexpr Math::UVector2 DEFAULT_DIMENSION = { 100, 100 };
+        constexpr Math::U32Vector2 DEFAULT_DIMENSION = { 100, 100 };
 
         constexpr DXGI_FORMAT MAIN_GBUFFER_FORMAT = DXGI_FORMAT_R16G16B16A16_FLOAT;
         constexpr DXGI_FORMAT DEPTH_GBUFFER_FORMAT = DXGI_FORMAT_D32_FLOAT;
@@ -22,7 +22,7 @@ namespace Xunlan::Graphics::DX12::GPass
         constexpr float CLEAR_COLOR[4] = {};
 #endif
 
-        Math::UVector2 g_dimension = DEFAULT_DIMENSION;
+        Math::U32Vector2 g_dimension = DEFAULT_DIMENSION;
 
         std::unique_ptr<RenderTexture> g_mainGBuffer = nullptr;
         std::unique_ptr<DepthTexture> g_depthGBuffer = nullptr;
@@ -37,7 +37,7 @@ namespace Xunlan::Graphics::DX12::GPass
             Count,
         };
 
-        bool CreateBuffers(Math::UVector2 size)
+        bool CreateBuffers(Math::U32Vector2 size)
         {
             assert(size.x > 0 && size.y > 0);
 
@@ -154,7 +154,7 @@ namespace Xunlan::Graphics::DX12::GPass
     const RenderTexture& GetMainBuffer() { return *g_mainGBuffer; }
     const DepthTexture& GetDepthBuffer() { return *g_depthGBuffer; }
 
-    void CheckSize(Math::UVector2 size)
+    void CheckSize(Math::U32Vector2 size)
     {
         if (size.x <= g_dimension.x || size.y <= g_dimension.y) return;
 
