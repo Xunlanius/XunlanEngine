@@ -23,9 +23,9 @@ namespace Xunlan::Tools
             uint32 horizontalIndex = Axis::X,
             uint32 verticalIndex = Axis::Z,
             bool flipWinding = false,
-            Vector3 offset = { -0.5f, 0.0f, -0.5f },
-            Vector2 uRange = { 0.0f, 1.0f },
-            Vector2 vRange = { 0.0f, 1.0f })
+            float3 offset = { -0.5f, 0.0f, -0.5f },
+            float2 uRange = { 0.0f, 1.0f },
+            float2 vRange = { 0.0f, 1.0f })
         {
             assert(horizontalIndex < Axis::Count);
             assert(verticalIndex < Axis::Count);
@@ -46,7 +46,7 @@ namespace Xunlan::Tools
             {
                 for (uint32 j = 0; j <= horizontalCount; ++j)
                 {
-                    Vector3 position = offset;
+                    float3 position = offset;
                     float* const asArray = &position.x;
                     asArray[horizontalIndex] += j * horizontalStride;
                     asArray[verticalIndex] += i * verticalStride;

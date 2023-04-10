@@ -49,8 +49,7 @@ namespace XunlanEditor.GameObjects
 
             PropertyChanged += (sender,e) =>
             {
-                if(_enableUpdate)
-                    UpdateSelectedComponents(e.PropertyName);
+                if(_enableUpdate) UpdateSelectedComponents(e.PropertyName);
             };
         }
 

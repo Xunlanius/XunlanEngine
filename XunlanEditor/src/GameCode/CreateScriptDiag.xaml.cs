@@ -18,7 +18,7 @@ namespace XunlanEditor.GameCode
         private static readonly string _headerCode =
 @"#pragma once
 
-#include ""EngineAPI/Script.h""
+#include ""Component/Script.h""
 
 namespace {0}
 {{
@@ -64,10 +64,9 @@ namespace {0}
         {
             IsValid();
         }
-        private async void On_CreateButton_Click(object sender,RoutedEventArgs e)
+        private async void On_CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            if(!IsValid())
-                return;
+            if(!IsValid()) return;
 
             IsEnabled = false;
 
@@ -147,7 +146,7 @@ namespace {0}
 
                 string[] headerAndCppFiles = new string[] { headerFile,cppFile };
 
-                Debug.Assert(VisualStudio.AddFileToSolution(solutionPath,projectName,headerAndCppFiles));
+                VisualStudio.AddFileToSolution(solutionPath,projectName,headerAndCppFiles);
             }
             catch(Exception ex)
             {

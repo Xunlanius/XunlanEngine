@@ -59,12 +59,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)XunlanLib/src</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)XunlanLib</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
@@ -72,7 +72,8 @@
     </Link>
     <PreBuildEvent>
       <Command>xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\bin\x64\dxcompiler.dll" "$(OutDir)"
-xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\bin\x64\dxil.dll" "$(OutDir)"</Command>
+xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\bin\x64\dxil.dll" "$(OutDir)"
+xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\lib\x64\dxcompiler.lib" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -83,12 +84,12 @@ xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\bin\x64\dxil.dll" "$(O
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)XunlanLib/src</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)XunlanLib</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -98,25 +99,20 @@ xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\bin\x64\dxil.dll" "$(O
     </Link>
     <PreBuildEvent>
       <Command>xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\bin\x64\dxcompiler.dll" "$(OutDir)"
-xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\bin\x64\dxil.dll" "$(OutDir)"</Command>
+xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\bin\x64\dxil.dll" "$(OutDir)"
+xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\lib\x64\dxcompiler.lib" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\ShaderCompilation.h" />
-    <ClInclude Include="src\ITest.h" />
-    <ClInclude Include="src\TestEntity.h" />
-    <ClInclude Include="src\TestRenderer.h" />
-    <ClInclude Include="src\TestECS.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\ShaderCompilation.cpp" />
-    <ClCompile Include="src\TestRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XunlanLib\XunlanLib.vcxproj">
       <Project>{a8938e3a-12d3-4e41-88c4-6001f0a4d3be}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Script\Script1.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

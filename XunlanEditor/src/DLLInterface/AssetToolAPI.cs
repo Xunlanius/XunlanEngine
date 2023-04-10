@@ -63,21 +63,15 @@ namespace XunlanEditor.DLLInterface
 
         public static void CreatePrimitiveMesh(Geometry geometry,PrimitiveMeshInitInfo info)
         {
-            CreateGeometry(
-                geometry,
-                (sceneData) => CreatePrimitiveMesh(info,sceneData),
-                $"Failed to create primitive mesh [{info.MeshType}]");
+            CreateGeometry(geometry, (sceneData) => CreatePrimitiveMesh(info,sceneData), $"Failed to create primitive mesh [{info.MeshType}]");
         }
 
-        public static void ImportFBX(string filePath,Geometry geometry)
+        public static bool ImportFBX(string filePath,Geometry geometry)
         {
-            CreateGeometry(
-                geometry,
-                (sceneData) => ImportFBX(filePath,sceneData),
-                $"Failed to import FBX file: {filePath}.");
+            return CreateGeometry(geometry, (sceneData) => ImportFBX(filePath,sceneData), $"Failed to import FBX file: {filePath}.");
         }
 
-        private static void CreateGeometry(Geometry geometry,Action<SceneData> sceneDataGenerator,string errorMsg)
+        private static bool CreateGeometry(Geometry geometry,Action<SceneData> sceneDataGenerator,string errorMsg)
         {
             Debug.Assert(geometry != null);
 
@@ -93,11 +87,13 @@ namespace XunlanEditor.DLLInterface
                 Marshal.Copy(sceneData.Buffer,pDst,0,sceneData.BufferByteSize);
 
                 geometry.UnpackRawData(pDst);
+                return true;
             }
             catch(Exception ex)
             {
                 Debug.WriteLine(ex.Message);
                 Logger.LogMessage(MsgType.Error,errorMsg);
+                return false;
             }
         }
 

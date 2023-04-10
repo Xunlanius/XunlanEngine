@@ -18,61 +18,28 @@ namespace XunlanEditor.Content
 
     sealed class AssetInfo
     {
-        public AssetType Type
-        {
-            get; set;
-        }
-        public Guid Guid
-        {
-            get; set;
-        }
-        public DateTime RegisterDate
-        {
-            get; set;
-        }
-        public DateTime ImportDate
-        {
-            get; set;
-        }
-        public byte[] Hash
-        {
-            get; set;
-        }
+        public AssetType Type { get; set; }
+        public Guid Guid { get; set; }
+        public DateTime RegisterDate { get; set; }
+        public DateTime ImportDate { get; set; }
+        public byte[] Hash { get; set; }
 
-        public string FullPath
-        {
-            get; set;
-        }
-        public string FileName
-        {
-            get => Path.GetFileNameWithoutExtension(FullPath);
-        }
+        public string FullPath { get; set; }
+        public string FileName { get => Path.GetFileNameWithoutExtension(FullPath); }
     }
 
     abstract class Asset : ViewModelBase
     {
-        public static string AssetFileExtension
-        {
-            get => ".asset";
-        }
+        public static string AssetFileExtension { get => ".asset"; }
 
-        public AssetType Type
-        {
-            get; set;
-        }
+        public AssetType Type { get; set; }
         public Guid Guid { get; protected set; } = Guid.NewGuid();
-        public DateTime ImportDate
-        {
-            get; protected set;
-        }
+        public DateTime ImportDate { get; protected set; }
 
         /// <summary>
         /// Used to compare if two <see cref="Asset"/> is the same
         /// </summary>
-        public byte[] Hash
-        {
-            get; protected set;
-        }
+        public byte[] Hash { get; protected set; }
 
         public string _filePath;
         public string FilePath
@@ -80,17 +47,13 @@ namespace XunlanEditor.Content
             get => _filePath;
             set
             {
-                if(_filePath == value)
-                    return;
+                if(_filePath == value) return;
                 _filePath = value;
                 OnPropertyChanged(nameof(FilePath));
                 OnPropertyChanged(nameof(FileName));
             }
         }
-        public string FileName
-        {
-            get => Path.GetFileNameWithoutExtension(FilePath);
-        }
+        public string FileName { get => Path.GetFileNameWithoutExtension(FilePath); }
 
         public Asset(AssetType type)
         {
@@ -165,5 +128,6 @@ namespace XunlanEditor.Content
         public abstract void Import(string filePath);
         public abstract void Load(string filePath);
         public abstract IEnumerable<string> Save(string filePath);
+        public abstract byte[] PackToEngine();
     }
 }

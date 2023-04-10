@@ -1,83 +1,45 @@
-#define TEST_ENTITY 0
-#define TEST_ECS 0
-#define TEST_RENDERER 1
-
-#if TEST_ENTITY
-    #include "TestEntity.h"
-#elif TEST_ECS
-    #include "TestECS.h"
-#elif TEST_RENDERER
-    #include "TestRenderer.h"
-#endif
-
-#include <filesystem>
-
-std::filesystem::path SetCurrDirExecutablePath()
-{
-    wchar_t path[MAX_PATH];
-    const uint32 pathLen = GetModuleFileName(0, path, MAX_PATH);
-    assert(pathLen > 0);
-    if (pathLen == 0 || GetLastError() == ERROR_INSUFFICIENT_BUFFER) return {};
-
-    std::filesystem::path p(path);
-    std::filesystem::current_path(p.parent_path());
-
-    return std::filesystem::current_path();
-}
-
 #if defined _WIN64
 
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+#include "src/Function/Core/Engine.h"
+
+#include <cassert>
+#include <crtdbg.h>
+#include <filesystem>
+
+namespace
 {
-#if _DEBUG
-    ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    SetCurrDirExecutablePath();
-
-    ITest* test = new TestRenderer();
-
-    if (test->Initialize())
+    std::filesystem::path SetCurrDirExecutablePath()
     {
-        MSG msg = {};
-        bool isRunning = true;
+        wchar_t path[MAX_PATH];
+        const uint32_t pathLen = GetModuleFileName(0, path, MAX_PATH);
+        assert(pathLen > 0);
+        if (pathLen == 0 || GetLastError() == ERROR_INSUFFICIENT_BUFFER) return {};
 
-        while (isRunning)
-        {
-            while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-            {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
+        std::filesystem::path p(path);
+        std::filesystem::current_path(p.parent_path());
 
-                if (msg.message == WM_QUIT) isRunning = false;
-            }
-
-            test->Run();
-        }
-        test->Shutdown();
+        return std::filesystem::current_path();
     }
-
-    delete test;
-    return 0;
 }
-
-#else
 
 int main()
 {
 #if _DEBUG
     ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    //::_CrtSetBreakAlloc(235);
 #endif
 
-    ITest* test = new TestWindow();
+    SetCurrDirExecutablePath();
 
-    if (test->Initialize())
+    Xunlan::EngineSystem& engine = Xunlan::Singleton<Xunlan::EngineSystem>::Instance();
+
+    if (!engine.Initialize()) return 0;
+
+    while (engine.IsRunning())
     {
-        test->Run();
-        test->Shutdown();
+        engine.OnTick();
     }
-
-    delete test;
+    engine.Shutdown();
 
     return 0;
 }

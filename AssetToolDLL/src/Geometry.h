@@ -1,11 +1,13 @@
 #pragma once
 
 #include "AssetToolCommon.h"
-#include "Utility/Math.h"
+#include "src/Utility/Math.h"
+#include <vector>
+#include <string>
 
 namespace Xunlan::Tools
 {
-    using UV = Math::Vector2;
+    using UV = Math::float2;
     using UVSet = std::vector<UV>;
 
     namespace Element
@@ -41,7 +43,7 @@ namespace Xunlan::Tools
             byte sign;
             uint16 normal[2];
             uint16 tangent[2];
-            Math::Vector2 uv;
+            Math::float2 uv;
         };
 
         struct Color
@@ -81,7 +83,7 @@ namespace Xunlan::Tools
             uint16 jointIndices[4];
             uint16 normal[2];
             uint16 tangent[2];
-            Math::Vector2 uv;
+            Math::float2 uv;
         };
 
         struct SkeletalNormalColor
@@ -101,7 +103,7 @@ namespace Xunlan::Tools
             uint16 jointIndices[4];
             uint16 normal[2];
             uint16 tangent[2];
-            Math::Vector2 uv;
+            Math::float2 uv;
             byte color[3];
             byte pad;
         };
@@ -109,12 +111,12 @@ namespace Xunlan::Tools
 
     struct Vertex
     {
-        Math::Vector3 position = {};
-        Math::Vector3 normal = {};
-        Math::Vector4 tangent = {};
+        Math::float3 position = {};
+        Math::float3 normal = {};
+        Math::float4 tangent = {};
         UV uv = {};
-        Math::Vector4 jointWeights = {};
-        Math::U32Vector4 jointIndices = { UINT32_MAX, UINT32_MAX, UINT32_MAX, UINT32_MAX };
+        Math::float4 jointWeights = {};
+        Math::uint4 jointIndices = { UINT32_MAX, UINT32_MAX, UINT32_MAX, UINT32_MAX };
         byte red = {};
         byte green = {};
         byte blue = {};
@@ -123,11 +125,11 @@ namespace Xunlan::Tools
 
     struct Mesh
     {
-        std::vector<Math::Vector3> positions;   // vertexIndex -> position (unique position in space)
-        std::vector<Math::Vector3> normals;     // index -> normal
-        std::vector<Math::Vector4> tangents;    // index -> tangent
+        std::vector<Math::float3> positions;   // vertexIndex -> position (unique position in space)
+        std::vector<Math::float3> normals;     // index -> normal
+        std::vector<Math::float4> tangents;    // index -> tangent
         std::vector<UVSet> uvSets;              // UVSet: index -> uv
-        std::vector<Math::Vector3> colors;      // index -> color
+        std::vector<Math::float3> colors;      // index -> color
 
         std::vector<uint32> materialIndices;    // polygonIndex -> materialIndex
         std::vector<uint32> materialIDs;        // materialIndex used in this mesh

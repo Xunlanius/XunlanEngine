@@ -71,8 +71,7 @@ namespace XunlanEditor.Editors
             get => _cameraDir;
             set
             {
-                if(_cameraDir == value)
-                    return;
+                if(_cameraDir == value) return;
                 _cameraDir = value;
                 OnPropertyChanged(nameof(CameraDir));
             }
@@ -84,8 +83,7 @@ namespace XunlanEditor.Editors
             get => _cameraPos;
             set
             {
-                if(_cameraPos == value)
-                    return;
+                if(_cameraPos == value) return;
                 _cameraPos = value;
                 CameraDir = new Vector3D(-value.X,-value.Y,-value.Z);
                 OnPropertyChanged(nameof(CameraPos));
@@ -99,8 +97,7 @@ namespace XunlanEditor.Editors
             get => _cameraTarget;
             set
             {
-                if(_cameraTarget == value)
-                    return;
+                if(_cameraTarget == value) return;
                 _cameraTarget = value;
                 OnPropertyChanged(nameof(CameraTarget));
                 OnPropertyChanged(nameof(OffsetCameraPos));
@@ -115,8 +112,7 @@ namespace XunlanEditor.Editors
             get => _keyLight;
             set
             {
-                if(_keyLight == value)
-                    return;
+                if(_keyLight == value) return;
                 _keyLight = value;
                 OnPropertyChanged(nameof(KeyLight));
             }
@@ -128,8 +124,7 @@ namespace XunlanEditor.Editors
             get => _skyLight;
             set
             {
-                if(_skyLight == value)
-                    return;
+                if(_skyLight == value) return;
                 _skyLight = value;
                 OnPropertyChanged(nameof(SkyLight));
             }
@@ -141,8 +136,7 @@ namespace XunlanEditor.Editors
             get => _groundLight;
             set
             {
-                if(_groundLight == value)
-                    return;
+                if(_groundLight == value) return;
                 _groundLight = value;
                 OnPropertyChanged(nameof(GroundLight));
             }
@@ -154,8 +148,7 @@ namespace XunlanEditor.Editors
             get => _ambientLight;
             set
             {
-                if(_ambientLight == value)
-                    return;
+                if(_ambientLight == value) return;
                 _ambientLight = value;
                 OnPropertyChanged(nameof(AmbientLight));
             }
@@ -174,7 +167,7 @@ namespace XunlanEditor.Editors
             Vector3D avgNormal = new Vector3D();
 
             // Unpack the packed normals
-            var intervals = 2.0f / ((1 << 16) - 1);
+            float intervals = 2.0f / ((1 << 16) - 1);
 
             foreach(var mesh in lod.Meshes)
             {

@@ -1,5 +1,5 @@
 #include "Geometry.h"
-#include "Utility/IO.h"
+#include "src/Utility/IO.h"
 
 namespace Xunlan::Tools
 {
@@ -128,8 +128,8 @@ namespace Xunlan::Tools
             // cos(n) < cosAlpha: hard edge
             assert(smoothingAngle >= 0.0f && smoothingAngle <= 180.0f);
             const float cosAlpha = XMScalarCos(XM_PI * (1 - smoothingAngle / 180.0f));
-            const bool absolutelySoft = XMScalarNearEqual(smoothingAngle, 0.0f, Epsilon);
-            const bool absolutelyHard = XMScalarNearEqual(smoothingAngle, 180.0f, Epsilon);
+            const bool absolutelySoft = XMScalarNearEqual(smoothingAngle, 0.0f, EPSILON);
+            const bool absolutelyHard = XMScalarNearEqual(smoothingAngle, 180.0f, EPSILON);
 
             std::vector<uint32> oldIndices(mesh.indices.size(), UINT_MAX);
             oldIndices.swap(mesh.indices);
@@ -248,7 +248,7 @@ namespace Xunlan::Tools
                         const UV& uv = mesh.uvSets[0][otherIndex];
 
                         // If two uvs are nearly equal, merge it
-                        if (XMScalarNearEqual(vertex.uv.x, uv.x, Epsilon) && XMScalarNearEqual(vertex.uv.y, uv.y, Epsilon))
+                        if (XMScalarNearEqual(vertex.uv.x, uv.x, EPSILON) && XMScalarNearEqual(vertex.uv.y, uv.y, EPSILON))
                         {
                             mesh.indices[otherIndex] = mesh.indices[index];
                         }
@@ -304,9 +304,9 @@ namespace Xunlan::Tools
             const uint32 numVertices = (uint32)mesh.vertices.size();
             assert(numVertices > 0);
 
-            mesh.positionBuffer.resize(numVertices * sizeof(Math::Vector3));
+            mesh.positionBuffer.resize(numVertices * sizeof(Math::float3));
             mesh.elementBuffer.resize(numVertices * GetElementSize(type));
-            Math::Vector3* const positionBuffer = (Math::Vector3*)mesh.positionBuffer.data();
+            Math::float3* const positionBuffer = (Math::float3*)mesh.positionBuffer.data();
 
             for (uint32 i = 0; i < numVertices; ++i)
             {
@@ -550,32 +550,32 @@ namespace Xunlan::Tools
         {
             // Mesh name
             uint32 nameLen = (uint32)mesh.name.size();
-            Utility::Write<uint32>(nameLen, dst);
-            Utility::Write(dst, mesh.name.data(), nameLen);
+            IO::Write<uint32>(nameLen, dst);
+            IO::WriteBuffer(dst, mesh.name.data(), nameLen);
 
             // Number of vertices
-            Utility::Write<uint32>((uint32)mesh.vertices.size(), dst);
+            IO::Write<uint32>((uint32)mesh.vertices.size(), dst);
 
             // Number of indices
             uint32 numIndices = (uint32)mesh.indices.size();
-            Utility::Write<uint32>(numIndices, dst);
+            IO::Write<uint32>(numIndices, dst);
 
             // Element type
-            Utility::Write<uint32>(mesh.elementsType, dst);
+            IO::Write<uint32>(mesh.elementsType, dst);
             // Element size
-            Utility::Write<uint32>((uint32)GetElementSize(mesh.elementsType), dst);
+            IO::Write<uint32>((uint32)GetElementSize(mesh.elementsType), dst);
 
             // LOD ID
-            Utility::Write<uint32>(mesh.lodID, dst);
+            IO::Write<uint32>(mesh.lodID, dst);
             // LOD threshold
-            Utility::Write<float>(mesh.lodThreshold, dst);
+            IO::Write<float>(mesh.lodThreshold, dst);
 
             // Position buffer
-            Utility::Write(dst, mesh.positionBuffer.data(), mesh.positionBuffer.size());
+            IO::WriteBuffer(dst, mesh.positionBuffer.data(), mesh.positionBuffer.size());
             // Index buffer
-            Utility::Write(dst, mesh.indices.data(), numIndices * sizeof(uint32));
+            IO::WriteBuffer(dst, mesh.indices.data(), numIndices * sizeof(uint32));
             // Element buffer
-            Utility::Write(dst, mesh.elementBuffer.data(), mesh.elementBuffer.size());
+            IO::WriteBuffer(dst, mesh.elementBuffer.data(), mesh.elementBuffer.size());
         }
     }
 
@@ -605,21 +605,21 @@ namespace Xunlan::Tools
 
         // Scene name
         uint32 sceneNameLen = (uint32)scene.name.size();
-        Utility::Write<uint32>(sceneNameLen, dst);
-        Utility::Write(dst, scene.name.data(), sceneNameLen);
+        IO::Write<uint32>(sceneNameLen, dst);
+        IO::WriteBuffer(dst, scene.name.data(), sceneNameLen);
 
         // Number of LODs
-        Utility::Write<uint32>((uint32)scene.lodGroups.size(), dst);
+        IO::Write<uint32>((uint32)scene.lodGroups.size(), dst);
 
         for (const LODGroup& lodGroup : scene.lodGroups)
         {
             // LOD name
             uint32 lodNameLen = (uint32)lodGroup.name.size();
-            Utility::Write<uint32>(lodNameLen, dst);
-            Utility::Write(dst, lodGroup.name.data(), lodNameLen);
+            IO::Write<uint32>(lodNameLen, dst);
+            IO::WriteBuffer(dst, lodGroup.name.data(), lodNameLen);
 
             // Number of Meshes
-            Utility::Write<uint32>((uint32)lodGroup.meshes.size(), dst);
+            IO::Write<uint32>((uint32)lodGroup.meshes.size(), dst);
 
             // Pack meshes
             for (const Mesh& mesh : lodGroup.meshes)

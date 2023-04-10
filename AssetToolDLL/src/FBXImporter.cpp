@@ -49,6 +49,8 @@ namespace Xunlan::Tools
         // Get scene scale
         m_sceneScale = (float)m_fbxScene->GetGlobalSettings().GetSystemUnit().GetConversionFactorTo(FbxSystemUnit::m);
 
+        //fbxsdk::FbxAxisSystem::DirectX.ConvertScene(m_fbxScene);
+
         return true;
     }
     bool FBXImporter::LoadScene(fbxsdk::FbxNode* root)
@@ -139,12 +141,12 @@ namespace Xunlan::Tools
 
         fbxsdk::FbxNode* const node = fbxMesh->GetNode();
 
-        fbxsdk::FbxAMatrix transform = {};
+        /*fbxsdk::FbxAMatrix transform = {};
         transform.SetT(node->GetGeometricTranslation(fbxsdk::FbxNode::eSourcePivot));
         transform.SetR(node->GetGeometricRotation(fbxsdk::FbxNode::eSourcePivot));
         transform.SetS(node->GetGeometricScaling(fbxsdk::FbxNode::eSourcePivot));
         transform = node->EvaluateGlobalTransform() * transform;
-        fbxsdk::FbxAMatrix inverseTranspose = transform.Transpose().Inverse();
+        fbxsdk::FbxAMatrix inverseTranspose = transform.Transpose().Inverse();*/
 
         const int numPolygons = fbxMesh->GetPolygonCount();
         if (numPolygons <= 0) { assert(false); return false; }
@@ -171,7 +173,8 @@ namespace Xunlan::Tools
             if (controlPointToVertexIndex[indexOfControlPoint] == UINT32_MAX) // haven't encounter the control point before
             {
                 // Record unique position of control point
-                const fbxsdk::FbxVector4 pos = transform.MultT(controlPoints[indexOfControlPoint]) * m_sceneScale;
+                //const fbxsdk::FbxVector4 pos = transform.MultT(controlPoints[indexOfControlPoint]) * m_sceneScale;
+                const fbxsdk::FbxVector4 pos = controlPoints[indexOfControlPoint] * m_sceneScale;
                 mesh.positions.emplace_back((float)pos[0], (float)pos[1], (float)pos[2]);
                 mesh.indices[i] = (uint32)mesh.positions.size() - 1;
                 controlPointToVertexIndex[indexOfControlPoint] = mesh.indices[i];
@@ -217,7 +220,8 @@ namespace Xunlan::Tools
 
                 for (int i = 0; i < numNormals; ++i)
                 {
-                    fbxsdk::FbxVector4 normal = inverseTranspose.MultT(normals[i]);
+                    //fbxsdk::FbxVector4 normal = inverseTranspose.MultT(normals[i]);
+                    fbxsdk::FbxVector4 normal = normals[i];
                     normal.Normalize();
                     mesh.normals.emplace_back((float)normal[0], (float)normal[1], (float)normal[2]);
                 }
@@ -243,7 +247,7 @@ namespace Xunlan::Tools
                     fbxsdk::FbxVector4 tangent = tangents->GetAt(i);
                     const float handedness = (float)tangent[3];
                     tangent[3] = 0;
-                    transform.MultT(tangent);
+                    //transform.MultT(tangent);
                     tangent.Normalize();
                     mesh.tangents.emplace_back((float)tangent[0], (float)tangent[1], (float)tangent[2], handedness);
                 }

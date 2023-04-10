@@ -1,7 +1,8 @@
 #include "Common.h"
-#include "EngineAPI/Script.h"
-#include "Platforms/Window.h"
-#include "Renderer/Renderer.h"
+#include "src/Component/Script.h"
+#include "src/Renderer/WindowSystem.h"
+#include "src/Renderer/RendererSystem.h"
+#include <string>
 
 using namespace Xunlan;
 
@@ -11,12 +12,12 @@ namespace
     HMODULE g_gameCodeDLL = nullptr;
 
     // Function pointers
-    using GetNames = LPSAFEARRAY (*)();
-    using GetCreator = Script::ScriptCreator (*)(const std::string&);
+    using GetNames = LPSAFEARRAY(*)();
+    using GetCreator = Component::ScriptCreator(*)(const std::string&);
     GetNames g_getNames = nullptr;
     GetCreator g_getCreator = nullptr;
 
-    std::vector<Graphics::RenderSurface> g_renderSurfaces;
+    std::vector<Renderer::RenderSurface> g_renderSurfaces;
 }
 
 EDITOR_INTERFACE uint32 LoadGameCodeDLL(const char* dllPath)
@@ -49,20 +50,20 @@ EDITOR_INTERFACE LPSAFEARRAY GetScriptNames()
 {
     return (g_gameCodeDLL && g_getNames) ? g_getNames() : nullptr;
 }
-EDITOR_INTERFACE Script::ScriptCreator GetScriptCreator(const char* scriptName)
+EDITOR_INTERFACE Component::ScriptCreator GetScriptCreator(const char* scriptName)
 {
     return (g_gameCodeDLL && g_getCreator) ? g_getCreator(scriptName) : nullptr;
 }
 
 EDITOR_INTERFACE uint32 CreateRenderSurface(HWND parent, int width, int height)
 {
-    Graphics::WindowInitDesc initDesc = {};
+    Renderer::WindowInitDesc initDesc = {};
     initDesc.parent = parent;
     initDesc.width = width;
     initDesc.height = height;
 
-    Graphics::RenderSurface renderSurface = {};
-    renderSurface.windowID = Graphics::Window::Create(&initDesc);
+    Renderer::RenderSurface renderSurface = {};
+    renderSurface.windowID = Renderer::WindowSystem::Create(&initDesc);
 
     assert(IsValid(renderSurface.windowID));
 
@@ -72,15 +73,15 @@ EDITOR_INTERFACE uint32 CreateRenderSurface(HWND parent, int width, int height)
 EDITOR_INTERFACE void RemoveRenderSurface(uint32 index)
 {
     assert(index < g_renderSurfaces.size());
-    Graphics::Window::Remove(g_renderSurfaces[index].windowID);
+    Renderer::WindowSystem::Remove(g_renderSurfaces[index].windowID);
 }
 EDITOR_INTERFACE HWND GetWindowHandle(uint32 index)
 {
     assert(index < g_renderSurfaces.size());
-    return (HWND)Graphics::Window::GetHandle(g_renderSurfaces[index].windowID);
+    return (HWND)Renderer::WindowSystem::GetHandle(g_renderSurfaces[index].windowID);
 }
 EDITOR_INTERFACE void ResizeRenderSurface(uint32 index)
 {
     assert(index < g_renderSurfaces.size());
-    Graphics::Window::Resize(g_renderSurfaces[index].windowID, 0, 0);
+    Renderer::WindowSystem::Resize(g_renderSurfaces[index].windowID, 0, 0);
 }

@@ -31,6 +31,15 @@ namespace XunlanEditor.Content
         Joints = 8,
     }
 
+    enum PrimitiveTopology
+    {
+        PointList = 1,
+        LineList,
+        LineStrip,
+        TriangleList,
+        TriangleStrip,
+    };
+
     class Mesh : ViewModelBase
     {
         public static int PositionSize = sizeof(float) * 3;
@@ -72,6 +81,8 @@ namespace XunlanEditor.Content
         }
 
         public ElementType ElementType { get; set; }
+
+        public PrimitiveTopology PrimitiveTopology { get; set; }
 
         private int _elementSize;
         public int ElementSize
@@ -330,6 +341,8 @@ namespace XunlanEditor.Content
             mesh.ElementType = (ElementType)reader.ReadInt32();
             // Element size
             mesh.ElementSize = reader.ReadInt32();
+            // Primitive topology
+            mesh.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             // LOD ID
             uint lodID = reader.ReadUInt32();
@@ -442,6 +455,7 @@ namespace XunlanEditor.Content
                 writer.Write(mesh.NumIndices);
                 writer.Write((int)mesh.ElementType);
                 writer.Write(mesh.ElementSize);
+                writer.Write((int)mesh.PrimitiveTopology);
                 writer.Write(mesh.PositionBuffer);
                 writer.Write(mesh.IndexBuffer);
                 writer.Write(mesh.ElementBuffer);
@@ -486,6 +500,8 @@ namespace XunlanEditor.Content
                     _lodGroups.Clear();
                     _lodGroups.Add(lodGroup);
                 }
+
+                PackToEngine();
             }
             catch(Exception ex)
             {
@@ -510,6 +526,7 @@ namespace XunlanEditor.Content
                     NumIndices = reader.ReadInt32(),
                     ElementType = (ElementType)reader.ReadInt32(),
                     ElementSize = reader.ReadInt32(),
+                    PrimitiveTopology = (PrimitiveTopology)reader.ReadInt32(),
                 };
 
                 mesh.PositionBuffer = reader.ReadBytes(Mesh.PositionSize * mesh.NumVertices);
@@ -527,20 +544,15 @@ namespace XunlanEditor.Content
             Debug.Assert(File.Exists(filePath));
             string extension = Path.GetExtension(filePath).ToLower();
 
-            try
+            if(extension == ".fbx")
             {
-                if(extension == ".fbx") ImportFBX(filePath);
+                if (!ImportFBX(filePath)) return;
+            }
 
-                Logger.LogMessage(MsgType.Info,$"Successfully imported [{filePath}].");
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                Logger.LogMessage(MsgType.Error,$"Failed to import [{filePath}].");
-            }
+            Logger.LogMessage(MsgType.Info,$"Successfully imported [{filePath}].");
         }
 
-        private void ImportFBX(string filePath)
+        private bool ImportFBX(string filePath)
         {
             Logger.LogMessage(MsgType.Info,$"Importing FBX file [{filePath}]...");
 
@@ -553,7 +565,51 @@ namespace XunlanEditor.Content
 
             string tempFilePath = $@"{tempDirPath}{AssetHelper.GetRandomString()}.fbx";
             File.Copy(filePath,tempFilePath,true);
-            AssetToolAPI.ImportFBX(filePath,this);
+            return AssetToolAPI.ImportFBX(filePath,this);
+        }
+
+        public override byte[] PackToEngine()
+        {
+            using var writer = new BinaryWriter(new MemoryStream());
+
+            writer.Write(GetLodGroupAt().LODs.Count);
+
+            foreach (MeshLOD lod in GetLodGroupAt().LODs)
+            {
+                writer.Write(lod.LodThreshold);
+                writer.Write(lod.Meshes.Count);
+
+                var submeshesSizePosition = writer.BaseStream.Position;
+                writer.Write(0);
+
+                foreach (Mesh submesh in lod.Meshes)
+                {
+                    writer.Write(submesh.NumVertices);
+                    writer.Write(submesh.NumIndices);
+                    writer.Write((int)submesh.ElementType);
+                    writer.Write(submesh.ElementSize);
+                    writer.Write((int)submesh.PrimitiveTopology);
+                    writer.Write(submesh.PositionBuffer);
+                    writer.Write(submesh.IndexBuffer);
+                    writer.Write(submesh.ElementBuffer);
+                }
+
+                var end = writer.BaseStream.Position;
+                int submeshesSize = (int)(end - submeshesSizePosition - sizeof(int));
+                writer.BaseStream.Position = submeshesSizePosition;
+                writer.Write(submeshesSize);
+                writer.BaseStream.Position = end;
+            }
+
+            writer.Flush();
+            byte[] data = (writer.BaseStream as MemoryStream)?.ToArray();
+
+            using (var fs = new FileStream(@"..\..\..\..\XunlanLib\src\Test\model2.model", FileMode.Create))
+            {
+                fs.Write(data);
+            }
+
+            return data;
         }
     }
 }

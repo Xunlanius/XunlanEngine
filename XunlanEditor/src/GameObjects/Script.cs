@@ -15,16 +15,13 @@ namespace XunlanEditor.GameObjects
             get => _scriptName;
             set
             {
-                if(_scriptName == value)
-                    return;
-
+                if(_scriptName == value) return;
                 _scriptName = value;
                 OnPropertyChanged(nameof(ScriptName));
             }
         }
 
-        public Script(GameObject parent)
-            : base(parent) { }
+        public Script(GameObject parent) : base(parent) { }
 
         public override IMultiComponent GetMultiComponent(MultiObject multiObject)
         {
@@ -47,19 +44,13 @@ namespace XunlanEditor.GameObjects
             get => _scriptName;
             set
             {
-                if(_scriptName == value)
-                    return;
-
+                if(_scriptName == value) return;
                 _scriptName = value;
                 OnPropertyChanged(nameof(ScriptName));
             }
         }
 
-        public MultiScript(MultiObject multiObject)
-            : base(multiObject)
-        {
-            Refresh();
-        }
+        public MultiScript(MultiObject multiObject) : base(multiObject) { Refresh(); }
 
         protected override bool UpdateProperties()
         {
@@ -69,8 +60,7 @@ namespace XunlanEditor.GameObjects
 
         protected override bool UpdateSelectedComponents(string propertyName)
         {
-            if(propertyName != ScriptName)
-                return false;
+            if(propertyName != ScriptName) return false;
 
             SelectedComponents.ForEach(component => component.ScriptName = ScriptName);
             return true;

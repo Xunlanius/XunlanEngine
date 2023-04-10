@@ -1,7 +1,8 @@
 #pragma once
 
-#include <fbxsdk.h>
 #include "AssetToolCommon.h"
+#include <fbxsdk.h>
+#include <vector>
 
 namespace Xunlan::Tools
 {

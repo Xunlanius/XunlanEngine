@@ -34,7 +34,7 @@ namespace XunlanEditor.GameCode
         public static bool AddFileToSolution(string solutionPath,string projectName,string[] headerAndCppFiles)
         {
             lock(_lock)
-                return AddFileToSolution_Internal(solutionPath,projectName,headerAndCppFiles);
+            return AddFileToSolution_Internal(solutionPath,projectName,headerAndCppFiles);
         }
         public static void BuildSolution(Project project,BuildConfiguration config,bool showWindow = true)
         {

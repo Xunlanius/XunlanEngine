@@ -1,6 +1,6 @@
 ﻿// dllmain.cpp : 定义 DLL 应用程序的入口点。
-#include "Common/Common.h"
-#include "Core/Engine.h"
+#include "src/Common/Common.h"
+#include "src/Component/Component.h"
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -19,7 +19,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
         break;
     }
 
-    Xunlan::RegisterECS();
+    Xunlan::Component::RegisterECS();
 
     return TRUE;
 }

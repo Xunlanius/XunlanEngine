@@ -6,7 +6,7 @@
 
 namespace Xunlan::Utility
 {
-    template<typename T>
+    /*template<typename T>
     class ObjectPool final
     {
     public:
@@ -84,9 +84,9 @@ namespace Xunlan::Utility
         std::vector<T*> m_instances = {};
         std::vector<uint32> m_cache = {};
         uint32 m_size = 0;
-    };
+    };*/
 
-    template<typename T>
+    /*template<typename T>
     class FreeList final
     {
         static_assert(sizeof(T) >= sizeof(uint32));
@@ -95,7 +95,11 @@ namespace Xunlan::Utility
 
         FreeList() = default;
         explicit FreeList(uint32 capacity) { m_container.reserve(capacity); }
-        ~FreeList() { assert(m_size == 0); }
+        ~FreeList()
+        {
+            assert(m_size == 0);
+            for (T& ele : m_container) ele = {};
+        }
 
     public:
 
@@ -139,5 +143,5 @@ namespace Xunlan::Utility
         std::deque<T> m_container;
         uint32 m_size = 0;
         uint32 m_freeIndex = UINT32_MAX;
-    };
+    };*/
 }
