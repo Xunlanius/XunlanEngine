@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX12Common.h"
-#include "d3dx12.h"
+#include "Helper/d3dx12.h"
 
 namespace Xunlan::DX12
 {

@@ -5,13 +5,13 @@ namespace Xunlan
     Entity::Entity(const std::string& name, const TransformerInitDesc& transformerDesc)
         : m_name(name)
     {
-        ECS::ECSManager& manager = Singleton<ECS::ECSManager>::Instance();
+        ECS::World& manager = Singleton<ECS::World>::Instance();
         m_id = manager.CreateEntity();
-        manager.AddComponent<TransformerComponent>(m_id, CreateTransformer(transformerDesc));
+        manager.AddComponent<TransformerComponent>(m_id, TransformerSystem::CreateTransformer(transformerDesc));
     }
 
     Entity::~Entity()
     {
-        Singleton<ECS::ECSManager>::Instance().RemoveEntity(m_id);
+        Singleton<ECS::World>::Instance().RemoveEntity(m_id);
     }
 }

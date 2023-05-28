@@ -1,14 +1,12 @@
 #pragma once
 
 #include "src/Common/Common.h"
-#include "src/Common/WindowsCommon.h"
+#include "src/Common/Win32Common.h"
 
 namespace Xunlan
 {
-    class WindowSystem;
-    class RenderSystem;
-
 #ifdef _WIN64
+
     using MsgProc = LRESULT(*)(HWND, UINT, WPARAM, LPARAM);
 
     struct WindowInitDesc final
@@ -30,6 +28,7 @@ namespace Xunlan
         uint32 height = 720;
         DWORD style = WS_VISIBLE;
     };
+
 #else
 #error Unknown platform.
 #endif
@@ -37,15 +36,5 @@ namespace Xunlan
     enum class Platform : uint32
     {
         DX12,
-    };
-
-    struct RenderSystemInitDesc final
-    {
-        Ref<WindowSystem> windowSystem;
-    };
-
-    struct RHIInitDesc final
-    {
-        Ref<WindowSystem> windowSystem;
     };
 }

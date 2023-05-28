@@ -128,6 +128,7 @@ namespace Xunlan::DX12
     {
         ShaderCompiler compiler;
         ComPtr<IDxcBlob> compiledShader = compiler.Compile(type, path, functionName);
+        assert(compiledShader && "Shader compiled error.");
 
         const void* byteCode = compiledShader->GetBufferPointer();
         const size_t byteCodeLength = compiledShader->GetBufferSize();

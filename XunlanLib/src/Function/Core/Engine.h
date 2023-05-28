@@ -14,18 +14,19 @@ namespace Xunlan
         EngineSystem() = default;
         DISABLE_COPY(EngineSystem)
         DISABLE_MOVE(EngineSystem)
+        ~EngineSystem() = default;
 
     public:
 
         bool Initialize();
-        void OnTick();
         void Shutdown();
+        void Tick();
         bool IsRunning();
 
     private:
 
-        void OnTickLogical(float deltaTime);
-        void OnTickRender(float deltaTime);
+        void TickLogical(float deltaTime);
+        void TickRender(float deltaTime);
 
     private:
 

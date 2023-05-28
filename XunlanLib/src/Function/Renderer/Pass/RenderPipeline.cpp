@@ -1,5 +1,5 @@
 #include "RenderPipeline.h"
-#include "src/Function/Renderer/RHI.h"
+#include "src/Function/Renderer/Abstract/RHI.h"
 #include "src/Function/World/Scene.h"
 
 namespace Xunlan

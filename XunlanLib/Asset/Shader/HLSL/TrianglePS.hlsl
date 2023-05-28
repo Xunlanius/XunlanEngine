@@ -1,4 +1,4 @@
-#include "Fractal.hlsli"
+#include "Common/Fractal.hlsli"
 
 struct PostProcessConstants
 {

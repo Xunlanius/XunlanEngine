@@ -6,8 +6,17 @@
 
 namespace Xunlan
 {
-    class WindowSystem
+    class WindowSystem final
     {
+        friend class Singleton<WindowSystem>;
+
+    private:
+
+        WindowSystem() = default;
+        DISABLE_COPY(WindowSystem)
+        DISABLE_MOVE(WindowSystem)
+        ~WindowSystem() = default;
+
     public:
 
         bool Initialize(const WindowInitDesc& initDesc);

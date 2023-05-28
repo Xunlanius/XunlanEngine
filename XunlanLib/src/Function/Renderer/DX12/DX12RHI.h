@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX12Common.h"
-#include "src/Function/Renderer/RHI.h"
+#include "src/Function/Renderer/Abstract/RHI.h"
 #include "DX12Surface.h"
 #include "DX12Command.h"
 #include "DX12Resource.h"
@@ -9,7 +9,7 @@
 #include "DX12Upload.h"
 #include "DX12Helper.h"
 #include "DX12Material.h"
-#include "d3dx12.h"
+#include "Helper/d3dx12.h"
 
 #include <array>
 #include <unordered_map>
@@ -21,7 +21,7 @@ namespace Xunlan::DX12
     {
     public:
 
-        explicit DX12RHI(Platform platform, const RHIInitDesc& initDesc);
+        explicit DX12RHI(Platform platform);
         virtual ~DX12RHI() override;
 
         static DX12RHI& Instance() { return (DX12RHI&)(*ms_instance); }

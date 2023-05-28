@@ -111,9 +111,6 @@ xcopy /Y /D "$(SolutionDir)Packages\DirectXShaderCompiler\lib\x64\dxcompiler.lib
       <Project>{a8938e3a-12d3-4e41-88c4-6001f0a4d3be}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Script\Script1.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

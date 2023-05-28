@@ -1,7 +1,7 @@
 #pragma once
 
 #include "src/Common/Common.h"
-#include "src/Common/WindowsCommon.h"
+#include "src/Common/Win32Common.h"
 #include <string>
 #include <chrono>
 

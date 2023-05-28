@@ -1,7 +1,7 @@
 #include "DX12RenderBuffer.h"
 #include "DX12RHI.h"
 #include "DX12Upload.h"
-#include "d3dx12.h"
+#include "Helper/d3dx12.h"
 
 using namespace Microsoft::WRL;
 

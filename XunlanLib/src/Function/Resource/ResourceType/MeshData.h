@@ -2,7 +2,7 @@
 
 #include "src/Common/Common.h"
 #include "src/Utility/Reflection/Reflection.h"
-#include "src/Utility/MathTypes.h"
+#include "src/Utility/Math/MathTypes.h"
 #include <vector>
 
 namespace Xunlan

@@ -1,8 +1,8 @@
 #include "ShadowPass.h"
-#include "src/Function/Renderer/RHI.h"
+#include "src/Function/Renderer/Abstract/RHI.h"
 #include "src/Function/Resource/ConfigSystem.h"
 #include "src/Function/World/Scene.h"
-#include "src/Function/World/Component/MeshRenderComponent.h"
+#include "src/Function/World/Component/MeshRender.h"
 
 namespace Xunlan
 {

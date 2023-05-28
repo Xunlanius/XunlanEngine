@@ -1,7 +1,7 @@
 #pragma once
 
 #include "src/Common/Common.h"
-#include "src/Utility/MathTypes.h"
+#include "Transformer.h"
 
 namespace Xunlan
 {
@@ -21,5 +21,5 @@ namespace Xunlan
         float m_intensity;
     };
 
-    Math::float4x4 GetDirectionalLightViewProj(const Math::float3& direction);
+    Math::float4x4 GetDirectionalLightViewProj(const TransformerComponent& transformer);
 }

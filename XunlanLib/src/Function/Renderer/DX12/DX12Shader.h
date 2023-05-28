@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX12Common.h"
-#include "src/Function/Renderer/Shader.h"
+#include "src/Function/Renderer/Abstract/Shader.h"
 #include <filesystem>
 
 namespace Xunlan::DX12

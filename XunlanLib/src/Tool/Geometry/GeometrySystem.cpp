@@ -1,41 +1,48 @@
 #include "GeometrySystem.h"
-#include "src/Function/Core/RuntimeContext.h"
-#include "src/Function/Resource/ConfigSystem.h"
 #include "FBXImporter.h"
+#include "src/Function/Resource/ConfigSystem.h"
 #include "src/Utility/Reflection/Serializer.h"
 
 namespace Xunlan
 {
     bool GeometryImportSystem::Initialize()
     {
-        const std::filesystem::path& modelFolder = Singleton<ConfigSystem>::Instance().GetModelFolder();
-        std::filesystem::path modelPath = modelFolder;
-        modelPath += "TestModel.model";
+        m_names.push_back("Fiora");
+        m_names.push_back("Plane");
 
-        if (std::filesystem::exists(modelPath)) return true;
-
-        std::filesystem::path fbxPath = modelFolder;
-        fbxPath += "TestModel.fbx";
-
-        MeshData meshData = {};
-        ImportFBX(fbxPath.string().c_str(), meshData);
-
-        Reflection::BinaryStream stream;
-        stream << meshData;
-        stream.Save(modelPath);
-
-        return true;
+        return LoadFromFBX();
     }
 
-    void GeometryImportSystem::ImportFBX(const char* filePath, MeshData& meshData)
+    void GeometryImportSystem::ImportFBX(const std::filesystem::path& filePath, MeshData& meshData)
     {
-        if (!filePath) { assert(false); return; }
-
         // FBX SDK doesn't support multi-thread
         std::lock_guard lock(m_mutex);
 
         FBXImporter fbxImporter;
-        if (!fbxImporter.Initialize(filePath)) return;
+        if (!fbxImporter.Initialize(filePath.string().c_str())) return;
         if (!fbxImporter.LoadScene(meshData)) return;
+    }
+
+    bool GeometryImportSystem::LoadFromFBX()
+    {
+        const std::filesystem::path& modelFolder = Singleton<ConfigSystem>::Instance().GetModelFolder();
+
+        for (const std::string& name : m_names)
+        {
+            const std::filesystem::path modelPath = modelFolder / (name + ".model");
+            if (std::filesystem::exists(modelPath)) continue;
+
+            const std::filesystem::path fbxPath = modelFolder / (name + ".fbx");
+            if (!std::filesystem::exists(fbxPath)) { assert(false); return false; };
+
+            MeshData meshData = {};
+            ImportFBX(fbxPath, meshData);
+
+            Reflection::BinaryStream stream;
+            stream << meshData;
+            stream.Save(modelPath);
+        }
+
+        return true;
     }
 }

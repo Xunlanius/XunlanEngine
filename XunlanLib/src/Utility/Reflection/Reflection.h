@@ -37,12 +37,12 @@ namespace Xunlan::Reflection
     consteval auto DefineClass();
 
     template<typename T>
-    consteval auto DefineField(const char* memName, auto memAddress)
+    consteval auto GetField(const char* memName, auto memAddress)
     {
         using MemberType = decltype(std::declval<T>().*memAddress);
-        const DataCategory cateGory = DATA_CATEGORY<MemberType>;
+        const DataCategory category = DATA_CATEGORY<MemberType>;
 
-        return Field(memName, memAddress, cateGory);
+        return Field(memName, memAddress, category);
     }
 
 #define REGISTER_CLASS(ClassName, ...) \
@@ -54,7 +54,7 @@ namespace Xunlan::Reflection
     }
 
 #define FIELD(memName) \
-    DefineField<_ClassName>(#memName, &_ClassName::##memName)
+    GetField<_ClassName>(#memName, &_ClassName::##memName)
 
     namespace Detail
     {
@@ -69,13 +69,13 @@ namespace Xunlan::Reflection
     }
 
     template<typename T, typename Func>
-    constexpr void ForEachField(T&& object, Func&& func)
+    constexpr void ForEachField(Func&& func)
     {
-        constexpr auto& instance = Detail::INSTANCE<std::decay_t<T>>;
+        constexpr auto& instance = Detail::INSTANCE<T>;
 
         Detail::ForEachField(
             instance,
-            [&object, &func](auto&& field) { func(field); },
+            [&func](auto&& field) { func(field); },
             std::make_index_sequence<std::tuple_size_v<std::decay_t<decltype(instance)>>>()
         );
     }

@@ -72,7 +72,7 @@ namespace Xunlan::Reflection
         if constexpr (category == DataCategory::CUSTOM)
         {
             auto func = [this, &data](const auto& field) { Input(field.GetMember(data)); };
-            ForEachField(data, func);
+            ForEachField<T>(func);
         }
         else if constexpr (category == DataCategory::NATIVE_ARRAY)
         {
@@ -124,7 +124,7 @@ namespace Xunlan::Reflection
         if constexpr (category == DataCategory::CUSTOM)
         {
             auto func = [this, &data](auto& field) { Output(field.GetMember(data)); };
-            ForEachField(data, func);
+            ForEachField<T>(func);
         }
         else if constexpr (category == DataCategory::NATIVE_ARRAY)
         {

@@ -37,7 +37,7 @@ int main()
 
     while (engine.IsRunning())
     {
-        engine.OnTick();
+        engine.Tick();
     }
     engine.Shutdown();
 

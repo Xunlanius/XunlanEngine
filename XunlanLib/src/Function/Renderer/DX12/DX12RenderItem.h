@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX12Common.h"
-#include "src/Function/Renderer/RenderItem.h"
+#include "src/Function/Renderer/Abstract/RenderItem.h"
 
 namespace Xunlan::DX12
 {

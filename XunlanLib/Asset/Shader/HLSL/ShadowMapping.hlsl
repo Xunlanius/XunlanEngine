@@ -1,15 +1,17 @@
-#include "Common.hlsli"
+#include "Common/Common.hlsli"
+
+struct VertexOutput
+{
+    float4 pos : SV_POSITION;
+};
 
 VertexOutput VS(uint vertexIndex : SV_VertexID)
 {
     VertexOutput output;
     const Vertex vertex = Vertices[vertexIndex];
     
-    output.pos = GetPos(vertex.position);
-    output.worldPos = GetWorldPos(vertex.position);
-    output.worldNormal = GetWorldNormal(vertex.normal);
-    output.worldTangent = GetWorldTangent(vertex.tangent);
-    output.uv = vertex.uv;
+    const float3 worldPos = GetWorldPos(vertex.position);
+    output.pos = mul(g_perFrame.directionLights[0].viewProj, float4(worldPos, 1.0f));
     
     return output;
 }

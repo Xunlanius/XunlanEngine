@@ -14,6 +14,9 @@ namespace Xunlan
     private:
 
         RenderPipeline() = default;
+        DISABLE_COPY(RenderPipeline)
+        DISABLE_MOVE(RenderPipeline)
+        ~RenderPipeline() = default;
 
     public:
 

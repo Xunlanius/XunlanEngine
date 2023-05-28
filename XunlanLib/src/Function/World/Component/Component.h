@@ -1,18 +1,18 @@
 #pragma once
 
-#include "src/Function/World/ECS/ECS.h"
+#include "src/Function/World/ECS/World.h"
 #include "Transformer.h"
 #include "NativeScript.h"
 #include "Camera.h"
-#include "MeshRenderComponent.h"
+#include "MeshRender.h"
 
 namespace Xunlan
 {
     inline void RegisterECS()
     {
-        ECS::ECSManager& instance = Singleton<ECS::ECSManager>::Instance();
-        instance.RegisterSystem<ScriptSystem, NativeScriptComponent>();
-        instance.RegisterSystem<CameraSystem, TransformerComponent, CameraComponent>();
-        instance.RegisterSystem<MeshRenderSystem, TransformerComponent>();
+        ECS::World& world = Singleton<ECS::World>::Instance();
+        world.RegisterSystem<ScriptSystem, NativeScriptComponent>();
+        world.RegisterSystem<CameraSystem, TransformerComponent, CameraComponent>();
+        world.RegisterSystem<MeshRenderSystem, MeshRenderComponent, TransformerComponent>();
     }
 }

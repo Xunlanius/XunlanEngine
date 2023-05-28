@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX12Common.h"
-#include "src/Function/Renderer/Mesh.h"
+#include "src/Function/Renderer/Abstract/Mesh.h"
 
 namespace Xunlan::DX12
 {

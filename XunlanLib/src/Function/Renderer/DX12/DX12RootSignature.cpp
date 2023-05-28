@@ -1,6 +1,6 @@
 #include "DX12RootSignature.h"
 #include "DX12RHI.h"
-#include "d3dx12.h"
+#include "Helper/d3dx12.h"
 
 using namespace Microsoft::WRL;
 

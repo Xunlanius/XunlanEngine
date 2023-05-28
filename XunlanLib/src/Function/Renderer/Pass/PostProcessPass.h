@@ -1,9 +1,9 @@
 #pragma once
 
 #include "src/Common/Common.h"
-#include "src/Function/Renderer/Texture.h"
-#include "src/Function/Renderer/Material.h"
-#include "src/Function/Renderer/RenderItem.h"
+#include "src/Function/Renderer/Abstract/Texture.h"
+#include "src/Function/Renderer/Abstract/Material.h"
+#include "src/Function/Renderer/Abstract/RenderItem.h"
 
 namespace Xunlan
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/Function/World/ECS/ECS.h"
+#include "src/Function/World/Entity.h"
 
 namespace Xunlan
 {
@@ -8,18 +8,19 @@ namespace Xunlan
 	{
 	public:
 
-		ScriptableEntity() = default;
+		explicit ScriptableEntity(const Ref<Entity>& entity) : m_entity(entity) {}
+		DISABLE_COPY(ScriptableEntity)
+		DISABLE_MOVE(ScriptableEntity)
 		virtual ~ScriptableEntity() = default;
 
-		template<typename... Args>
-		inline std::tuple<Args&...> GetComponent() { return Singleton<ECS::ECSManager>::Instance().GetComponent<Args...>(m_entityID); }
+	public:
 
 		virtual void Initialize() = 0;
 		virtual void OnDestroy() = 0;
 		virtual void OnUpdate(float deltaTime) = 0;
 
-	private:
+	protected:
 
-		ECS::EntityID m_entityID;
+		Ref<Entity> m_entity;
 	};
 }

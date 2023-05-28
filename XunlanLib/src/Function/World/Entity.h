@@ -1,7 +1,7 @@
 #pragma once
 
 #include "src/Common/Common.h"
-#include "ECS/ECS.h"
+#include "ECS/World.h"
 #include "Component/Transformer.h"
 
 #include <string>
@@ -17,6 +17,8 @@ namespace Xunlan
     private:
 
         explicit Entity(const std::string& name, const TransformerInitDesc& transformerDesc);
+        DISABLE_COPY(Entity)
+        DISABLE_MOVE(Entity)
 
     public:
 
@@ -24,20 +26,19 @@ namespace Xunlan
 
     public:
 
+        ECS::EntityID GetID() const { return m_id; }
         const std::string& GetName() const { return m_name; }
         void SetName(const std::string& name) { m_name = name; }
-
         auto& GetChildren() { return m_children; }
 
         template<typename... Args>
-        void AddComponent(const Args&... components) { Singleton<ECS::ECSManager>::Instance().AddComponent(m_id, components...); }
+        void AddComponent(const Args&... components) { Singleton<ECS::World>::Instance().AddComponent(m_id, components...); }
         template<typename... Args>
-        void RemoveComponent() { Singleton<ECS::ECSManager>::Instance().RemoveComponent<Args...>(m_id); }
-
+        void RemoveComponent() { Singleton<ECS::World>::Instance().RemoveComponent<Args...>(m_id); }
         template<typename T>
-        bool HasComponent() { return Singleton<ECS::ECSManager>::Instance().HasComponent<T>(m_id); }
+        bool HasComponent() { return Singleton<ECS::World>::Instance().HasComponent<T>(m_id); }
         template<typename... Args>
-        std::tuple<Args&...> GetComponent() { return Singleton<ECS::ECSManager>::Instance().GetComponent<Args...>(m_id); }
+        std::tuple<Args&...> GetComponent() { return Singleton<ECS::World>::Instance().GetComponent<Args...>(m_id); }
 
     private:
 

@@ -4,7 +4,10 @@
 #include "Entity.h"
 #include "Component/Camera.h"
 #include "Component/Light.h"
-#include "src/Function/Renderer/CBuffer.h"
+#include "src/Function/Renderer/Abstract/CBuffer.h"
+
+#include <vector>
+#include <unordered_map>
 
 namespace Xunlan
 {
@@ -15,20 +18,28 @@ namespace Xunlan
     private:
 
         Scene() = default;
+        DISABLE_COPY(Scene)
+        DISABLE_MOVE(Scene)
+        ~Scene() = default;
 
     public:
 
         bool Initialize();
         void Shutdown();
+
         void LoadScene();
+        void OnScenePlay();
+        void OnSceneDestroy();
 
         WeakRef<Entity> CreateEntity(const std::string& name, const TransformerInitDesc& transformerDesc, const WeakRef<Entity>& refParent);
         void RemoveEntity(WeakRef<Entity>& refEntity);
 
         void RegisterMainCamera(const WeakRef<Entity>& refEntity);
+        void RegisterLight(const WeakRef<Entity>& refEntity);
 
         void UpdateCBufferPerScene();
 
+        WeakRef<Entity> GetEntity(ECS::EntityID entityID) const;
         WeakRef<Entity> GetRoot() const { return m_root; }
         Ref<CBuffer> GetCBufferPerScene() const { return m_cBufferPerScene; }
 
@@ -42,7 +53,7 @@ namespace Xunlan
     private:
 
         Ref<Entity> m_root;
-        std::unordered_set<Ref<Entity>> m_entities;
+        std::unordered_map<ECS::EntityID, Ref<Entity>> m_entities;
 
         WeakRef<Entity> m_mainCamera;
         std::vector<WeakRef<Entity>> m_cameras;

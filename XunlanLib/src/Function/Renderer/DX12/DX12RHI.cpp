@@ -13,13 +13,13 @@
 #include "DX12Material.h"
 #include "DX12RenderItem.h"
 #include "DX12RootParameter.h"
-#include "d3dx12.h"
+#include "Helper/d3dx12.h"
 
 using namespace Microsoft::WRL;
 
 namespace Xunlan::DX12
 {
-    DX12RHI::DX12RHI(Platform platform, const RHIInitDesc& initDesc) : RHI(platform, initDesc)
+    DX12RHI::DX12RHI(Platform platform) : RHI(platform)
     {
         EnableDebugLayer();
         CreateDevice();
@@ -28,9 +28,11 @@ namespace Xunlan::DX12
         m_mainCommand = std::make_unique<DX12Command>(GetDevice(), D3D12_COMMAND_LIST_TYPE_DIRECT);
         m_uploadContext = std::make_unique<UploadContext>(GetDevice());
 
-        const uint32 width = initDesc.windowSystem->GetWidth();
-        const uint32 height = initDesc.windowSystem->GetHeight();
-        const HWND hwnd = (HWND)initDesc.windowSystem->GetHandle();
+        WindowSystem& windowSystem = Singleton<WindowSystem>::Instance();
+
+        const uint32 width = windowSystem.GetWidth();
+        const uint32 height = windowSystem.GetHeight();
+        const HWND hwnd = (HWND)windowSystem.GetHandle();
 
         m_surface = std::make_unique<DX12Surface>(hwnd, width, height);
         m_surface->CreateSwapChain(m_factory.Get(), GetDevice(), m_mainCommand->GetCommandQueue(), GetRTVHeap());

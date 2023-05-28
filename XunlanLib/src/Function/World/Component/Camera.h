@@ -1,12 +1,13 @@
 #pragma once
 
 #include "src/Common/Common.h"
-#include "src/Function/World/ECS/ECS.h"
-#include "src/Utility/MathTypes.h"
+#include "Transformer.h"
+#include "src/Function/World/ECS/World.h"
+#include "src/Utility/Math/MathTypes.h"
 
 namespace Xunlan
 {
-    enum CameraType : uint32
+    enum class CameraType : uint32
     {
         PERSPECTIVE,
         ORTHOGRAPHIC,
@@ -32,7 +33,7 @@ namespace Xunlan
 
         CameraInitDesc(CameraType type) : m_type(type), m_up(0.0, 1.0f, 0.0f), m_nearZ(0.0001f), m_farZ(10000.0f)
         {
-            if (type == PERSPECTIVE)
+            if (type == CameraType::PERSPECTIVE)
             {
                 m_fov = 0.25f;
                 m_aspect = 1280.0f / 720.0f;
@@ -68,28 +69,32 @@ namespace Xunlan
         Math::float4x4 m_invProjection;
         Math::float4x4 m_viewProjection;
         Math::float4x4 m_invViewProjection;
-
-        bool m_changed;
     };
 
-    CameraComponent AddCamera(const CameraInitDesc& initDesc);
-
-    class CameraSystem : public ECS::ISystem
+    class CameraSystem
     {
     public:
 
-        void OnUpdate();
+        static CameraComponent AddCamera(const CameraInitDesc& initDesc);
 
-        void SetUp(ECS::EntityID entityID, const Math::float3& up);
-        void SetNearZ(ECS::EntityID entityID, float nearZ);
-        void SetFarZ(ECS::EntityID entityID, float farZ);
-        void SetFOV(ECS::EntityID entityID, float fov);
-        void SetAspect(ECS::EntityID entityID, float aspect);
-        void SetWidth(ECS::EntityID entityID, float width);
-        void SetHeight(ECS::EntityID entityID, float height);
+        static void Update();
+
+        static void SetUp(ECS::EntityID entityID, const Math::float3& up);
+        static void SetNearZ(ECS::EntityID entityID, float nearZ);
+        static void SetFarZ(ECS::EntityID entityID, float farZ);
+        static void SetFOV(ECS::EntityID entityID, float fov);
+        static void SetAspect(ECS::EntityID entityID, float aspect);
+        static void SetWidth(ECS::EntityID entityID, float width);
+        static void SetHeight(ECS::EntityID entityID, float height);
 
     private:
 
-        CameraComponent& GetCamera(ECS::EntityID entityID) { return std::get<0>(m_manager.GetComponent<CameraComponent>(entityID)); }
+        static void Update(const TransformerComponent& transformer, CameraComponent& camera);
+
+        static CameraComponent& GetCamera(ECS::EntityID entityID)
+        {
+            auto [camera] = Singleton<ECS::World>::Instance().GetComponent<CameraComponent>(entityID);
+            return camera;
+        }
     };
 }

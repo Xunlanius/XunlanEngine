@@ -7,30 +7,16 @@
 
 namespace Xunlan::ECS
 {
-    class ECSManager;
-
-    class ISystem
-    {
-        friend class SystemManager;
-
-    protected:
-
-        // Entities with the needed components
-        std::unordered_set<EntityID> m_entityIDs;
-
-        ECSManager& m_manager = Singleton<ECSManager>::Instance();
-    };
-
     class SystemManager final
     {
     public:
 
-        template<typename T>
-        void RegisterSystem(const std::unordered_set<EntityID>& entityIDs, const std::initializer_list<ComponentID>& comIDs);
+        template<typename SystemType, typename... Args>
+        void RegisterSystem(const std::unordered_set<EntityID>& entityIDs, Args... comIDs);
 
         /// <returns> T* if T is registered, nullptr if T is not registered </returns>
         template<typename T>
-        T& GetSystem();
+        std::unordered_set<EntityID>& GetView();
 
         void OnEntityChanged(EntityID entityID);
         void OnEntityRemoved(EntityID entityID);
@@ -39,34 +25,25 @@ namespace Xunlan::ECS
 
         struct SystemInfo final
         {
-            ISystem* system = nullptr;
+            std::unordered_set<EntityID> m_entityIDs;
             Signature signature;
         };
 
-        std::unordered_map<size_t, SystemInfo> m_systems;
+        std::unordered_map<SystemID, SystemInfo> m_systems;
     };
 
-    template<typename T>
-    inline void SystemManager::RegisterSystem(const std::unordered_set<EntityID>& entityIDs, const std::initializer_list<ComponentID>& comIDs)
+    template<typename SystemType, typename... Args>
+    inline void SystemManager::RegisterSystem(const std::unordered_set<EntityID>& entityIDs, Args... comIDs)
     {
-        static_assert(std::is_base_of_v<ISystem, T>, "System type should be inherited from ISystem.");
+        assert(!IDGetter<System>::IsRegistered<SystemType>());
+        const SystemID systemID = IDGetter<System>::GetID<SystemType>();
 
-        static T system;
-        const size_t hashCode = typeid(T).hash_code();
+        auto [it, succeed] = m_systems.emplace(systemID, SystemInfo());
+        assert(succeed);
+        SystemInfo& systemInfo = it->second;
+        Signature& signature = systemInfo.signature;
 
-        SystemInfo info = {};
-        info.system = &system;
-        info.signature = Signature();
-
-        m_systems[hashCode] = info;
-
-        for (const ComponentID comID : comIDs)
-        {
-            const size_t hashCode = typeid(T).hash_code();
-
-            Signature& signature = m_systems[hashCode].signature;
-            signature.set(comID);
-        }
+        (signature.set(comIDs), ...);
 
         // Update entites to the system
         for (const EntityID entityID : entityIDs)
@@ -76,36 +53,35 @@ namespace Xunlan::ECS
     }
 
     template<typename T>
-    inline T& SystemManager::GetSystem()
+    inline std::unordered_set<EntityID>& SystemManager::GetView()
     {
-        auto it = m_systems.find(typeid(T).hash_code());
-        assert(it != m_systems.end() && "Non-registered system.");
-        return *(T*)it->second.system;
+        assert(IDGetter<System>::IsRegistered<T>() && "Non-registered system.");
+        const SystemID systemID = IDGetter<System>::GetID<T>();
+
+        auto it = m_systems.find(systemID);
+        assert(it != m_systems.end());
+        return it->second.m_entityIDs;
     }
 
     inline void SystemManager::OnEntityChanged(EntityID entityID)
     {
         EntityManager& entityManager = Singleton<EntityManager>::Instance();
 
-        for (const auto& [hashCode, info] : m_systems)
+        for (auto& [systemID, info] : m_systems)
         {
-            ISystem* system = info.system;
+            std::unordered_set<EntityID>& entityIDs = info.m_entityIDs;
             Signature systemSignature = info.signature;
-            assert(system);
 
-            if (entityManager.BelongToSystem(entityID, systemSignature)) system->m_entityIDs.insert(entityID);
-            else system->m_entityIDs.erase(entityID);
+            if (entityManager.BelongToSystem(entityID, systemSignature)) entityIDs.insert(entityID);
+            else entityIDs.erase(entityID);
         }
     }
 
     inline void SystemManager::OnEntityRemoved(EntityID entityID)
     {
-        for (const auto& [hashCode, info] : m_systems)
+        for (auto& [systemID, info] : m_systems)
         {
-            ISystem* system = info.system;
-            assert(system);
-
-            system->m_entityIDs.erase(entityID);
+            info.m_entityIDs.erase(entityID);
         }
     }
 }

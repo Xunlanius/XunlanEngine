@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX12Common.h"
-#include "src/Function/Renderer/Material.h"
+#include "src/Function/Renderer/Abstract/Material.h"
 #include "DX12Shader.h"
 #include "DX12RasterizerState.h"
 #include "DX12DepthStencilState.h"

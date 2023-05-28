@@ -1,5 +1,5 @@
 #include "PostProcessPass.h"
-#include "src/Function/Renderer/RHI.h"
+#include "src/Function/Renderer/Abstract/RHI.h"
 #include "src/Function/Resource/ConfigSystem.h"
 #include "src/Function/Resource/ResourceType/MeshData.h"
 

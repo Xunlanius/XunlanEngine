@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX12Common.h"
-#include "src/Function/Renderer/DepthStencilState.h"
+#include "src/Function/Renderer/Abstract/DepthStencilState.h"
 
 namespace Xunlan::DX12
 {

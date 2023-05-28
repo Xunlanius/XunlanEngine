@@ -19,10 +19,6 @@ namespace Xunlan::ECS
 
         template<ComponentConcept T>
         void RegisterComponent();
-        template<ComponentConcept T>
-        ComponentID GetComponentID();
-        template<ComponentConcept T>
-        bool IsRegistered();
 
         template<ComponentConcept... Args>
         std::tuple<Args&...> GetComponent(EntityID entity);
@@ -40,29 +36,16 @@ namespace Xunlan::ECS
 
     private:
 
-        ComponentID m_currID = 0;
         std::unordered_set<IComponentContainer*> m_containers;
     };
 
     template<ComponentConcept T>
     inline void ComponentManager::RegisterComponent()
     {
-        GetComponentID<T>();
+        IDGetter<Component>::GetID<T>();
         ComponentContainer<T>& container = GetComponentContainer<T>();
         container.OnEntityRemovedFunc = [&container](EntityID entity) { container.OnEntityRemoved(entity); };
         m_containers.insert(&container);
-    }
-    template<ComponentConcept T>
-    inline ComponentID ComponentManager::GetComponentID()
-    {
-        static const ComponentID comID = m_currID++;
-        return comID;
-    }
-    template<ComponentConcept T>
-    inline bool ComponentManager::IsRegistered()
-    {
-        const ComponentID currComID = m_currID;
-        return GetComponentID<T>() < currComID;
     }
 
     template<ComponentConcept... Args>
@@ -74,7 +57,10 @@ namespace Xunlan::ECS
     template<ComponentConcept T, ComponentConcept... Args>
     inline void ComponentManager::AddComponent(EntityID entity, const T& component, const Args&... args)
     {
-        if (IsRegistered<T>()) RegisterComponent<T>();
+        if (!IDGetter<Component>::IsRegistered<T>())
+        {
+            RegisterComponent<T>();
+        }
         GetComponentContainer<T>().Emplace(entity, component);
 
         if constexpr (sizeof...(Args) > 0) AddComponent(entity, args...);

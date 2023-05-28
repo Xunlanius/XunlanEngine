@@ -3,21 +3,18 @@
 #include "src/Function/World/Component/Transformer.h"
 #include "src/Function/World/Component/Camera.h"
 #include "src/Function/World/Scene.h"
-#include "src/Function/Core/RuntimeContext.h"
 
 namespace Xunlan
 {
-    bool RenderSystem::Initialize(Platform platform, const RenderSystemInitDesc& initDesc)
+    bool RenderSystem::Initialize(Platform platform)
     {
-        m_windowSystem = initDesc.windowSystem;
-
-        RHIInitDesc rhiInitDesc = {};
-        rhiInitDesc.windowSystem = m_windowSystem;
+        WindowSystem& windowSystem = Singleton<WindowSystem>::Instance();
 
         // Initialize RHI
-        RHI::Create(platform, rhiInitDesc);
+        RHI::Create(platform);
 
-        Singleton<RenderPipeline>::Instance().Initialize(m_windowSystem->GetWidth(), m_windowSystem->GetHeight());
+        RenderPipeline& renderPipeline = Singleton<RenderPipeline>::Instance();
+        renderPipeline.Initialize(windowSystem.GetWidth(), windowSystem.GetHeight());
 
         return true;
     }

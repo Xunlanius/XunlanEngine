@@ -1,5 +1,5 @@
 #include "WindowSystem.h"
-#include "src/Function/Core/RuntimeContext.h"
+#include "src/Function/Input/Win32/Win32Input.h"
 #include <cassert>
 #include <string>
 
@@ -108,6 +108,8 @@ namespace Xunlan
             }
             default: break;
         }
+
+        ProcessInputMessage(hwnd, msg, wParam, lParam);
 
         return ::DefWindowProc(hwnd, msg, wParam, lParam);
     }

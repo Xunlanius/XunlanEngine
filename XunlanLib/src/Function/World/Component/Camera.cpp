@@ -1,42 +1,8 @@
 #include "Camera.h"
-#include "Transformer.h"
 
 namespace Xunlan
 {
-    namespace
-    {
-        void Update(const TransformerComponent& transformer, CameraComponent& camera)
-        {
-            using namespace DirectX;
-
-            const Math::float3 direction = GetDirection(transformer);
-
-            const XMVECTOR pos = XMLoadFloat3(&transformer.m_position);
-            const XMVECTOR dir = XMLoadFloat3(&direction);
-            const XMVECTOR up = XMLoadFloat3(&camera.m_up);
-
-            const XMMATRIX view = XMMatrixLookToLH(pos, dir, up);
-            XMStoreFloat4x4(&camera.m_view, view);
-
-            if (!camera.m_changed) return;
-
-            const XMMATRIX proj = (camera.m_type == PERSPECTIVE) ?
-                XMMatrixPerspectiveFovLH(camera.m_fov * XM_PI, camera.m_aspect, camera.m_nearZ, camera.m_farZ) :
-                XMMatrixOrthographicLH(camera.m_width, camera.m_height, camera.m_nearZ, camera.m_farZ);
-            const XMMATRIX invProj = XMMatrixInverse(nullptr, proj);
-            const XMMATRIX viewProj = view * proj;
-            const XMMATRIX invViewProj = XMMatrixInverse(nullptr, viewProj);
-
-            XMStoreFloat4x4(&camera.m_projection, proj);
-            XMStoreFloat4x4(&camera.m_invProjection, invProj);
-            XMStoreFloat4x4(&camera.m_viewProjection, viewProj);
-            XMStoreFloat4x4(&camera.m_invViewProjection, invViewProj);
-
-            camera.m_changed = false;
-        }
-    }
-
-    CameraComponent AddCamera(const CameraInitDesc& initDesc)
+    CameraComponent CameraSystem::AddCamera(const CameraInitDesc& initDesc)
     {
         CameraComponent camera = {};
         camera.m_type = initDesc.m_type;
@@ -44,29 +10,29 @@ namespace Xunlan
         camera.m_nearZ = initDesc.m_nearZ;
         camera.m_farZ = initDesc.m_farZ;
 
-        if (camera.m_type == PERSPECTIVE)
+        if (camera.m_type == CameraType::PERSPECTIVE)
         {
             camera.m_fov = initDesc.m_fov;
             camera.m_aspect = initDesc.m_aspect;
         }
-        else if (camera.m_type == ORTHOGRAPHIC)
+        else if (camera.m_type == CameraType::ORTHOGRAPHIC)
         {
             camera.m_width = initDesc.m_width;
             camera.m_height = initDesc.m_height;
         }
         else assert(false && "Unknown camera type.");
 
-        // Set the flag to true to compute the matrix
-        camera.m_changed = true;
-
         return camera;
     }
 
-    void CameraSystem::OnUpdate()
+    void CameraSystem::Update()
     {
-        for (const ECS::EntityID entityID : m_entityIDs)
+        ECS::World& world = Singleton<ECS::World>::Instance();
+        const auto& entityIDs = world.GetView<CameraSystem>();
+
+        for (const ECS::EntityID entityID : entityIDs)
         {
-            auto [transformer, camera] = m_manager.GetComponent<TransformerComponent, CameraComponent>(entityID);
+            auto [transformer, camera] = world.GetComponent<TransformerComponent, CameraComponent>(entityID);
             Update(transformer, camera);
         }
     }
@@ -80,40 +46,59 @@ namespace Xunlan
     {
         CameraComponent& camera = GetCamera(entityID);
         camera.m_nearZ = nearZ;
-        camera.m_changed = true;
     }
     void CameraSystem::SetFarZ(ECS::EntityID entityID, float farZ)
     {
         CameraComponent& camera = GetCamera(entityID);
         camera.m_farZ = farZ;
-        camera.m_changed = true;
     }
     void CameraSystem::SetFOV(ECS::EntityID entityID, float fov)
     {
         CameraComponent& camera = GetCamera(entityID);
-        assert(camera.m_type == PERSPECTIVE);
+        assert(camera.m_type == CameraType::PERSPECTIVE);
         camera.m_fov = fov;
-        camera.m_changed = true;
     }
     void CameraSystem::SetAspect(ECS::EntityID entityID, float aspect)
     {
         CameraComponent& camera = GetCamera(entityID);
-        assert(camera.m_type == PERSPECTIVE);
+        assert(camera.m_type == CameraType::PERSPECTIVE);
         camera.m_aspect = aspect;
-        camera.m_changed = true;
     }
     void CameraSystem::SetWidth(ECS::EntityID entityID, float width)
     {
         CameraComponent& camera = GetCamera(entityID);
-        assert(camera.m_type == ORTHOGRAPHIC);
+        assert(camera.m_type == CameraType::ORTHOGRAPHIC);
         camera.m_width = width;
-        camera.m_changed = true;
     }
     void CameraSystem::SetHeight(ECS::EntityID entityID, float height)
     {
         CameraComponent& camera = GetCamera(entityID);
-        assert(camera.m_type == ORTHOGRAPHIC);
+        assert(camera.m_type == CameraType::ORTHOGRAPHIC);
         camera.m_height = height;
-        camera.m_changed = true;
+    }
+
+    void CameraSystem::Update(const TransformerComponent& transformer, CameraComponent& camera)
+    {
+        using namespace DirectX;
+
+        const Math::float3 direction = TransformerSystem::GetForward(transformer);
+
+        const XMVECTOR pos = XMLoadFloat3(&transformer.m_position);
+        const XMVECTOR dir = XMLoadFloat3(&direction);
+        const XMVECTOR up = XMLoadFloat3(&camera.m_up);
+
+        const XMMATRIX view = XMMatrixLookToLH(pos, dir, up);
+        const XMMATRIX proj = (camera.m_type == CameraType::PERSPECTIVE) ?
+            XMMatrixPerspectiveFovLH(camera.m_fov * XM_PI, camera.m_aspect, camera.m_nearZ, camera.m_farZ) :
+            XMMatrixOrthographicLH(camera.m_width, camera.m_height, camera.m_nearZ, camera.m_farZ);
+        const XMMATRIX invProj = XMMatrixInverse(nullptr, proj);
+        const XMMATRIX viewProj = view * proj;
+        const XMMATRIX invViewProj = XMMatrixInverse(nullptr, viewProj);
+
+        XMStoreFloat4x4(&camera.m_view, view);
+        XMStoreFloat4x4(&camera.m_projection, proj);
+        XMStoreFloat4x4(&camera.m_invProjection, invProj);
+        XMStoreFloat4x4(&camera.m_viewProjection, viewProj);
+        XMStoreFloat4x4(&camera.m_invViewProjection, invViewProj);
     }
 }

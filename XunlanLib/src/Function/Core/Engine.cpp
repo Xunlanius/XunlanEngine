@@ -1,5 +1,6 @@
 #include "Engine.h"
-#include "RuntimeContext.h"
+#include "src/Tool/Geometry/GeometrySystem.h"
+#include "src/Function/World/Scene.h"
 #include "src/Function/Renderer/WindowSystem.h"
 #include "src/Function/Renderer/RendererSystem.h"
 #include "src/Function/World/Component/Component.h"
@@ -9,23 +10,48 @@ namespace Xunlan
 {
     bool EngineSystem::Initialize()
     {
-        if (!g_runtimeContext.Start()) return false;
+        RegisterECS();
+
+        GeometryImportSystem& geometryImportSystem = Singleton<GeometryImportSystem>::Instance();
+        if (!geometryImportSystem.Initialize()) return false;
+
+        WindowInitDesc windowInitDesc = {};
+        windowInitDesc.caption = L"Xunlan Game";
+        windowInitDesc.isCenter = true;
+
+        WindowSystem& windowSystem = Singleton<WindowSystem>::Instance();
+        if (!windowSystem.Initialize(windowInitDesc)) return false;
+
+        RenderSystem& renderSystem = Singleton<RenderSystem>::Instance();
+        if (!renderSystem.Initialize(Platform::DX12)) return false;
+
+        Scene& scene = Singleton<Scene>::Instance();
+        scene.Initialize();
+        scene.LoadScene();
+        scene.OnScenePlay();
+
         m_running = true;
+
         return true;
     }
-    void EngineSystem::OnTick()
+    void EngineSystem::Shutdown()
+    {
+        Scene& scene = Singleton<Scene>::Instance();
+        RenderSystem& renderSystem = Singleton<RenderSystem>::Instance();
+
+        scene.OnSceneDestroy();
+        scene.Shutdown();
+        renderSystem.Shutdown();
+    }
+    void EngineSystem::Tick()
     {
         //m_timer.Begin();
 
         std::this_thread::sleep_for(std::chrono::microseconds(10));
-        OnTickLogical(10.0f);
-        OnTickRender(10.0f);
+        TickLogical(10.0f);
+        TickRender(10.0f);
 
         //m_timer.End();
-    }
-    void EngineSystem::Shutdown()
-    {
-        g_runtimeContext.Shutdown();
     }
     bool EngineSystem::IsRunning()
     {
@@ -42,18 +68,14 @@ namespace Xunlan
         return true;
     }
 
-    void EngineSystem::OnTickLogical(float deltaTime)
+    void EngineSystem::TickLogical(float deltaTime)
     {
-        ECS::ECSManager& instance = Singleton<ECS::ECSManager>::Instance();
-
-        CameraSystem& cameraSystem = instance.GetSystem<CameraSystem>();
-        ScriptSystem& scriptSystem = instance.GetSystem<ScriptSystem>();
-
-        cameraSystem.OnUpdate();
-        scriptSystem.OnUpdate(10.0f);
+        CameraSystem::Update();
+        ScriptSystem::Update(10.0f);
+        MeshRenderSystem::Update();
     }
-    void EngineSystem::OnTickRender(float deltaTime)
+    void EngineSystem::TickRender(float deltaTime)
     {
-        g_runtimeContext.m_renderSystem->Render(deltaTime);
+        Singleton<RenderSystem>::Instance().Render(deltaTime);
     }
 }

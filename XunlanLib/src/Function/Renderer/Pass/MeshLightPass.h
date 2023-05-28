@@ -3,9 +3,9 @@
 #include "src/Common/Common.h"
 #include "RenderPassBase.h"
 #include "src/Function/World/Entity.h"
-#include "src/Function/Renderer/Texture.h"
-#include "src/Function/Renderer/RasterizerState.h"
-#include "src/Function/Renderer/RenderItem.h"
+#include "src/Function/Renderer/Abstract/Texture.h"
+#include "src/Function/Renderer/Abstract/RasterizerState.h"
+#include "src/Function/Renderer/Abstract/RenderItem.h"
 
 namespace Xunlan
 {
