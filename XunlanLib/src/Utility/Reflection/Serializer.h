@@ -19,7 +19,7 @@ namespace Xunlan::Reflection
         template<typename T>
         BinaryStream& operator>>(T& value) { Output(value); return *this; }
 
-        void Save(const std::filesystem::path& filePath);
+        void Save(const std::filesystem::path& filePath) const;
         void Load(const std::filesystem::path& filePath);
 
     private:
@@ -43,7 +43,7 @@ namespace Xunlan::Reflection
         size_t m_pos = 0;
     };
 
-    inline void BinaryStream::Save(const std::filesystem::path& filePath)
+    inline void BinaryStream::Save(const std::filesystem::path& filePath) const
     {
         std::ofstream stream(filePath, std::ios::out | std::ios::binary);
         stream.write((char*)m_buffer.data(), m_buffer.size());
