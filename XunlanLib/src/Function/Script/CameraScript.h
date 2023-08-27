@@ -50,7 +50,7 @@ namespace Xunlan
 
         void OnMouseMove(InputDevice device, InputCode code, const InputValue& mousePos)
         {
-            if (code == InputCode::MOUSE_POS)
+            if (device == InputDevice::MOUSE && code == InputCode::MOUSE_POS)
             {
                 const InputValue mouseRight = Singleton<InputSystem>::Instance().Get(InputDevice::MOUSE, InputCode::MOUSE_RIGHT);
                 if (mouseRight.m_curr.x == 0.0f) return;
