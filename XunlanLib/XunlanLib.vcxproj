@@ -93,7 +93,7 @@
     <ClInclude Include="src\Common\ID.h" />
     <ClInclude Include="src\Function\World\Component\Transformer.h" />
     <ClInclude Include="src\Function\Renderer\WindowSystem.h" />
-    <ClInclude Include="src\Function\Renderer\DX12\DX12Resource.h" />
+    <ClInclude Include="src\Function\Renderer\DX12\DX12DescriptorHeap.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12Upload.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\RHI.h" />
     <ClInclude Include="src\Function\Renderer\RendererSystem.h" />
@@ -148,7 +148,7 @@
     <ClCompile Include="src\Function\Renderer\DX12\DX12Command.cpp" />
     <ClCompile Include="src\Function\Core\Engine.cpp" />
     <ClCompile Include="src\Function\Renderer\WindowSystem.cpp" />
-    <ClCompile Include="src\Function\Renderer\DX12\DX12Resource.cpp" />
+    <ClCompile Include="src\Function\Renderer\DX12\DX12DescriptorHeap.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Upload.cpp" />
     <ClCompile Include="src\Function\Renderer\RendererSystem.cpp" />
     <ClCompile Include="src\Function\World\Entity.cpp" />

@@ -13,7 +13,7 @@
     <ClInclude Include="src\Function\Renderer\DX12\DX12RHI.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12Common.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12Command.h" />
-    <ClInclude Include="src\Function\Renderer\DX12\DX12Resource.h" />
+    <ClInclude Include="src\Function\Renderer\DX12\DX12DescriptorHeap.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12Surface.h" />
     <ClInclude Include="src\Utility\Pool.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12Helper.h" />
@@ -95,7 +95,7 @@
     <ClCompile Include="src\Function\Renderer\WindowSystem.cpp" />
     <ClCompile Include="src\Function\Renderer\RendererSystem.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Command.cpp" />
-    <ClCompile Include="src\Function\Renderer\DX12\DX12Resource.cpp" />
+    <ClCompile Include="src\Function\Renderer\DX12\DX12DescriptorHeap.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Surface.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Helper.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Upload.cpp" />

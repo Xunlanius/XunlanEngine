@@ -2,7 +2,7 @@
 
 #include "src/Function/Renderer/RenderCommon.h"
 #include "DX12Common.h"
-#include "DX12Resource.h"
+#include "DX12DescriptorHeap.h"
 #include <memory>
 
 namespace Xunlan::DX12

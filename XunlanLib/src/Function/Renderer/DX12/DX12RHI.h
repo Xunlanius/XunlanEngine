@@ -4,7 +4,7 @@
 #include "src/Function/Renderer/Abstract/RHI.h"
 #include "DX12Surface.h"
 #include "DX12Command.h"
-#include "DX12Resource.h"
+#include "DX12DescriptorHeap.h"
 #include "DX12GPUVisibleDescriptorHeap.h"
 #include "DX12Upload.h"
 #include "DX12Helper.h"

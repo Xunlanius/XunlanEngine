@@ -1,4 +1,4 @@
-#include "DX12Resource.h"
+#include "DX12DescriptorHeap.h"
 #include "DX12RHI.h"
 
 namespace Xunlan::DX12

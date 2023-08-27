@@ -13,6 +13,6 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <wrl.h>
-#include <atlsafe.h>
+//#include <atlsafe.h>
 
 #endif

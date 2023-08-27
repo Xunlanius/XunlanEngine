@@ -2,7 +2,7 @@
 
 #include "DX12Common.h"
 #include "src/Function/Renderer/Abstract/Texture.h"
-#include "DX12Resource.h"
+#include "DX12DescriptorHeap.h"
 
 namespace Xunlan::DX12
 {
