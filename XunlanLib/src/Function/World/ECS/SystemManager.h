@@ -26,7 +26,7 @@ namespace Xunlan::ECS
         struct SystemInfo final
         {
             std::unordered_set<EntityID> m_entityIDs;
-            Signature signature;
+            Signature m_signature;
         };
 
         std::unordered_map<SystemID, SystemInfo> m_systems;
@@ -41,7 +41,7 @@ namespace Xunlan::ECS
         auto [it, succeed] = m_systems.emplace(systemID, SystemInfo());
         assert(succeed);
         SystemInfo& systemInfo = it->second;
-        Signature& signature = systemInfo.signature;
+        Signature& signature = systemInfo.m_signature;
 
         (signature.set(comIDs), ...);
 
@@ -70,7 +70,7 @@ namespace Xunlan::ECS
         for (auto& [systemID, info] : m_systems)
         {
             std::unordered_set<EntityID>& entityIDs = info.m_entityIDs;
-            Signature systemSignature = info.signature;
+            Signature systemSignature = info.m_signature;
 
             if (entityManager.BelongToSystem(entityID, systemSignature)) entityIDs.insert(entityID);
             else entityIDs.erase(entityID);
