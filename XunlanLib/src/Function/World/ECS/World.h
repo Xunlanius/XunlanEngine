@@ -85,7 +85,7 @@ namespace Xunlan::ECS
     template<ComponentConcept... Args>
     void World::AddComponent(EntityID entityID, const Args&... components)
     {
-        assert((!HasComponent<Args>(entityID)) && ...);
+        assert(!HasComponent<Args>(entityID) && ...);
 
         m_entityManager.AddComponent(entityID, IDGetter<Component>::GetID<Args>()...);
         m_componentManager.AddComponent(entityID, components...);
