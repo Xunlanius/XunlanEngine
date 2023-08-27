@@ -70,22 +70,22 @@ namespace Xunlan::DX12
         DX12RHI& rhi = DX12RHI::Instance();
         Device& device = rhi.GetDevice();
 
+        m_currRTFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+
         const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
         Check(device.CreateCommittedResource(
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
             D3D12_HEAP_FLAG_NONE,
             &CD3DX12_RESOURCE_DESC::Tex2D(
-                DXGI_FORMAT_R32G32B32A32_FLOAT,
-                width,
-                height,
-                1,
-                0,
+                m_currRTFormat,
+                width, height,
+                1, 0,
                 1, 0,
                 D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
             ),
             RT_INIT_STATE,
-            &CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R32G32B32A32_FLOAT, clearColor),
+            &CD3DX12_CLEAR_VALUE(m_currRTFormat, clearColor),
             IID_PPV_ARGS(&m_rtTexture)
         ));
 
@@ -94,51 +94,47 @@ namespace Xunlan::DX12
 
         device.CreateRenderTargetView(m_rtTexture.Get(), nullptr, m_rtv.handleCPU);
         device.CreateShaderResourceView(m_rtTexture.Get(), nullptr, m_rtSRV.handleCPU);
-
-        m_currRTFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
     }
     void DX12RenderTarget::CreateDepthStencil(uint32 width, uint32 height)
     {
         DX12RHI& rhi = DX12RHI::Instance();
         Device& device = rhi.GetDevice();
 
+        m_currDSFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
         Check(device.CreateCommittedResource(
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
             D3D12_HEAP_FLAG_NONE,
             &CD3DX12_RESOURCE_DESC::Tex2D(
-                DXGI_FORMAT_D24_UNORM_S8_UINT,
-                width,
-                height,
-                1,
-                0,
+                m_currDSFormat,
+                width, height,
+                1, 0,
                 1, 0,
                 D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
             ),
             DS_INIT_STATE,
-            &CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D24_UNORM_S8_UINT, 1.0f, 0),
+            &CD3DX12_CLEAR_VALUE(m_currDSFormat, 1.0f, 0),
             IID_PPV_ARGS(&m_dsTexture)
         ));
 
         m_dsv = rhi.GetDSVHeap().Allocate();
 
         device.CreateDepthStencilView(m_dsTexture.Get(), nullptr, m_dsv.handleCPU);
-
-        m_currDSFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
     }
     void DX12RenderTarget::CreateDepth(uint32 width, uint32 height)
     {
         DX12RHI& rhi = DX12RHI::Instance();
         Device& device = rhi.GetDevice();
 
+        m_currDSFormat = DXGI_FORMAT_D32_FLOAT;
+
         Check(device.CreateCommittedResource(
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
             D3D12_HEAP_FLAG_NONE,
             &CD3DX12_RESOURCE_DESC::Tex2D(
                 DXGI_FORMAT_R32_TYPELESS,
-                width,
-                height,
-                1,
-                0,
+                width, height,
+                1, 0,
                 1, 0,
                 D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
             ),
@@ -165,8 +161,6 @@ namespace Xunlan::DX12
 
         device.CreateDepthStencilView(m_dsTexture.Get(), &dsvDesc, m_dsv.handleCPU);
         device.CreateShaderResourceView(m_dsTexture.Get(), &srvDesc, m_dsSRV.handleCPU);
-
-        m_currDSFormat = DXGI_FORMAT_D32_FLOAT;
     }
 
     void DX12RenderTarget::ClearRenderTarget()
