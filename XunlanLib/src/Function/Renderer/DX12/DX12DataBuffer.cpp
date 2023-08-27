@@ -1,4 +1,4 @@
-#include "DX12RenderBuffer.h"
+#include "DX12DataBuffer.h"
 #include "DX12RHI.h"
 #include "DX12Upload.h"
 #include "Helper/d3dx12.h"
@@ -7,7 +7,7 @@ using namespace Microsoft::WRL;
 
 namespace Xunlan::DX12
 {
-    Ref<DX12RenderBuffer> DX12RenderBuffer::Create(const RawData& rawData)
+    Ref<DX12DataBuffer> DX12DataBuffer::Create(const RawData& rawData)
     {
         DX12RHI& rhi = (DX12RHI&)RHI::Instance();
         Device& device = rhi.GetDevice();
@@ -30,6 +30,6 @@ namespace Xunlan::DX12
 
         uploadContext.Upload(buffer.Get(), rawData.m_buffer.get(), bufferSize);
 
-        return MakeRef<DX12RenderBuffer>(0, numElements, stride, buffer);
+        return MakeRef<DX12DataBuffer>(0, numElements, stride, buffer);
     }
 }

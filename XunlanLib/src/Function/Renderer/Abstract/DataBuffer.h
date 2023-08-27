@@ -11,15 +11,15 @@ namespace Xunlan
         uint32 m_stride;
     };
 
-    class RenderBuffer
+    class DataBuffer
     {
     protected:
 
-        explicit RenderBuffer(uint32 offset, uint32 numElements, uint32 stride)
+        explicit DataBuffer(uint32 offset, uint32 numElements, uint32 stride)
             : m_offset(offset), m_numElements(numElements), m_stride(stride) {}
-        DISABLE_COPY(RenderBuffer)
-        DISABLE_MOVE(RenderBuffer)
-        virtual ~RenderBuffer() = default;
+        DISABLE_COPY(DataBuffer)
+        DISABLE_MOVE(DataBuffer)
+        virtual ~DataBuffer() = default;
 
     public:
 

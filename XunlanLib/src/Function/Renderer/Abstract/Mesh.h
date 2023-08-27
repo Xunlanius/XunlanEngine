@@ -1,7 +1,7 @@
 #pragma once
 
 #include "src/Common/Common.h"
-#include "RenderBuffer.h"
+#include "DataBuffer.h"
 #include <vector>
 
 namespace Xunlan
@@ -33,7 +33,7 @@ namespace Xunlan
     {
     protected:
 
-        explicit Submesh(const Ref<RenderBuffer>& verticesView, const Ref<RenderBuffer>& indicesView, PrimitiveType primitiveType, uint32 materialIndex)
+        explicit Submesh(const Ref<DataBuffer>& verticesView, const Ref<DataBuffer>& indicesView, PrimitiveType primitiveType, uint32 materialIndex)
             : m_verticesView(verticesView), m_indicesView(indicesView), m_primitiveType(primitiveType), m_materialIndex(materialIndex) {}
         DISABLE_COPY(Submesh)
         DISABLE_MOVE(Submesh)
@@ -43,13 +43,13 @@ namespace Xunlan
 
         uint32 GetMaterialIndex() const { return m_materialIndex; }
         void SetMaterialIndex(uint32 value) { m_materialIndex = value; }
-        Ref<RenderBuffer> GetVerticesView() const { return m_verticesView; }
-        Ref<RenderBuffer> GetIndicesView() const { return m_indicesView; }
+        Ref<DataBuffer> GetVerticesView() const { return m_verticesView; }
+        Ref<DataBuffer> GetIndicesView() const { return m_indicesView; }
 
     protected:
 
-        Ref<RenderBuffer> m_verticesView;
-        Ref<RenderBuffer> m_indicesView;
+        Ref<DataBuffer> m_verticesView;
+        Ref<DataBuffer> m_indicesView;
 
         PrimitiveType m_primitiveType;
         uint32 m_materialIndex = 0;

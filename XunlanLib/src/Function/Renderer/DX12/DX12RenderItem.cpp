@@ -1,7 +1,7 @@
 #include "DX12RenderItem.h"
 #include "DX12RenderContext.h"
 #include "DX12RootParameter.h"
-#include "DX12RenderBuffer.h"
+#include "DX12DataBuffer.h"
 #include "DX12RHI.h"
 
 namespace Xunlan::DX12
@@ -41,8 +41,8 @@ namespace Xunlan::DX12
 
             m_perObject->Bind(context);
 
-            Ref<DX12RenderBuffer> verticesView = std::dynamic_pointer_cast<DX12RenderBuffer>(submesh->GetVerticesView());
-            Ref<DX12RenderBuffer> indicesView = std::dynamic_pointer_cast<DX12RenderBuffer>(submesh->GetIndicesView());
+            Ref<DX12DataBuffer> verticesView = std::dynamic_pointer_cast<DX12DataBuffer>(submesh->GetVerticesView());
+            Ref<DX12DataBuffer> indicesView = std::dynamic_pointer_cast<DX12DataBuffer>(submesh->GetIndicesView());
 
             /*D3D12_VERTEX_BUFFER_VIEW dx12VerticesView = {};
             dx12VerticesView.BufferLocation = verticesView->GetGPUAddress();

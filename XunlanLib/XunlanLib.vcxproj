@@ -34,7 +34,7 @@
     <ClInclude Include="src\Function\Renderer\DX12\DX12ImageTexture.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12Material.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12RasterizerState.h" />
-    <ClInclude Include="src\Function\Renderer\DX12\DX12RenderBuffer.h" />
+    <ClInclude Include="src\Function\Renderer\DX12\DX12DataBuffer.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12CBuffer.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12Mesh.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12RenderContext.h" />
@@ -55,7 +55,7 @@
     <ClInclude Include="src\Function\Renderer\Abstract\Material.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\Mesh.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\Shader.h" />
-    <ClInclude Include="src\Function\Renderer\Abstract\RenderBuffer.h" />
+    <ClInclude Include="src\Function\Renderer\Abstract\DataBuffer.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\Texture.h" />
     <ClInclude Include="src\Function\Script\CameraScript.h" />
     <ClInclude Include="src\Function\World\Component\Camera.h" />
@@ -118,7 +118,7 @@
     <ClCompile Include="src\Function\Renderer\DX12\DX12ImageTexture.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Material.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12RasterizerState.cpp" />
-    <ClCompile Include="src\Function\Renderer\DX12\DX12RenderBuffer.cpp" />
+    <ClCompile Include="src\Function\Renderer\DX12\DX12DataBuffer.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12CBuffer.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Mesh.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12RenderItem.cpp" />

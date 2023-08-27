@@ -9,7 +9,7 @@ namespace Xunlan::DX12
     {
     public:
 
-        DX12Submesh(const Ref<RenderBuffer>& vertexBuffer, const Ref<RenderBuffer>& indexBuffer, PrimitiveType primitiveType, uint32 materialIndex)
+        DX12Submesh(const Ref<DataBuffer>& vertexBuffer, const Ref<DataBuffer>& indexBuffer, PrimitiveType primitiveType, uint32 materialIndex)
             : Submesh(vertexBuffer, indexBuffer, primitiveType, materialIndex) {}
 
     public:

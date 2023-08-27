@@ -1,12 +1,12 @@
 #include "DX12Mesh.h"
-#include "DX12RenderBuffer.h"
+#include "DX12DataBuffer.h"
 
 namespace Xunlan::DX12
 {
     Ref<DX12Submesh> DX12Submesh::Create(const CRef<SubmeshRawData>& submeshRawData)
     {
-        const Ref<RenderBuffer> vertexBuffer = DX12RenderBuffer::Create(submeshRawData->m_vertexBuffer);
-        const Ref<RenderBuffer> indexBuffer = DX12RenderBuffer::Create(submeshRawData->m_indexBuffer);
+        const Ref<DataBuffer> vertexBuffer = DX12DataBuffer::Create(submeshRawData->m_vertexBuffer);
+        const Ref<DataBuffer> indexBuffer = DX12DataBuffer::Create(submeshRawData->m_indexBuffer);
 
         return MakeRef<DX12Submesh>(vertexBuffer, indexBuffer, submeshRawData->primitiveType, submeshRawData->materialIndex);
     }
