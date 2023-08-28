@@ -37,13 +37,11 @@ struct CBufferPerObject
     float4x4 world;
     float4x4 invWorld;
 };
-ConstantBuffer<CBufferPerObject> g_perObject : register(b0);
 
 struct CBufferPerMaterial
 {
     
 };
-ConstantBuffer<CBufferPerMaterial> g_perMaterial : register(b1);
 
 struct CBufferPerFrame
 {
@@ -71,23 +69,31 @@ struct CBufferPerFrame
     float3 _3;
     SpotLight spotLights[MAX_NUM_SPOT_LIGHTS];
 };
+
+struct MeshTextures
+{
+    uint albedoIndex;
+    uint roughnessIndex;
+    uint metallicIndex;
+    uint normalIndex;
+};
+
+struct GBuffer
+{
+    uint positionIndex;
+    uint normalIndex;
+};
+
+struct ShadowMaps
+{
+    uint shadowMapIndices[MAX_NUM_DIRECTIONAL_LIGHTS];
+};
+
+ConstantBuffer<CBufferPerObject> g_perObject : register(b0);
+ConstantBuffer<CBufferPerMaterial> g_perMaterial : register(b1);
 ConstantBuffer<CBufferPerFrame> g_perFrame : register(b2);
-
-struct ShadowMapIndices
-{
-    uint ShadowMapIndices[MAX_NUM_DIRECTIONAL_LIGHTS];
-};
-ConstantBuffer<ShadowMapIndices> g_shadowMapIndices : register(b3);
-
-struct TextureIndices
-{
-    uint BaseColorIndex;
-    uint RoughnessIndex;
-    uint MetallicIndex;
-    uint NormalMapIndex;
-    uint HeightMapIndex;
-    uint AOMapIndex;
-};
-ConstantBuffer<TextureIndices> g_textureIndices : register(b4);
+ConstantBuffer<MeshTextures> g_meshTextures : register(b3);
+ConstantBuffer<GBuffer> g_GBuffer : register(b4);
+ConstantBuffer<ShadowMaps> g_shadowMaps : register(b5);
 
 #endif

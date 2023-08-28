@@ -2,17 +2,18 @@
 
 namespace Xunlan::DX12
 {
-    enum class DefaultRootParam : uint32
+    enum class RootParam : uint32
     {
-        PER_OBJECT,
-        PER_MATERIAL,
-        PER_FRAME,
+        PerObject,
+        PerMaterial,
+        PerFrame,
 
-        VERTEX_BUFFER,
+        VertexBuffer,
 
-        SHADOW_MAP_INDICES,
-        TEXTURE_INDICES,
+        MeshTextures,
+        GBuffer,
+        ShadowMaps,
 
-        COUNT,
+        Count,
     };
 }

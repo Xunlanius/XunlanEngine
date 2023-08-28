@@ -2,6 +2,7 @@
 
 #include "src/Common/Common.h"
 #include "ShadowPass.h"
+#include "GPass.h"
 #include "MeshLightPass.h"
 #include "PostProcessPass.h"
 
@@ -28,6 +29,7 @@ namespace Xunlan
     private:
 
         std::unique_ptr<ShadowPass> m_shadowPass;
+        std::unique_ptr<GPass> m_gPass;
         std::unique_ptr<MeshLightPass> m_meshLightPass;
         std::unique_ptr<PostProcessPass> m_postProcessPass;
     };

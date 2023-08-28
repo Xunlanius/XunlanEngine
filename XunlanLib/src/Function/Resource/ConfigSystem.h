@@ -17,7 +17,7 @@ namespace Xunlan
 
         const std::filesystem::path& GetRootFolder() const { return m_rootFolder; }
         const std::filesystem::path& GetModelFolder() const { return m_modelFolder; }
-        const std::filesystem::path& GetHLSLShaderFolder() const { return m_hlslShaderFolder; }
+        const std::filesystem::path& GetHLSLFolder() const { return m_hlslShaderFolder; }
         
     private:
 

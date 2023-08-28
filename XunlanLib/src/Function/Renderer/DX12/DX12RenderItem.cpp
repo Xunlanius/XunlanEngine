@@ -55,7 +55,7 @@ namespace Xunlan::DX12
             dx12IndicesView.Format = DXGI_FORMAT_R32_UINT;
 
             //cmdList->IASetVertexBuffers(0, 1, &dx12VerticesView);
-            cmdList->SetGraphicsRootShaderResourceView((uint32)DefaultRootParam::VERTEX_BUFFER, verticesView->GetGPUAddress());
+            cmdList->SetGraphicsRootShaderResourceView((uint32)RootParam::VertexBuffer, verticesView->GetGPUAddress());
             cmdList->IASetIndexBuffer(&dx12IndicesView);
             cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

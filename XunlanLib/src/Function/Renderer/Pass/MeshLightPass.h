@@ -17,20 +17,19 @@ namespace Xunlan
 
     public:
 
-        void Render(const Ref<RenderContext>& context);
+        void Render(Ref<RenderContext> context);
 
         Ref<RenderTarget> GetMainRT() const { return m_mainRT; }
 
     private:
 
-        void CollectRenderItems();
-        void CollectVisableEntity(const WeakRef<Entity>& refNode);
+        Ref<Material> CreateMaterial();
 
-    private:
+        uint32 m_width = 0;
+        uint32 m_height = 0;
 
         Ref<RenderTarget> m_mainRT;
-        Ref<RenderTarget> m_shadowMap;
-
-        std::vector<WeakRef<RenderItem>> m_renderItems;
+        Ref<RenderItem> m_canvas;
+        Ref<Material> m_lighting;
     };
 }

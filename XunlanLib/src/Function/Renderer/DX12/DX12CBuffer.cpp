@@ -33,7 +33,7 @@ namespace Xunlan::DX12
         m_buffer->Unmap(0, nullptr);
     }
 
-    void DX12CBuffer::Bind(const Ref<RenderContext>& context) const
+    void DX12CBuffer::Bind(Ref<RenderContext> context) const
     {
         Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
         GraphicsCommandList* cmdList = dx12Context->m_cmdList;
@@ -44,31 +44,36 @@ namespace Xunlan::DX12
 
         switch (m_type)
         {
-        case CBufferType::PER_OBJECT:
+        case CBufferType::PerObject:
         {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)DefaultRootParam::PER_OBJECT, gpuAddress);
-            break;
+            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::PerObject, gpuAddress);
         }
-        case CBufferType::PER_MATERIAL:
+        break;
+        case CBufferType::PerMaterial:
         {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)DefaultRootParam::PER_MATERIAL, gpuAddress);
-            break;
+            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::PerMaterial, gpuAddress);
         }
-        case CBufferType::PER_FRAME:
+        break;
+        case CBufferType::PerFrame:
         {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)DefaultRootParam::PER_FRAME, gpuAddress);
-            break;
+            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::PerFrame, gpuAddress);
         }
-        case CBufferType::SHADOW_MAP_INDICES:
+        break;
+        case CBufferType::MeshTextures:
         {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)DefaultRootParam::SHADOW_MAP_INDICES, gpuAddress);
-            break;
+            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::MeshTextures, gpuAddress);
         }
-        case CBufferType::TEXTURE_INDICES:
+        break;
+        case CBufferType::GBuffer:
         {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)DefaultRootParam::TEXTURE_INDICES, gpuAddress);
-            break;
+            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::GBuffer, gpuAddress);
         }
+        break;
+        case CBufferType::ShadowMaps:
+        {
+            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::ShadowMaps, gpuAddress);
+        }
+        break;
         default: assert(false);
         }
     }

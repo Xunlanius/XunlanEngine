@@ -1,10 +1,11 @@
 #include "DX12Material.h"
 #include "DX12RenderContext.h"
-#include "DX12ImageTexture.h"
-#include "DX12RenderTarget.h"
+#include "Texture/DX12ImageTexture.h"
+#include "Texture/DX12RenderTarget.h"
 #include "DX12RootParameter.h"
 #include "DX12RHI.h"
 #include "DX12Helper.h"
+#include <numeric>
 
 using namespace Microsoft::WRL;
 
@@ -16,8 +17,7 @@ namespace Xunlan::DX12
             lhs.m_PS == rhs.m_PS &&
             *lhs.m_rasterizerState == *rhs.m_rasterizerState &&
             *lhs.m_depthStencilState == *rhs.m_depthStencilState &&
-            lhs.numRTs == rhs.numRTs &&
-            lhs.m_rtFormat == rhs.m_rtFormat &&
+            lhs.m_rtFormats == rhs.m_rtFormats &&
             lhs.m_dsFormat == rhs.m_dsFormat;
     }
 
@@ -28,13 +28,12 @@ namespace Xunlan::DX12
         result += std::hash<CRef<DX12Shader>>()(key.m_PS);
         result += DX12RasterizerState::Hash()(*key.m_rasterizerState);
         result += DX12DepthStencilState::Hash()(*key.m_depthStencilState);
-        result += key.numRTs;
-        result += (size_t)key.m_rtFormat;
-        result += (size_t)key.m_dsFormat;
+        result += std::accumulate(key.m_rtFormats.begin(), key.m_rtFormats.end(), 0);
+        result += key.m_dsFormat;
         return result;
     }
 
-    void DX12Material::Apply(const Ref<RenderContext>& context) const
+    void DX12Material::Apply(Ref<RenderContext> context) const
     {
         Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
         GraphicsCommandList* cmdList = dx12Context->m_cmdList;
@@ -48,65 +47,45 @@ namespace Xunlan::DX12
         CollectTextureSRVs(context);
     }
 
-    void DX12Material::CollectTextureSRVs(const Ref<RenderContext>& context) const
+    void DX12Material::CollectTextureSRVs(Ref<RenderContext> context) const
     {
-        std::vector<uint32> textureIndices((size_t)TextureCategory::COUNT, UINT32_MAX);
+        std::vector<uint32> textureIndices((size_t)TextureCategory::Count, UINT32_MAX);
 
-        for (uint32 i = 0; i < (uint32)TextureCategory::COUNT; ++i)
+        for (uint32 i = 0; i < (uint32)TextureCategory::Count; ++i)
         {
-            const Ref<Texture>& texture = m_textureParams[i];
+            const CRef<Texture>& texture = m_textureParams[i];
             if (!texture) continue;
 
-            uint32 index = 0;
-
-            switch (texture->GetType())
-            {
-            case TextureType::IMAGE:
-            {
-                const Ref<DX12ImageTexture> imageTexture = std::dynamic_pointer_cast<DX12ImageTexture>(texture);
-                index = imageTexture->GetIndex();
-                break;
-            }
-            case TextureType::RENDER_TARGET:
-            {
-                const Ref<DX12RenderTarget> renderTarget = std::dynamic_pointer_cast<DX12RenderTarget>(texture);
-                index = renderTarget->GetRenderTargetIndex();
-                break;
-            }
-            default: assert(false);
-            }
-
-            textureIndices[i] = index;
+            textureIndices[i] = texture->GetHeapIndex();
         }
 
         BindTextureSRVs(context, textureIndices);
     }
-    void DX12Material::BindTextureSRVs(const Ref<RenderContext>& context, const std::vector<uint32>& textureIndices) const
+
+    void DX12Material::BindTextureSRVs(Ref<RenderContext> context, const std::vector<uint32>& textureIndices) const
     {
-        DX12RHI& rhi = DX12RHI::Instance();
-        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        Ref<DX12RenderContext> dx12Context = CastTo<DX12RenderContext>(context);
         GraphicsCommandList* cmdList = dx12Context->m_cmdList;
 
-        CBufferTextureIndices* pTextureIndices = (CBufferTextureIndices*)m_textureIndices->GetData();
-        memcpy(pTextureIndices, textureIndices.data(), sizeof(CBufferTextureIndices));
+        CBufferTextures* pTextureIndices = (CBufferTextures*)m_textureIndices->GetData();
+        memcpy(pTextureIndices, textureIndices.data(), sizeof(CBufferTextures));
         m_textureIndices->Bind(context);
     }
 
     ComPtr<ID3D12PipelineState> DX12Material::GetPSO() const
     {
         DX12RHI& rhi = DX12RHI::Instance();
-        CRef<DX12Shader> vs = std::dynamic_pointer_cast<const DX12Shader>(m_VS);
-        CRef<DX12Shader> ps = std::dynamic_pointer_cast<const DX12Shader>(m_PS);
-        CRef<DX12RasterizerState> rasterizerState = std::dynamic_pointer_cast<const DX12RasterizerState>(m_rasterizerState);
-        CRef<DX12DepthStencilState> depthStencilState = std::dynamic_pointer_cast<const DX12DepthStencilState>(m_depthStencilState);
+        CRef<DX12Shader> vs = CastTo<const DX12Shader>(m_VS);
+        CRef<DX12Shader> ps = CastTo<const DX12Shader>(m_PS);
+        CRef<DX12RasterizerState> rasterizerState = CastTo<const DX12RasterizerState>(m_rasterizerState);
+        CRef<DX12DepthStencilState> depthStencilState = CastTo<const DX12DepthStencilState>(m_depthStencilState);
 
         DX12PSO psoDesc = {};
         psoDesc.m_VS = vs;
         psoDesc.m_PS = ps;
         psoDesc.m_rasterizerState = rasterizerState;
         psoDesc.m_depthStencilState = depthStencilState;
-        psoDesc.numRTs = rhi.GetRTFormat() == DXGI_FORMAT_UNKNOWN ? 0 : 1;
-        psoDesc.m_rtFormat = rhi.GetRTFormat();
+        psoDesc.m_rtFormats = rhi.GetRTFormats();
         psoDesc.m_dsFormat = rhi.GetDSFormat();
 
         auto& psoContainer = rhi.GetPSOContainer();
@@ -122,6 +101,7 @@ namespace Xunlan::DX12
             return newOne->second;
         }
     }
+
     ComPtr<ID3D12PipelineState> DX12Material::CreatePSO(const DX12PSO& psoDesc) const
     {
         DX12RHI& rhi = DX12RHI::Instance();
@@ -137,8 +117,12 @@ namespace Xunlan::DX12
         desc.DepthStencilState = psoDesc.m_depthStencilState->GetDX12Desc();
         //desc.InputLayout = rhi.GetInputLayout();
         desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        desc.NumRenderTargets = psoDesc.numRTs;
-        if (psoDesc.numRTs > 0) desc.RTVFormats[0] = psoDesc.m_rtFormat;
+        desc.NumRenderTargets = std::min((uint32)psoDesc.m_rtFormats.size(), 8u);
+        if (desc.NumRenderTargets > 0)
+        {
+            const size_t byteSize = desc.NumRenderTargets * sizeof(DXGI_FORMAT);
+            std::memcpy(desc.RTVFormats, psoDesc.m_rtFormats.data(), byteSize);
+        }
         desc.DSVFormat = psoDesc.m_dsFormat;
         desc.SampleDesc = { 1, 0 };
 

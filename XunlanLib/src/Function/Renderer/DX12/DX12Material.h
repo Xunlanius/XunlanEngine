@@ -14,8 +14,7 @@ namespace Xunlan::DX12
         CRef<DX12Shader> m_PS;
         CRef<DX12RasterizerState> m_rasterizerState;
         CRef<DX12DepthStencilState> m_depthStencilState;
-        uint32 numRTs;
-        DXGI_FORMAT m_rtFormat;
+        std::vector<DXGI_FORMAT> m_rtFormats;
         DXGI_FORMAT m_dsFormat;
 
         friend bool operator==(const DX12PSO& lhs, const DX12PSO& rhs);
@@ -35,12 +34,12 @@ namespace Xunlan::DX12
 
     public:
 
-        virtual void Apply(const Ref<RenderContext>& context) const override;
+        virtual void Apply(Ref<RenderContext> context) const override;
 
     private:
 
-        void CollectTextureSRVs(const Ref<RenderContext>& context) const;
-        void BindTextureSRVs(const Ref<RenderContext>& context, const std::vector<uint32>& textureIndices) const;
+        void CollectTextureSRVs(Ref<RenderContext> context) const;
+        void BindTextureSRVs(Ref<RenderContext> context, const std::vector<uint32>& textureIndices) const;
 
         Microsoft::WRL::ComPtr<ID3D12PipelineState> GetPSO() const;
         Microsoft::WRL::ComPtr<ID3D12PipelineState> CreatePSO(const DX12PSO& psoDesc) const;

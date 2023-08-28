@@ -15,8 +15,9 @@ namespace Xunlan
 
     enum class TextureType : uint32
     {
-        IMAGE,
-        RENDER_TARGET,
+        Image,
+        RenderTarget,
+        DepthBuffer,
     };
 
     class RawTexture final
@@ -60,6 +61,8 @@ namespace Xunlan
         uint32 GetWidth() const { return m_width; }
         uint32 GetHeight() const { return m_height; }
 
+        virtual uint32 GetHeapIndex() const = 0;
+
     protected:
 
         TextureType m_type;
@@ -77,36 +80,33 @@ namespace Xunlan
 
         TextureFormat GetFormat() const { return m_format; }
         uint32 GetPixelSize() const;
-        virtual uint32 GetIndex() const = 0;
 
     protected:
 
         TextureFormat m_format;
     };
 
-    enum class RenderTargetUsage : uint32
-    {
-        DEFAULT,
-        SHADOW_MAP,
-    };
-
     class RenderTarget : public Texture
     {
     protected:
 
-        explicit RenderTarget(uint32 width, uint32 height, RenderTargetUsage usage)
-            : Texture(TextureType::RENDER_TARGET, width, height), m_usage(usage) {}
+        explicit RenderTarget(uint32 width, uint32 height)
+            : Texture(TextureType::RenderTarget, width, height) {}
 
     public:
 
-        RenderTargetUsage GetUsage() const { return m_usage; }
-
         virtual void Resize(uint32 width, uint32 height) { m_width = width; m_height = height; }
-        virtual uint32 GetRenderTargetIndex() const = 0;
-        virtual uint32 GetDepthStencilIndex() const = 0;
+    };
 
+    class DepthBuffer : public Texture
+    {
     protected:
 
-        RenderTargetUsage m_usage;
+        explicit DepthBuffer(uint32 width, uint32 height)
+            : Texture(TextureType::DepthBuffer, width, height) {}
+
+    public:
+
+        virtual void Resize(uint32 width, uint32 height) { m_width = width; m_height = height; }
     };
 }

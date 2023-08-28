@@ -7,12 +7,14 @@ namespace Xunlan
     void RenderPipeline::Initialize(uint32 width, uint32 height)
     {
         m_shadowPass = std::make_unique<ShadowPass>();
+        m_gPass = std::make_unique<GPass>(width, height);
         m_meshLightPass = std::make_unique<MeshLightPass>(width, height);
         m_postProcessPass = std::make_unique<PostProcessPass>();
     }
     void RenderPipeline::Shutdown()
     {
         m_shadowPass.reset();
+        m_gPass.reset();
         m_meshLightPass.reset();
         m_postProcessPass.reset();
     }
@@ -26,6 +28,7 @@ namespace Xunlan
         scene.GetCBufferPerScene()->Bind(context);
 
         m_shadowPass->Render(context);
+        m_gPass->Render(context);
         m_meshLightPass->Render(context);
         m_postProcessPass->Render(context, PostProcessEffect::NONE, m_meshLightPass->GetMainRT());
 

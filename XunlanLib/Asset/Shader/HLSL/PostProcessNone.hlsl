@@ -19,11 +19,7 @@ VertexOutput VS(uint vertexIndex : SV_VertexID)
 
 float4 PS(VertexOutput input) : SV_TARGET
 {
-    Texture2D baseColor = ResourceDescriptorHeap[g_textureIndices.BaseColorIndex];
+    Texture2D baseColor = ResourceDescriptorHeap[g_meshTextures.albedoIndex];
     float4 color = baseColor.Sample(LinearClamp, input.uv);
     return float4(color.xyz, 1.0f);
-    
-    //Texture2D baseColor = ResourceDescriptorHeap[g_shadowMapIndices.ShadowMapIndices[0]];
-    //float color = baseColor.Sample(LinearClamp, input.uv).r;
-    //return color;
 }

@@ -13,7 +13,7 @@ namespace Xunlan
 
         m_rasterizerState = rhi.CreateRasterizerState({});
         m_depthStencilState = rhi.CreateDepthStencilState();
-        m_perMaterial = rhi.CreateConstantBuffer(CBufferType::PER_MATERIAL, 1024);
-        m_textureIndices = rhi.CreateConstantBuffer(CBufferType::TEXTURE_INDICES, sizeof(CBufferTextureIndices));
+        m_perMaterial = rhi.CreateCBuffer(CBufferType::PerMaterial, 1024);
+        m_textureIndices = rhi.CreateCBuffer(CBufferType::MeshTextures, sizeof(CBufferTextures));
     }
 }

@@ -2,6 +2,7 @@
 
 #include "src/Common/Common.h"
 #include "src/Function/Renderer/Abstract/CBuffer.h"
+#include "src/Function/Renderer/Abstract/RenderItem.h"
 #include "src/Function/World/Entity.h"
 #include "src/Function/World/Component/Transformer.h"
 #include "src/Utility/Math/Math.h"
@@ -16,11 +17,8 @@ namespace Xunlan
 
     protected:
 
-        void UpdateCBufferPerObject(const TransformerComponent& transformer, const Ref<CBuffer>& cBufferPerObject)
-        {
-            CBufferPerObject* perObject = (CBufferPerObject*)cBufferPerObject->GetData();
-            perObject->m_world = TransformerSystem::GetWorld(transformer);
-            perObject->m_invWorld = Math::GetInverse(perObject->m_world);
-        }
+        static void UpdateCBufferPerObject(const TransformerComponent& transformer, Ref<CBuffer> cBufferPerObject);
+
+        static Ref<RenderItem> CreateCanvas();
     };
 }

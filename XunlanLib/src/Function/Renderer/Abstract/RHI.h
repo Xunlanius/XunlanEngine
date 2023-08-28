@@ -41,20 +41,33 @@ namespace Xunlan
         virtual void Execute(Ref<RenderContext>& context) = 0;
         virtual void Present() = 0;
 
-        virtual void SetRenderTarget(const Ref<RenderContext>& context, const CRef<RenderTarget>& renderTarget) = 0;
-        virtual void ClearRenderTarget(const Ref<RenderContext>& context, const CRef<RenderTarget>& renderTarget) = 0;
-        virtual void ResetRenderTarget(const Ref<RenderContext>& context, const CRef<RenderTarget>& renderTarget) = 0;
-        virtual void SetViewport(const Ref<RenderContext>& context, uint32 x, uint32 y, uint32 width, uint32 height) = 0;
+        virtual void SetRT(Ref<RenderContext> context) = 0;
+        virtual void SetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts) = 0;
+        virtual void SetRT(Ref<RenderContext> context, CRef<DepthBuffer> depthBuffer) = 0;
+        virtual void SetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer) = 0;
+
+        virtual void ClearRT(Ref<RenderContext> context) = 0;
+        virtual void ClearRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts) = 0;
+        virtual void ClearRT(Ref<RenderContext> context, CRef<DepthBuffer> depthBuffer) = 0;
+        virtual void ClearRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer) = 0;
+
+        virtual void ResetRT(Ref<RenderContext> context) = 0;
+        virtual void ResetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts) = 0;
+        virtual void ResetRT(Ref<RenderContext> context, CRef<DepthBuffer> depthBuffer) = 0;
+        virtual void ResetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer) = 0;
+
+        virtual void SetViewport(Ref<RenderContext> context, uint32 x, uint32 y, uint32 width, uint32 height) = 0;
 
         Ref<Mesh> CreateMesh(const std::filesystem::path& path);
         virtual Ref<Mesh> CreateMesh(const CRef<MeshRawData>& meshRawData) = 0;
         virtual Ref<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, const std::string& functionName) = 0;
         Ref<ImageTexture> CreateImageTexture(const std::filesystem::path& path);
         virtual Ref<ImageTexture> CreateImageTexture(const CRef<RawTexture>& rawTexture) = 0;
-        virtual Ref<RenderTarget> CreateRenderTarget(uint32 width, uint32 height, RenderTargetUsage usage) = 0;
+        virtual Ref<RenderTarget> CreateRT(uint32 width, uint32 height) = 0;
+        virtual Ref<DepthBuffer> CreateDepthBuffer(uint32 width, uint32 height) = 0;
         virtual Ref<RasterizerState> CreateRasterizerState(const RasterizerStateDesc& desc) = 0;
         virtual Ref<DepthStencilState> CreateDepthStencilState() = 0;
-        virtual Ref<CBuffer> CreateConstantBuffer(CBufferType type, uint32 size) = 0;
+        virtual Ref<CBuffer> CreateCBuffer(CBufferType type, uint32 size) = 0;
         virtual Ref<Material> CreateMaterial(const std::string& name, MaterialType type, const ShaderList& shaderList) = 0;
         virtual Ref<RenderItem> CreateRenderItem(const Ref<Mesh>& mesh) = 0;
         virtual Ref<RenderItem> CreateRenderItem(const Ref<Mesh>& mesh, const std::vector<Ref<Material>>& materials) = 0;

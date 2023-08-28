@@ -2,58 +2,48 @@
 #include "src/Function/Renderer/Abstract/RHI.h"
 #include "src/Function/World/Scene.h"
 #include "src/Function/World/Component/MeshRender.h"
+#include "src/Function/Resource/ConfigSystem.h"
 
 namespace Xunlan
 {
     MeshLightPass::MeshLightPass(uint32 width, uint32 height)
+        : m_width(width), m_height(height)
     {
-        m_mainRT = RHI::Instance().CreateRenderTarget(width, height, RenderTargetUsage::DEFAULT);
+        m_mainRT = RHI::Instance().CreateRT(width, height);
+        m_canvas = RenderPassBase::CreateCanvas();
+        m_lighting = CreateMaterial();
     }
 
-    void MeshLightPass::Render(const Ref<RenderContext>& context)
+    void MeshLightPass::Render(Ref<RenderContext> context)
     {
         RHI& rhi = RHI::Instance();
 
-        rhi.SetRenderTarget(context, m_mainRT);
-        rhi.ClearRenderTarget(context, m_mainRT);
-        rhi.SetViewport(context, 0, 0, m_mainRT->GetWidth(), m_mainRT->GetHeight());
+        std::vector<CRef<RenderTarget>> rts = { m_mainRT };
 
-        CollectRenderItems();
+        rhi.SetRT(context, rts);
+        rhi.ClearRT(context, rts);
+        rhi.SetViewport(context, 0, 0, m_width, m_height);
 
-        for (const WeakRef<RenderItem>& refItem : m_renderItems)
-        {
-            Ref<RenderItem> item = refItem.lock();
-            assert(item);
+        m_canvas->Render(context, m_lighting);
 
-            item->Render(context);
-        }
-
-        rhi.ResetRenderTarget(context, m_mainRT);
+        rhi.ResetRT(context, rts);
     }
 
-    void MeshLightPass::CollectRenderItems()
+    Ref<Material> MeshLightPass::CreateMaterial()
     {
-        m_renderItems.clear();
+        RHI& rhi = RHI::Instance();
+        ConfigSystem& configSystem = Singleton<ConfigSystem>::Instance();
 
-        WeakRef<Entity> refRoot = Singleton<Scene>::Instance().GetRoot();
-        CollectVisableEntity(refRoot);
-    }
-    void MeshLightPass::CollectVisableEntity(const WeakRef<Entity>& refNode)
-    {
-        Ref<Entity> node = refNode.lock();
-        assert(node);
+        const std::filesystem::path shaderPath = configSystem.GetHLSLFolder() / "Lighting.hlsl";
 
-        if (node->HasComponent<MeshRenderComponent>())
-        {
-            auto [transformer, meshRender] = node->GetComponent<TransformerComponent, MeshRenderComponent>();
+        ShaderList list = {};
+        list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shaderPath, "VS");
+        list.m_PS = rhi.CreateShader(ShaderType::PIXEL_SHADER, shaderPath, "PS");
 
-            UpdateCBufferPerObject(transformer, meshRender.m_renderItem->GetPerObject());
-            m_renderItems.push_back(meshRender.m_renderItem);
-        }
+        Ref<Material> lighting = rhi.CreateMaterial("Mat_lighting", MaterialType::PostProcess, list);
+        lighting->GetDepthStencilState()->SetDepthEnable(false);
+        lighting->GetRasterizerState()->SetCullMode(CullMode::NONE);
 
-        for (const WeakRef<Entity>& child : node->GetChildren())
-        {
-            CollectVisableEntity(child);
-        }
+        return lighting;
     }
 }

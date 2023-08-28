@@ -73,7 +73,7 @@ float3 ComputeDirectionLight(float3 worldPos, float3 worldNormal)
         
         const float3 lightColor = light.color * light.intensity;
         
-        Texture2D shadowMap = ResourceDescriptorHeap[g_shadowMapIndices.ShadowMapIndices[i]];
+        Texture2D shadowMap = ResourceDescriptorHeap[g_shadowMaps.shadowMapIndices[i]];
         const float shadow = CalculationShadow(shadowMap, LinearWarp, mul(light.viewProj, float4(worldPos, 1.0f)));
         
         color += (diffuse + specular) * lightColor * shadow;

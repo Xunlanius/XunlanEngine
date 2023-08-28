@@ -14,21 +14,19 @@ namespace Xunlan
 {
     enum class TextureCategory : uint32
     {
-        BASE_COLOR,
-        ROUGHNESS,
-        METALLIC,
-        NORMAL,
-        HEIGHT,
-        AO,
+        Albedo,
+        Roughness,
+        Metallic,
+        Normal,
 
-        COUNT,
+        Count,
     };
 
     enum class MaterialType : uint32
     {
-        MESH_RENDER,
-        POST_PROCESS,
-        SHADOW_MAPPING,
+        MeshRenderer,
+        PostProcess,
+        ShadowMapping,
     };
 
     struct ShaderList final
@@ -53,10 +51,10 @@ namespace Xunlan
         Ref<RasterizerState> GetRasterizerState() const { return m_rasterizerState; }
         Ref<DepthStencilState> GetDepthStencilState() const { return m_depthStencilState; }
 
-        Ref<Texture> GetTexture(TextureCategory category) const { return m_textureParams[(uint32)category]; }
-        void SetTexture(TextureCategory category, const Ref<Texture>& value) { assert(value); m_textureParams[(uint32)category] = value; }
+        CRef<Texture> GetTexture(TextureCategory category) const { return m_textureParams[(uint32)category]; }
+        void SetTexture(TextureCategory category, CRef<Texture> value) { assert(value); m_textureParams[(uint32)category] = value; }
 
-        virtual void Apply(const Ref<RenderContext>& context) const = 0;
+        virtual void Apply(Ref<RenderContext> context) const = 0;
 
     protected:
 
@@ -68,9 +66,10 @@ namespace Xunlan
 
         Ref<RasterizerState> m_rasterizerState;
         Ref<DepthStencilState> m_depthStencilState;
+
         Ref<CBuffer> m_perMaterial;
         Ref<CBuffer> m_textureIndices;
 
-        std::array<Ref<Texture>, (size_t)TextureCategory::COUNT> m_textureParams;
+        std::array<CRef<Texture>, (size_t)TextureCategory::Count> m_textureParams;
     };
 }

@@ -13,7 +13,7 @@ namespace Xunlan
     bool Scene::Initialize()
     {
         m_root = Ref<Entity>(new Entity("root", {}));
-        m_cBufferPerScene = RHI::Instance().CreateConstantBuffer(CBufferType::PER_FRAME, sizeof(CBufferPerFrame));
+        m_cBufferPerScene = RHI::Instance().CreateCBuffer(CBufferType::PerFrame, sizeof(CBufferPerFrame));
         return true;
     }
     void Scene::Shutdown()
@@ -51,13 +51,13 @@ namespace Xunlan
 
         // Create models
         {
-            const std::filesystem::path pbrShaderPath = configSystem.GetHLSLShaderFolder() / "PBR.hlsl";
+            const std::filesystem::path shaderPath = configSystem.GetHLSLFolder() / "GBuffer.hlsl";
 
             ShaderList list = {};
-            list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, pbrShaderPath, "VS");
-            list.m_PS = rhi.CreateShader(ShaderType::PIXEL_SHADER, pbrShaderPath, "PS");
+            list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shaderPath, "VS");
+            list.m_PS = rhi.CreateShader(ShaderType::PIXEL_SHADER, shaderPath, "PS");
 
-            Ref<Material> pbr = rhi.CreateMaterial("PBR", MaterialType::MESH_RENDER, list);
+            Ref<Material> mat = rhi.CreateMaterial("Mat_GBuffer", MaterialType::MeshRenderer, list);
 
             const std::filesystem::path& modelFolderPath = configSystem.GetModelFolder();
             const std::filesystem::path fioraPath = modelFolderPath / "Fiora.model";
@@ -76,8 +76,8 @@ namespace Xunlan
                 submesh->SetMaterialIndex(0);
             }
 
-            Ref<RenderItem> fiora = rhi.CreateRenderItem(modelFiora, { pbr });
-            Ref<RenderItem> plane = rhi.CreateRenderItem(modelPlane, { pbr });
+            Ref<RenderItem> fiora = rhi.CreateRenderItem(modelFiora, { mat });
+            Ref<RenderItem> plane = rhi.CreateRenderItem(modelPlane, { mat });
 
             const TransformerInitDesc transformerDescFiora = {
                 { 0.0f, -2.0f, 0.0f },

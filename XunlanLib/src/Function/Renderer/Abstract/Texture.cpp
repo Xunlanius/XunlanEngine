@@ -24,7 +24,7 @@ namespace Xunlan
     }
 
     ImageTexture::ImageTexture(const CRef<RawTexture>& rawTexture)
-        : Texture(TextureType::IMAGE, rawTexture->GetWidth(), rawTexture->GetHeight()), m_format(rawTexture->GetFormat()) {}
+        : Texture(TextureType::Image, rawTexture->GetWidth(), rawTexture->GetHeight()), m_format(rawTexture->GetFormat()) {}
 
     uint32 ImageTexture::GetPixelSize() const
     {

@@ -12,7 +12,7 @@ namespace Xunlan
         const XMVECTOR dir = XMVector3Normalize(XMLoadFloat3(&direction));
 
         const XMMATRIX view = XMMatrixLookToLH(pos, dir, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
-        const XMMATRIX proj = XMMatrixOrthographicLH(128, 128, 1.0f, 500.0f);
+        const XMMATRIX proj = XMMatrixOrthographicLH(256, 256, 1.0f, 500.0f);
 
         Math::float4x4 viewProj = {};
         XMStoreFloat4x4(&viewProj, view * proj);

@@ -10,28 +10,25 @@ namespace Xunlan
     {
         RHI& rhi = RHI::Instance();
 
-        m_shadowMap = rhi.CreateRenderTarget(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, RenderTargetUsage::SHADOW_MAP);
-        m_shadowMapIndices = rhi.CreateConstantBuffer(CBufferType::SHADOW_MAP_INDICES, sizeof(CBufferShadowMapIndices));
+        m_shadowMap = rhi.CreateDepthBuffer(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+        m_shadowMapIndices = rhi.CreateCBuffer(CBufferType::ShadowMaps, sizeof(CBufferShadowMaps));
 
         ConfigSystem& configSystem = Singleton<ConfigSystem>::Instance();
-        const std::filesystem::path shadowMappingShader = configSystem.GetHLSLShaderFolder() / "ShadowMapping.hlsl";
+        const std::filesystem::path shadowMappingShader = configSystem.GetHLSLFolder() / "ShadowMapping.hlsl";
 
         ShaderList list = {};
         list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shadowMappingShader, "VS");
 
-        m_shadowMaterial = rhi.CreateMaterial("Shadow_Map_Material", MaterialType::SHADOW_MAPPING, list);
+        m_shadowMaterial = rhi.CreateMaterial("Shadow_Map_Material", MaterialType::ShadowMapping, list);
     }
 
-    void ShadowPass::Render(const Ref<RenderContext>& context)
+    void ShadowPass::Render(Ref<RenderContext> context)
     {
         RHI& rhi = RHI::Instance();
 
-        rhi.SetRenderTarget(context, m_shadowMap);
-        rhi.ClearRenderTarget(context, m_shadowMap);
+        rhi.SetRT(context, m_shadowMap);
+        rhi.ClearRT(context, m_shadowMap);
         rhi.SetViewport(context, 0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
-
-        CBufferShadowMapIndices* shadowMapIndices = (CBufferShadowMapIndices*)m_shadowMapIndices->GetData();
-        shadowMapIndices->m_shadowMapIndices[0] = m_shadowMap->GetDepthStencilIndex();
 
         CollectRenderItems();
 
@@ -42,7 +39,10 @@ namespace Xunlan
             item->Render(context, m_shadowMaterial);
         }
 
-        rhi.ResetRenderTarget(context, m_shadowMap);
+        rhi.ResetRT(context, m_shadowMap);
+
+        CBufferShadowMaps* shadowMapIndices = (CBufferShadowMaps*)m_shadowMapIndices->GetData();
+        shadowMapIndices->m_shadowMapIndices[0] = m_shadowMap->GetHeapIndex();
 
         m_shadowMapIndices->Bind(context);
     }

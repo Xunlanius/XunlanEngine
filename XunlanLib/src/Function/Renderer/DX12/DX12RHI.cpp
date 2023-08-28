@@ -5,8 +5,7 @@
 #include "DX12RenderContext.h"
 #include "DX12Mesh.h"
 #include "DX12Shader.h"
-#include "DX12ImageTexture.h"
-#include "DX12RenderTarget.h"
+#include "Texture/DX12ImageTexture.h"
 #include "DX12DepthStencilState.h"
 #include "DX12RasterizerState.h"
 #include "DX12CBuffer.h"
@@ -39,6 +38,7 @@ namespace Xunlan::DX12
 
         CreateRootSignature();
     }
+
     DX12RHI::~DX12RHI()
     {
         Flush();
@@ -83,128 +83,165 @@ namespace Xunlan::DX12
 
         return MakeRef<DX12RenderContext>(cmdList);
     }
+
     void DX12RHI::Execute(Ref<RenderContext>& context)
     {
         m_mainCommand->EndRecord();
         context.reset();
     }
 
-    void DX12RHI::SetRenderTarget(const Ref<RenderContext>& context, const CRef<RenderTarget>& renderTarget)
+#pragma region RenderTarget
+
+    void DX12RHI::SetRT(Ref<RenderContext> context)
     {
-        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
-        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
-        
-        if (renderTarget)
-        {
-            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(renderTarget);
-            const DescriptorHandle rtv = dx12RT->GetRTV();
-            const DescriptorHandle dsv = dx12RT->GetDSV();
+        assert(context);
 
-            if (rtv.IsValid())
-            {
-                const CD3DX12_RESOURCE_BARRIER barriers[2] =
-                {
-                    CD3DX12_RESOURCE_BARRIER::Transition(dx12RT->GetRT(),
-                        dx12RT->RT_INIT_STATE,
-                        D3D12_RESOURCE_STATE_RENDER_TARGET
-                    ),
-                    CD3DX12_RESOURCE_BARRIER::Transition(dx12RT->GetDS(),
-                        dx12RT->DS_INIT_STATE,
-                        D3D12_RESOURCE_STATE_DEPTH_WRITE
-                    ),
-                };
-
-                cmdList->ResourceBarrier(_countof(barriers), barriers);
-
-                cmdList->OMSetRenderTargets(1, &rtv.handleCPU, FALSE, &dsv.handleCPU);
-                m_currRTFormat = dx12RT->GetRTFormat();
-                m_currDSFormat = dx12RT->GetDSFormat();
-            }
-            else
-            {
-                cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-                    dx12RT->GetDS(),
-                    dx12RT->DS_INIT_STATE,
-                    D3D12_RESOURCE_STATE_DEPTH_WRITE)
-                );
-
-                cmdList->OMSetRenderTargets(0, nullptr, FALSE, &dsv.handleCPU);
-                m_currRTFormat = DXGI_FORMAT_UNKNOWN;
-                m_currDSFormat = dx12RT->GetDSFormat();
-            }
-        }
-        else
-        {
-            ComPtr<ID3D12Resource> backBuffer = m_surface->GetBackBuffer();
-            const D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_surface->GetRTV();
-
-            cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-                backBuffer.Get(),
-                D3D12_RESOURCE_STATE_PRESENT,
-                D3D12_RESOURCE_STATE_RENDER_TARGET)
-            );
-            cmdList->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
-            m_currRTFormat = m_surface->GetFormat();
-            m_currDSFormat = DXGI_FORMAT_UNKNOWN;
-        }
-    }
-    void DX12RHI::ClearRenderTarget(const Ref<RenderContext>& context, const CRef<RenderTarget>& renderTarget)
-    {
         Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
         GraphicsCommandList* cmdList = dx12Context->m_cmdList;
 
-        const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+        ComPtr<ID3D12Resource> backBuffer = m_surface->GetBackBuffer();
+        const D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_surface->GetRTV();
 
-        if (renderTarget)
-        {
-            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(renderTarget);
-            const DescriptorHandle rtv = dx12RT->GetRTV();
-            const DescriptorHandle dsv = dx12RT->GetDSV();
+        m_currRTFormats.clear();
 
-            if (rtv.IsValid()) cmdList->ClearRenderTargetView(rtv.handleCPU, clearColor, 0, nullptr);
-            cmdList->ClearDepthStencilView(dsv.handleCPU, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-        }
-        else
-        {
-            cmdList->ClearRenderTargetView(m_surface->GetRTV(), DirectX::Colors::SkyBlue, 0, nullptr);
-        }
+        cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
+            backBuffer.Get(),
+            D3D12_RESOURCE_STATE_PRESENT,
+            D3D12_RESOURCE_STATE_RENDER_TARGET)
+        );
+        cmdList->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
+
+        m_currRTFormats.push_back(m_surface->GetFormat());
+        m_currDSFormat = DXGI_FORMAT_UNKNOWN;
     }
-    void DX12RHI::ResetRenderTarget(const Ref<RenderContext>& context, const CRef<RenderTarget>& renderTarget)
+
+    void DX12RHI::SetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts)
+    {
+        assert(context);
+        assert(rts.size() > 0);
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        SetRT(*cmdList, rts, nullptr);
+    }
+
+    void DX12RHI::SetRT(Ref<RenderContext> context, CRef<DepthBuffer> depthBuffer)
+    {
+        assert(context);
+        assert(depthBuffer);
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        SetRT(*cmdList, {}, depthBuffer);
+    }
+
+    void DX12RHI::SetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
+    {
+        assert(context);
+        assert(rts.size() > 0);
+        assert(depthBuffer);
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        SetRT(*cmdList, rts, depthBuffer);
+    }
+
+    void DX12RHI::ClearRT(Ref<RenderContext> context)
     {
         Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
         GraphicsCommandList* cmdList = dx12Context->m_cmdList;
 
-        if (renderTarget)
-        {
-            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(renderTarget);
-            const DescriptorHandle rtv = dx12RT->GetRTV();
-            const DescriptorHandle dsv = dx12RT->GetDSV();
-
-            if (rtv.IsValid())
-            {
-                cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-                    dx12RT->GetRT(),
-                    D3D12_RESOURCE_STATE_RENDER_TARGET,
-                    dx12RT->RT_INIT_STATE)
-                );
-            }
-
-            cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-                dx12RT->GetDS(),
-                D3D12_RESOURCE_STATE_DEPTH_WRITE,
-                dx12RT->DS_INIT_STATE)
-            );
-        }
-        else
-        {
-            cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-                m_surface->GetBackBuffer().Get(),
-                D3D12_RESOURCE_STATE_RENDER_TARGET,
-                D3D12_RESOURCE_STATE_PRESENT)
-            );
-        }
+        cmdList->ClearRenderTargetView(m_surface->GetRTV(), m_clearColor, 0, nullptr);
     }
-    void DX12RHI::SetViewport(const Ref<RenderContext>& context, uint32 x, uint32 y, uint32 width, uint32 height)
+
+    void DX12RHI::ClearRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts)
+    {
+        assert(context);
+        assert(rts.size() > 0);
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        ClearRT(*cmdList, rts, nullptr);
+    }
+
+    void DX12RHI::ClearRT(Ref<RenderContext> context, CRef<DepthBuffer> depthBuffer)
+    {
+        assert(context);
+        assert(depthBuffer);
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        ClearRT(*cmdList, {}, depthBuffer);
+    }
+
+    void DX12RHI::ClearRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
+    {
+        assert(context);
+        assert(rts.size() > 0);
+        assert(depthBuffer);
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        ClearRT(*cmdList, rts, depthBuffer);
+    }
+
+    void DX12RHI::ResetRT(Ref<RenderContext> context)
+    {
+        assert(context);
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
+            m_surface->GetBackBuffer().Get(),
+            D3D12_RESOURCE_STATE_RENDER_TARGET,
+            D3D12_RESOURCE_STATE_PRESENT)
+        );
+    }
+
+    void DX12RHI::ResetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts)
+    {
+        assert(context);
+        assert(rts.size());
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        ResetRT(*cmdList, rts, nullptr);
+    }
+
+    void DX12RHI::ResetRT(Ref<RenderContext> context, CRef<DepthBuffer> depthBuffer)
+    {
+        assert(context);
+        assert(depthBuffer);
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        ResetRT(*cmdList, {}, depthBuffer);
+    }
+
+    void DX12RHI::ResetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
+    {
+        assert(context);
+        assert(rts.size() > 0);
+        assert(depthBuffer);
+
+        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
+
+        ResetRT(*cmdList, rts, depthBuffer);
+    }
+
+#pragma endregion
+
+    void DX12RHI::SetViewport(Ref<RenderContext> context, uint32 x, uint32 y, uint32 width, uint32 height)
     {
         Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
         GraphicsCommandList* cmdList = dx12Context->m_cmdList;
@@ -213,6 +250,8 @@ namespace Xunlan::DX12
         cmdList->RSSetViewports(1, &m_surface->GetViewport());
         cmdList->RSSetScissorRects(1, &m_surface->GetScissorRect());
     }
+
+#pragma region CreateResource
 
     Ref<Mesh> DX12RHI::CreateMesh(const CRef<MeshRawData>& meshRawData)
     {
@@ -226,9 +265,13 @@ namespace Xunlan::DX12
     {
         return DX12ImageTexture::Create(rawTexture);
     }
-    Ref<RenderTarget> DX12RHI::CreateRenderTarget(uint32 width, uint32 height, RenderTargetUsage usage)
+    Ref<RenderTarget> DX12RHI::CreateRT(uint32 width, uint32 height)
     {
-        return DX12RenderTarget::Create(width, height, usage);
+        return MakeRef<DX12RenderTarget>(width, height);
+    }
+    Ref<DepthBuffer> DX12RHI::CreateDepthBuffer(uint32 width, uint32 height)
+    {
+        return MakeRef<DX12DepthBuffer>(width, height);
     }
     Ref<RasterizerState> DX12RHI::CreateRasterizerState(const RasterizerStateDesc& desc)
     {
@@ -238,7 +281,7 @@ namespace Xunlan::DX12
     {
         return MakeRef<DX12DepthStencilState>();
     }
-    Ref<CBuffer> DX12RHI::CreateConstantBuffer(CBufferType type, uint32 size)
+    Ref<CBuffer> DX12RHI::CreateCBuffer(CBufferType type, uint32 size)
     {
         return MakeRef<DX12CBuffer>(type, size);
     }
@@ -254,6 +297,8 @@ namespace Xunlan::DX12
     {
         return MakeRef<DX12RenderItem>(mesh, materials);
     }
+
+#pragma endregion
 
     void DX12RHI::DeferredRelease(Microsoft::WRL::ComPtr<IUnknown>& resource)
     {
@@ -278,6 +323,7 @@ namespace Xunlan::DX12
     #endif
     #endif
     }
+    
     void DX12RHI::CreateDevice()
     {
         //ID3D12Device指负责渲染的对象，我们需要指定硬件来创建device
@@ -315,6 +361,7 @@ namespace Xunlan::DX12
         Check(D3D12CreateDevice(targetAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&m_device)));
         NAME_OBJECT(m_device, L"Main Device");
     }
+    
     void DX12RHI::CreateDescriptorHeap()
     {
         m_rtvHeap = std::make_unique<DX12DescriptorHeap>(GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 512, false);
@@ -325,15 +372,17 @@ namespace Xunlan::DX12
         NAME_OBJECT(m_dsvHeap->GetHeap(), L"DSV Descriptor Heap");
         NAME_OBJECT(m_srvHeap->GetHeap(), L"SRV Descriptor Heap");
     }
+    
     void DX12RHI::CreateRootSignature()
     {
-        CD3DX12_ROOT_PARAMETER1 params[(uint32)DefaultRootParam::COUNT] = {};
-        params[(uint32)DefaultRootParam::PER_OBJECT].InitAsConstantBufferView(0);
-        params[(uint32)DefaultRootParam::PER_MATERIAL].InitAsConstantBufferView(1);
-        params[(uint32)DefaultRootParam::PER_FRAME].InitAsConstantBufferView(2);
-        params[(uint32)DefaultRootParam::VERTEX_BUFFER].InitAsShaderResourceView(0);
-        params[(uint32)DefaultRootParam::SHADOW_MAP_INDICES].InitAsConstantBufferView(3);
-        params[(uint32)DefaultRootParam::TEXTURE_INDICES].InitAsConstantBufferView(4);
+        CD3DX12_ROOT_PARAMETER1 params[(uint32)RootParam::Count] = {};
+        params[(uint32)RootParam::PerObject].InitAsConstantBufferView(0);
+        params[(uint32)RootParam::PerMaterial].InitAsConstantBufferView(1);
+        params[(uint32)RootParam::PerFrame].InitAsConstantBufferView(2);
+        params[(uint32)RootParam::VertexBuffer].InitAsShaderResourceView(0);
+        params[(uint32)RootParam::MeshTextures].InitAsConstantBufferView(3);
+        params[(uint32)RootParam::GBuffer].InitAsConstantBufferView(4);
+        params[(uint32)RootParam::ShadowMaps].InitAsConstantBufferView(5);
 
         const std::array<CD3DX12_STATIC_SAMPLER_DESC, 6> samplers = GetStaticSamplers();
 
@@ -434,6 +483,7 @@ namespace Xunlan::DX12
         }
         resources.clear();
     }
+    
     void DX12RHI::ReleaseHeapsAndDeferredResources()
     {
         for (uint32 i = 0; i < NUM_FRAME_BUFFERS; ++i)
@@ -444,5 +494,113 @@ namespace Xunlan::DX12
         m_rtvHeap.reset();
         m_dsvHeap.reset();
         m_srvHeap.reset();
+    }
+
+    void DX12RHI::SetRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
+    {
+        m_currRTFormats.clear();
+
+        std::vector<CD3DX12_RESOURCE_BARRIER> barriers;
+        std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
+        D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};
+
+        for (auto& rt : rts)
+        {
+            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(rt);
+            assert(dx12RT);
+
+            rtvs.push_back(dx12RT->GetRTV().handleCPU);
+
+            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+                dx12RT->GetResource(),
+                dx12RT->RT_INIT_STATE,
+                D3D12_RESOURCE_STATE_RENDER_TARGET)
+            );
+
+            m_currRTFormats.push_back(dx12RT->GetRTFormat());
+        }
+
+        if (depthBuffer)
+        {
+            const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
+
+            m_currDSFormat = dx12DepthBuffer->GetDSFormat();
+            dsv = dx12DepthBuffer->GetDSV().handleCPU;
+
+            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+                dx12DepthBuffer->GetResource(),
+                dx12DepthBuffer->DS_INIT_STATE,
+                D3D12_RESOURCE_STATE_DEPTH_WRITE
+            ));
+        }
+        else
+        {
+            m_currDSFormat = DXGI_FORMAT_UNKNOWN;
+        }
+
+        assert(barriers.size() > 0);
+
+        cmdList.ResourceBarrier((uint32)barriers.size(), barriers.data());
+        cmdList.OMSetRenderTargets(
+            (uint32)rtvs.size(),
+            (rtvs.size() > 0) ? rtvs.data() : nullptr,
+            FALSE,
+            depthBuffer ? &dsv : nullptr
+        );
+    }
+    
+    void DX12RHI::ClearRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
+    {
+        for (auto& rt : rts)
+        {
+            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(rt);
+            assert(dx12RT);
+
+            cmdList.ClearRenderTargetView(dx12RT->GetRTV().handleCPU, m_clearColor, 0, nullptr);
+        }
+
+        if (depthBuffer)
+        {
+            const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
+
+            cmdList.ClearDepthStencilView(
+                dx12DepthBuffer->GetDSV().handleCPU,
+                D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
+                1.0f, 0,
+                0, nullptr
+            );
+        }
+    }
+    
+    void DX12RHI::ResetRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
+    {
+        std::vector<CD3DX12_RESOURCE_BARRIER> barriers;
+
+        for (auto& rt : rts)
+        {
+            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(rt);
+            assert(dx12RT);
+
+            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+                dx12RT->GetResource(),
+                D3D12_RESOURCE_STATE_RENDER_TARGET,
+                dx12RT->RT_INIT_STATE)
+            );
+        }
+
+        if (depthBuffer)
+        {
+            const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
+
+            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+                dx12DepthBuffer->GetResource(),
+                D3D12_RESOURCE_STATE_DEPTH_WRITE,
+                dx12DepthBuffer->DS_INIT_STATE)
+            );
+        }
+
+        assert(barriers.size() > 0);
+
+        cmdList.ResourceBarrier((uint32)barriers.size(), barriers.data());
     }
 }

@@ -14,7 +14,7 @@ namespace Xunlan::DX12
 
     public:
 
-        virtual void Bind(const Ref<RenderContext>& context) const override;
+        virtual void Bind(Ref<RenderContext> context) const override;
 
     private:
 

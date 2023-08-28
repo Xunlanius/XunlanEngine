@@ -8,6 +8,8 @@
 #include "DX12GPUVisibleDescriptorHeap.h"
 #include "DX12Upload.h"
 #include "DX12Helper.h"
+#include "Texture/DX12RenderTarget.h"
+#include "Texture/DX12DepthBuffer.h"
 #include "DX12Material.h"
 #include "Helper/d3dx12.h"
 
@@ -32,25 +34,38 @@ namespace Xunlan::DX12
         virtual uint32 GetHeight() override { return m_surface->GetHeight(); }
         virtual void Resize(uint32 width, uint32 height) override;
 
-        DXGI_FORMAT GetRTFormat() const { return m_currRTFormat; }
+        const std::vector<DXGI_FORMAT>& GetRTFormats() const { return m_currRTFormats; }
         DXGI_FORMAT GetDSFormat() const { return m_currDSFormat; }
 
         virtual Ref<RenderContext> CreateRenderContext() override;
         virtual void Execute(Ref<RenderContext>& context) override;
         virtual void Present() override { m_surface->Present(); }
 
-        virtual void SetRenderTarget(const Ref<RenderContext>& context, const CRef<RenderTarget>& renderTarget) override;
-        virtual void ClearRenderTarget(const Ref<RenderContext>& context, const CRef<RenderTarget>& renderTarget) override;
-        virtual void ResetRenderTarget(const Ref<RenderContext>& context, const CRef<RenderTarget>& renderTarget) override;
-        virtual void SetViewport(const Ref<RenderContext>& context, uint32 x, uint32 y, uint32 width, uint32 height) override;
+        virtual void SetRT(Ref<RenderContext> context) override;
+        virtual void SetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts) override;
+        virtual void SetRT(Ref<RenderContext> context, CRef<DepthBuffer> depthBuffer) override;
+        virtual void SetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer) override;
+
+        virtual void ClearRT(Ref<RenderContext> context) override;
+        virtual void ClearRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts) override;
+        virtual void ClearRT(Ref<RenderContext> context, CRef<DepthBuffer> depthBuffer) override;
+        virtual void ClearRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer) override;
+
+        virtual void ResetRT(Ref<RenderContext> context) override;
+        virtual void ResetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts) override;
+        virtual void ResetRT(Ref<RenderContext> context, CRef<DepthBuffer> depthBuffer) override;
+        virtual void ResetRT(Ref<RenderContext> context, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer) override;
+
+        virtual void SetViewport(Ref<RenderContext> context, uint32 x, uint32 y, uint32 width, uint32 height) override;
 
         virtual Ref<Mesh> CreateMesh(const CRef<MeshRawData>& meshRawData) override;
         virtual Ref<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, const std::string& functionName) override;
         virtual Ref<ImageTexture> CreateImageTexture(const CRef<RawTexture>& rawTexture) override;
-        virtual Ref<RenderTarget> CreateRenderTarget(uint32 width, uint32 height, RenderTargetUsage usage) override;
+        virtual Ref<RenderTarget> CreateRT(uint32 width, uint32 height) override;
+        virtual Ref<DepthBuffer> CreateDepthBuffer(uint32 width, uint32 height) override;
         virtual Ref<RasterizerState> CreateRasterizerState(const RasterizerStateDesc& desc) override;
         virtual Ref<DepthStencilState> CreateDepthStencilState() override;
-        virtual Ref<CBuffer> CreateConstantBuffer(CBufferType type, uint32 size) override;
+        virtual Ref<CBuffer> CreateCBuffer(CBufferType type, uint32 size) override;
         virtual Ref<Material> CreateMaterial(const std::string& name, MaterialType type, const ShaderList& shaderList) override;
         virtual Ref<RenderItem> CreateRenderItem(const Ref<Mesh>& mesh) override;
         virtual Ref<RenderItem> CreateRenderItem(const Ref<Mesh>& mesh, const std::vector<Ref<Material>>& materials) override;
@@ -94,6 +109,12 @@ namespace Xunlan::DX12
 
     private:
 
+        void SetRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer);
+        void ClearRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer);
+        void ResetRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer);
+
+    private:
+
         Microsoft::WRL::ComPtr<Factory> m_factory;
         Microsoft::WRL::ComPtr<Device> m_device;
 
@@ -107,12 +128,14 @@ namespace Xunlan::DX12
         Microsoft::WRL::ComPtr<ID3D12RootSignature> m_defaultRootSig;
         std::unordered_map<DX12PSO, Microsoft::WRL::ComPtr<ID3D12PipelineState>, DX12PSO::Hash> m_psoContainer;
 
-        DXGI_FORMAT m_currRTFormat;
+        std::vector<DXGI_FORMAT> m_currRTFormats;
         DXGI_FORMAT m_currDSFormat;
 
         std::vector<Microsoft::WRL::ComPtr<IUnknown>> m_deferredReleaseResources[NUM_FRAME_BUFFERS];
         uint32 m_deferredReleaseFlag[NUM_FRAME_BUFFERS] = {};
         std::mutex m_deferredReleaseMutex;
+
+        static constexpr float m_clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
         static constexpr D3D12_INPUT_ELEMENT_DESC m_elements[] = {
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },

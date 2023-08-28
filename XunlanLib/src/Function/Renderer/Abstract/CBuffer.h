@@ -8,14 +8,15 @@ namespace Xunlan
 {
     enum class CBufferType : uint32
     {
-        PER_OBJECT,
-        PER_MATERIAL,
-        PER_FRAME,
+        PerObject,
+        PerMaterial,
+        PerFrame,
 
-        SHADOW_MAP_INDICES,
-        TEXTURE_INDICES,
+        MeshTextures,
+        GBuffer,
+        ShadowMaps,
 
-        COUNT,
+        Count,
     };
 
     class CBuffer
@@ -32,7 +33,7 @@ namespace Xunlan
         void* GetData() const { return m_data.get(); }
         CBufferType GetType() const { return m_type; }
 
-        virtual void Bind(const Ref<RenderContext>& context) const = 0;
+        virtual void Bind(Ref<RenderContext> context) const = 0;
 
     protected:
 
@@ -111,18 +112,22 @@ namespace Xunlan
 
     constexpr uint32 MAX_NUM_SHADOW_MAPS = 4;
 
-    struct CBufferShadowMapIndices final
+    struct CBufferShadowMaps final
     {
         uint32 m_shadowMapIndices[MAX_NUM_SHADOW_MAPS];
     };
 
-    struct CBufferTextureIndices final
+    struct CBufferTextures final
     {
-        uint32 m_baseColorIndex;
+        uint32 m_albedoIndex;
         uint32 m_roughnessIndex;
         uint32 m_metallicIndex;
-        uint32 m_normalMapIndex;
-        uint32 m_heightMapIndex;
-        uint32 m_AOMapIndex;
+        uint32 m_normalIndex;
+    };
+
+    struct CBufferGBuffer final
+    {
+        uint32 m_positionIndex;
+        uint32 m_normalIndex;
     };
 }

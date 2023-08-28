@@ -1,8 +1,8 @@
 #pragma once
 
-#include "DX12Common.h"
 #include "src/Function/Renderer/Abstract/Texture.h"
-#include "DX12DescriptorHeap.h"
+#include "../DX12Common.h"
+#include "../DX12DescriptorHeap.h"
 
 namespace Xunlan::DX12
 {
@@ -23,7 +23,7 @@ namespace Xunlan::DX12
 
         ID3D12Resource* GetTexture() const { return m_texture.Get(); }
         D3D12_CPU_DESCRIPTOR_HANDLE GetSRV() const { return m_handle.handleCPU; }
-        virtual uint32 GetIndex() const override { return m_handle.index; }
+        virtual uint32 GetHeapIndex() const override { return m_handle.index; }
 
     private:
 
