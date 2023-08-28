@@ -1,5 +1,0 @@
-<Project>
-    <PropertyGroup>
-        <BaseIntermediateOutputPath>$(SolutionDir)bin\int\$(Platform)\$(Configuration)\</BaseIntermediateOutputPath>
-    </PropertyGroup>
-</Project>
