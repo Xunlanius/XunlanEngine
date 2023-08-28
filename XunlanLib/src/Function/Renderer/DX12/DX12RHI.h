@@ -102,7 +102,6 @@ namespace Xunlan::DX12
         void CreateRootSignature();
 
         std::array<CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers() const;
-        //D3D12_INPUT_LAYOUT_DESC GetInputLayout() const;
 
         void ProcessDeferredRelease(uint32 frameIndex);
         void ReleaseHeapsAndDeferredResources();

@@ -455,14 +455,6 @@ namespace Xunlan::DX12
 
         return { pointWarp, pointClamp, linearWarp, linearClamp, anisotropicWarp, anisotropicClamp };
     }
-    /*D3D12_INPUT_LAYOUT_DESC DX12RHI::GetInputLayout() const
-    {
-        D3D12_INPUT_LAYOUT_DESC inputLayout = {};
-        inputLayout.pInputElementDescs = m_elements;
-        inputLayout.NumElements = _countof(m_elements);
-
-        return inputLayout;
-    }*/
 
     void DX12RHI::ProcessDeferredRelease(uint32 frameIndex)
     {
