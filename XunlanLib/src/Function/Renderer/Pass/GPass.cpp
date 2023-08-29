@@ -10,9 +10,9 @@ namespace Xunlan
     {
         RHI& rhi = RHI::Instance();
 
-        m_albedo = rhi.CreateRT(width, height);
-        m_position = rhi.CreateRT(width, height);
-        m_normal = rhi.CreateRT(width, height);
+        m_albedo = rhi.CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
+        m_position = rhi.CreateRT(width, height, TextureFormat::R32G32B32A32_Float);
+        m_normal = rhi.CreateRT(width, height, TextureFormat::R16G16B16A16_Snorm);
         m_depthBuffer = rhi.CreateDepthBuffer(width, height);
 
         m_gBuffer = rhi.CreateCBuffer(CBufferType::GBuffer, sizeof(CStruct::GBuffer));

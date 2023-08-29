@@ -10,7 +10,7 @@ namespace Xunlan::DX12
     {
     public:
 
-        DX12RenderTarget(uint32 width, uint32 height);
+        DX12RenderTarget(uint32 width, uint32 height, TextureFormat format);
         virtual ~DX12RenderTarget();
 
     public:
@@ -18,7 +18,7 @@ namespace Xunlan::DX12
         ID3D12Resource* GetResource() const { return m_resource.Get(); }
         DescriptorHandle GetRTV() const { return m_rtv; }
         DescriptorHandle GetSRV() const { return m_srv; }
-        DXGI_FORMAT GetRTFormat() const { return m_format; }
+        DXGI_FORMAT GetDXFormat() const { return m_dxFormat; }
 
         virtual void Resize(uint32 width, uint32 height) override;
         virtual uint32 GetHeapIndex() const override { return m_srv.index; }
@@ -36,6 +36,6 @@ namespace Xunlan::DX12
         DescriptorHandle m_rtv;
         DescriptorHandle m_srv;
 
-        DXGI_FORMAT m_format = DXGI_FORMAT_UNKNOWN;
+        DXGI_FORMAT m_dxFormat = DXGI_FORMAT_UNKNOWN;
     };
 }

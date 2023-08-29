@@ -63,7 +63,7 @@ namespace Xunlan
         virtual Ref<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, const std::string& functionName) = 0;
         Ref<ImageTexture> CreateImageTexture(const std::filesystem::path& path);
         virtual Ref<ImageTexture> CreateImageTexture(const CRef<RawTexture>& rawTexture) = 0;
-        virtual Ref<RenderTarget> CreateRT(uint32 width, uint32 height) = 0;
+        virtual Ref<RenderTarget> CreateRT(uint32 width, uint32 height, TextureFormat format) = 0;
         virtual Ref<DepthBuffer> CreateDepthBuffer(uint32 width, uint32 height) = 0;
         virtual Ref<RasterizerState> CreateRasterizerState(const RasterizerStateDesc& desc) = 0;
         virtual Ref<DepthStencilState> CreateDepthStencilState() = 0;

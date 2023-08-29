@@ -29,7 +29,7 @@ namespace Xunlan::DX12
         DX12RHI& rhi = DX12RHI::Instance();
         Device& device = rhi.GetDevice();
 
-        m_format = DXGI_FORMAT_D32_FLOAT;
+        m_dxFormat = DXGI_FORMAT_D32_FLOAT;
 
         Check(device.CreateCommittedResource(
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
@@ -42,7 +42,7 @@ namespace Xunlan::DX12
                 D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
             ),
             DS_INIT_STATE,
-            &CD3DX12_CLEAR_VALUE(m_format, 1.0f, 0),
+            &CD3DX12_CLEAR_VALUE(m_dxFormat, 1.0f, 0),
             IID_PPV_ARGS(&m_resource)
         ));
 
@@ -50,7 +50,7 @@ namespace Xunlan::DX12
         m_srv = rhi.GetSRVHeap().Allocate();
 
         D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-        dsvDesc.Format = m_format;
+        dsvDesc.Format = m_dxFormat;
         dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 
         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};

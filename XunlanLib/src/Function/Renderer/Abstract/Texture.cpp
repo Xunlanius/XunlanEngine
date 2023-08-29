@@ -17,8 +17,8 @@ namespace Xunlan
     {
         switch (m_format)
         {
-            case TextureFormat::R8G8B8: return 3;
-            case TextureFormat::R8G8B8A8: return 4;
+            case TextureFormat::R8G8B8_U: return 3;
+            case TextureFormat::R8G8B8A8_Unorm: return 4;
             default: assert(false); return 0;
         }
     }
@@ -30,8 +30,8 @@ namespace Xunlan
     {
         switch (m_format)
         {
-            case TextureFormat::R8G8B8: return 3;
-            case TextureFormat::R8G8B8A8: return 4;
+            case TextureFormat::R8G8B8_U: return 3;
+            case TextureFormat::R8G8B8A8_Unorm: return 4;
             default: assert(false); return 0;
         }
     }

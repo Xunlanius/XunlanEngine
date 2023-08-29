@@ -18,7 +18,7 @@ namespace Xunlan::DX12
         ID3D12Resource* GetResource() const { return m_resource.Get(); }
         DescriptorHandle GetDSV() const { return m_dsv; }
         DescriptorHandle GetSRV() const { return m_srv; }
-        DXGI_FORMAT GetDSFormat() const { return m_format; }
+        DXGI_FORMAT GetDXFormat() const { return m_dxFormat; }
         virtual uint32 GetHeapIndex() const override { return m_srv.index; }
 
         virtual void Resize(uint32 width, uint32 height) override;
@@ -34,6 +34,6 @@ namespace Xunlan::DX12
         DescriptorHandle m_dsv;
         DescriptorHandle m_srv;
 
-        DXGI_FORMAT m_format = DXGI_FORMAT_UNKNOWN;
+        DXGI_FORMAT m_dxFormat = DXGI_FORMAT_UNKNOWN;
     };
 }

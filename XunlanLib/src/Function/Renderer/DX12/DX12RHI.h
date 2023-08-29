@@ -61,7 +61,7 @@ namespace Xunlan::DX12
         virtual Ref<Mesh> CreateMesh(const CRef<MeshRawData>& meshRawData) override;
         virtual Ref<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, const std::string& functionName) override;
         virtual Ref<ImageTexture> CreateImageTexture(const CRef<RawTexture>& rawTexture) override;
-        virtual Ref<RenderTarget> CreateRT(uint32 width, uint32 height) override;
+        virtual Ref<RenderTarget> CreateRT(uint32 width, uint32 height, TextureFormat format) override;
         virtual Ref<DepthBuffer> CreateDepthBuffer(uint32 width, uint32 height) override;
         virtual Ref<RasterizerState> CreateRasterizerState(const RasterizerStateDesc& desc) override;
         virtual Ref<DepthStencilState> CreateDepthStencilState() override;

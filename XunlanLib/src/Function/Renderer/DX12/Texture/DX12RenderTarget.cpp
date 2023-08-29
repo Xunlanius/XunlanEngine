@@ -5,8 +5,8 @@
 
 namespace Xunlan::DX12
 {
-    DX12RenderTarget::DX12RenderTarget(uint32 width, uint32 height)
-        : RenderTarget(width, height)
+    DX12RenderTarget::DX12RenderTarget(uint32 width, uint32 height, TextureFormat format)
+        : RenderTarget(width, height, format)
     {
         CreateRT(width, height);
     }
@@ -29,7 +29,16 @@ namespace Xunlan::DX12
         DX12RHI& rhi = DX12RHI::Instance();
         Device& device = rhi.GetDevice();
 
-        m_format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        switch (m_format)
+        {
+        case TextureFormat::R8G8B8A8_Unorm: m_dxFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+            break;
+        case TextureFormat::R16G16B16A16_Snorm: m_dxFormat = DXGI_FORMAT_R16G16B16A16_SNORM;
+            break;
+        case TextureFormat::R32G32B32A32_Float: m_dxFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+            break;
+        default: assert(false);
+        }
 
         const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -37,14 +46,14 @@ namespace Xunlan::DX12
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
             D3D12_HEAP_FLAG_NONE,
             &CD3DX12_RESOURCE_DESC::Tex2D(
-                m_format,
+                m_dxFormat,
                 width, height,
                 1, 0,
                 1, 0,
                 D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
             ),
             RT_INIT_STATE,
-            &CD3DX12_CLEAR_VALUE(m_format, clearColor),
+            &CD3DX12_CLEAR_VALUE(m_dxFormat, clearColor),
             IID_PPV_ARGS(&m_resource)
         ));
 

@@ -7,8 +7,10 @@ namespace Xunlan
 {
     enum class TextureFormat : uint32
     {
-        R8G8B8,
-        R8G8B8A8,
+        R8G8B8_U,
+        R8G8B8A8_Unorm,
+        R16G16B16A16_Snorm,
+        R32G32B32A32_Float,
 
         COUNT,
     };
@@ -90,12 +92,16 @@ namespace Xunlan
     {
     protected:
 
-        explicit RenderTarget(uint32 width, uint32 height)
-            : Texture(TextureType::RenderTarget, width, height) {}
+        explicit RenderTarget(uint32 width, uint32 height, TextureFormat format)
+            : Texture(TextureType::RenderTarget, width, height), m_format(format) {}
 
     public:
 
         virtual void Resize(uint32 width, uint32 height) { m_width = width; m_height = height; }
+
+    protected:
+
+        const TextureFormat m_format;
     };
 
     class DepthBuffer : public Texture

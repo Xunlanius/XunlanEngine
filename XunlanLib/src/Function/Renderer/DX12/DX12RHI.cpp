@@ -34,7 +34,12 @@ namespace Xunlan::DX12
         const HWND hwnd = (HWND)windowSystem.GetHandle();
 
         m_surface = std::make_unique<DX12Surface>(hwnd, width, height);
-        m_surface->CreateSwapChain(m_factory.Get(), GetDevice(), m_mainCommand->GetCommandQueue(), GetRTVHeap());
+        m_surface->CreateSwapChain(
+            m_factory.Get(),
+            GetDevice(),
+            m_mainCommand->GetCommandQueue(),
+            GetRTVHeap()
+        );
 
         CreateRootSignature();
     }
@@ -265,9 +270,9 @@ namespace Xunlan::DX12
     {
         return DX12ImageTexture::Create(rawTexture);
     }
-    Ref<RenderTarget> DX12RHI::CreateRT(uint32 width, uint32 height)
+    Ref<RenderTarget> DX12RHI::CreateRT(uint32 width, uint32 height, TextureFormat format)
     {
-        return MakeRef<DX12RenderTarget>(width, height);
+        return MakeRef<DX12RenderTarget>(width, height, format);
     }
     Ref<DepthBuffer> DX12RHI::CreateDepthBuffer(uint32 width, uint32 height)
     {
@@ -508,14 +513,14 @@ namespace Xunlan::DX12
                 D3D12_RESOURCE_STATE_RENDER_TARGET)
             );
 
-            m_currRTFormats.push_back(dx12RT->GetRTFormat());
+            m_currRTFormats.push_back(dx12RT->GetDXFormat());
         }
 
         if (depthBuffer)
         {
             const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
 
-            m_currDSFormat = dx12DepthBuffer->GetDSFormat();
+            m_currDSFormat = dx12DepthBuffer->GetDXFormat();
             dsv = dx12DepthBuffer->GetDSV().handleCPU;
 
             barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(

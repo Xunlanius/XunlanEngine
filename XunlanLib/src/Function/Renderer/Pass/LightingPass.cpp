@@ -9,7 +9,7 @@ namespace Xunlan
     MeshLightPass::MeshLightPass(uint32 width, uint32 height)
         : m_width(width), m_height(height)
     {
-        m_mainRT = RHI::Instance().CreateRT(width, height);
+        m_mainRT = RHI::Instance().CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
         m_canvas = RenderPassBase::CreateCanvas();
         m_lighting = CreateMaterial();
     }
