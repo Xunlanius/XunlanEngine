@@ -1,5 +1,5 @@
-#ifndef HELPER
-#define HELPER
+#ifndef TRANSFORM
+#define TRANSFORM
 
 #include "Data/CBuffer.hlsli"
 
