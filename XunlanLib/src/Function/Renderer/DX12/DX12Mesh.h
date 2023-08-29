@@ -9,12 +9,12 @@ namespace Xunlan::DX12
     {
     public:
 
-        DX12Submesh(const Ref<DataBuffer>& vertexBuffer, const Ref<DataBuffer>& indexBuffer, PrimitiveType primitiveType, uint32 materialIndex)
+        DX12Submesh(Ref<DataBuffer> vertexBuffer, Ref<DataBuffer> indexBuffer, PrimitiveType primitiveType, uint32 materialIndex)
             : Submesh(vertexBuffer, indexBuffer, primitiveType, materialIndex) {}
 
     public:
 
-        static Ref<DX12Submesh> Create(const CRef<SubmeshRawData>& submeshRawData);
+        static Ref<DX12Submesh> Create(CRef<SubmeshRawData> submeshRawData);
     };
 
     class DX12Mesh final : public Mesh
@@ -25,6 +25,6 @@ namespace Xunlan::DX12
 
     public:
 
-        static Ref<DX12Mesh> Create(const CRef<MeshRawData>& meshRawData);
+        static Ref<DX12Mesh> Create(CRef<MeshRawData> meshRawData);
     };
 }

@@ -33,7 +33,7 @@ namespace Xunlan
     {
     protected:
 
-        explicit Submesh(const Ref<DataBuffer>& verticesView, const Ref<DataBuffer>& indicesView, PrimitiveType primitiveType, uint32 materialIndex)
+        explicit Submesh(Ref<DataBuffer> verticesView, Ref<DataBuffer> indicesView, PrimitiveType primitiveType, uint32 materialIndex)
             : m_verticesView(verticesView), m_indicesView(indicesView), m_primitiveType(primitiveType), m_materialIndex(materialIndex) {}
         DISABLE_COPY(Submesh)
         DISABLE_MOVE(Submesh)
@@ -70,7 +70,7 @@ namespace Xunlan
         void SetNumMaterials(uint32 value) { m_numMaterials = value; }
         const std::vector<Ref<Submesh>>& GetSubmeshes() const { return m_submeshes; }
 
-        void AddSubmesh(const Ref<Submesh>& submeshView) { m_submeshes.push_back(submeshView); }
+        void AddSubmesh(Ref<Submesh> submeshView) { m_submeshes.push_back(submeshView); }
 
     protected:
 

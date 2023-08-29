@@ -11,7 +11,7 @@ namespace Xunlan::DX12
     public:
 
         DX12ImageTexture(
-            const CRef<RawTexture>& rawTexture,
+            CRef<RawTexture> rawTexture,
             Microsoft::WRL::ComPtr<ID3D12Resource> texture,
             const DescriptorHandle& handle)
             : ImageTexture(rawTexture), m_texture(texture), m_handle(handle) {}
@@ -19,7 +19,7 @@ namespace Xunlan::DX12
 
     public:
 
-        static Ref<ImageTexture> Create(const CRef<RawTexture>& rawTexture);
+        static Ref<ImageTexture> Create(CRef<RawTexture> rawTexture);
 
         ID3D12Resource* GetTexture() const { return m_texture.Get(); }
         D3D12_CPU_DESCRIPTOR_HANDLE GetSRV() const { return m_handle.handleCPU; }

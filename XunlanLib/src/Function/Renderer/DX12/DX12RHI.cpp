@@ -258,7 +258,7 @@ namespace Xunlan::DX12
 
 #pragma region CreateResource
 
-    Ref<Mesh> DX12RHI::CreateMesh(const CRef<MeshRawData>& meshRawData)
+    Ref<Mesh> DX12RHI::CreateMesh(CRef<MeshRawData> meshRawData)
     {
         return DX12Mesh::Create(meshRawData);
     }
@@ -266,7 +266,7 @@ namespace Xunlan::DX12
     {
         return DX12Shader::Create(type, path, functionName);
     }
-    Ref<ImageTexture> DX12RHI::CreateImageTexture(const CRef<RawTexture>& rawTexture)
+    Ref<ImageTexture> DX12RHI::CreateImageTexture(CRef<RawTexture> rawTexture)
     {
         return DX12ImageTexture::Create(rawTexture);
     }
@@ -294,11 +294,11 @@ namespace Xunlan::DX12
     {
         return MakeRef<DX12Material>(name, type, shaderList);
     }
-    Ref<RenderItem> DX12RHI::CreateRenderItem(const Ref<Mesh>& mesh)
+    Ref<RenderItem> DX12RHI::CreateRenderItem(Ref<Mesh> mesh)
     {
         return MakeRef<DX12RenderItem>(mesh);
     }
-    Ref<RenderItem> DX12RHI::CreateRenderItem(const Ref<Mesh>& mesh, const std::vector<Ref<Material>>& materials)
+    Ref<RenderItem> DX12RHI::CreateRenderItem(Ref<Mesh> mesh, const std::vector<Ref<Material>>& materials)
     {
         return MakeRef<DX12RenderItem>(mesh, materials);
     }

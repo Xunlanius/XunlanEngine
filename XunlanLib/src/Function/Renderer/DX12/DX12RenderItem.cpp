@@ -6,21 +6,21 @@
 
 namespace Xunlan::DX12
 {
-    void DX12RenderItem::Render(const Ref<RenderContext>& context) const
+    void DX12RenderItem::Render(Ref<RenderContext> context) const
     {
         if (m_materials.empty() || !GetMaterial(0)) { assert(false); return; }
 
         DrawMesh(context, nullptr);
     }
-    void DX12RenderItem::Render(const Ref<RenderContext>& context, const CRef<Material>& overrideMaterial) const
+    void DX12RenderItem::Render(Ref<RenderContext> context, CRef<Material> overrideMaterial) const
     {
         DrawMesh(context, overrideMaterial);
     }
 
-    void DX12RenderItem::DrawMesh(const Ref<RenderContext>& context, const CRef<Material>& overrideMaterial) const
+    void DX12RenderItem::DrawMesh(Ref<RenderContext> context, CRef<Material> overrideMaterial) const
     {
         DX12RHI& rhi = DX12RHI::Instance();
-        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
+        Ref<DX12RenderContext> dx12Context = CastTo<DX12RenderContext>(context);
         GraphicsCommandList* cmdList = dx12Context->m_cmdList;
 
         const std::vector<Ref<Submesh>> submeshes = m_mesh->GetSubmeshes();
@@ -41,8 +41,8 @@ namespace Xunlan::DX12
 
             m_perObject->Bind(context);
 
-            Ref<DX12DataBuffer> verticesView = std::dynamic_pointer_cast<DX12DataBuffer>(submesh->GetVerticesView());
-            Ref<DX12DataBuffer> indicesView = std::dynamic_pointer_cast<DX12DataBuffer>(submesh->GetIndicesView());
+            Ref<DX12DataBuffer> verticesView = CastTo<DX12DataBuffer>(submesh->GetVerticesView());
+            Ref<DX12DataBuffer> indicesView = CastTo<DX12DataBuffer>(submesh->GetIndicesView());
 
             /*D3D12_VERTEX_BUFFER_VIEW dx12VerticesView = {};
             dx12VerticesView.BufferLocation = verticesView->GetGPUAddress();

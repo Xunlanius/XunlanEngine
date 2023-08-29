@@ -59,18 +59,18 @@ namespace Xunlan
         virtual void SetViewport(Ref<RenderContext> context, uint32 x, uint32 y, uint32 width, uint32 height) = 0;
 
         Ref<Mesh> CreateMesh(const std::filesystem::path& path);
-        virtual Ref<Mesh> CreateMesh(const CRef<MeshRawData>& meshRawData) = 0;
+        virtual Ref<Mesh> CreateMesh(CRef<MeshRawData> meshRawData) = 0;
         virtual Ref<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, const std::string& functionName) = 0;
         Ref<ImageTexture> CreateImageTexture(const std::filesystem::path& path);
-        virtual Ref<ImageTexture> CreateImageTexture(const CRef<RawTexture>& rawTexture) = 0;
+        virtual Ref<ImageTexture> CreateImageTexture(CRef<RawTexture> rawTexture) = 0;
         virtual Ref<RenderTarget> CreateRT(uint32 width, uint32 height, TextureFormat format) = 0;
         virtual Ref<DepthBuffer> CreateDepthBuffer(uint32 width, uint32 height) = 0;
         virtual Ref<RasterizerState> CreateRasterizerState(const RasterizerStateDesc& desc) = 0;
         virtual Ref<DepthStencilState> CreateDepthStencilState() = 0;
         virtual Ref<CBuffer> CreateCBuffer(CBufferType type, uint32 size) = 0;
         virtual Ref<Material> CreateMaterial(const std::string& name, MaterialType type, const ShaderList& shaderList) = 0;
-        virtual Ref<RenderItem> CreateRenderItem(const Ref<Mesh>& mesh) = 0;
-        virtual Ref<RenderItem> CreateRenderItem(const Ref<Mesh>& mesh, const std::vector<Ref<Material>>& materials) = 0;
+        virtual Ref<RenderItem> CreateRenderItem(Ref<Mesh> mesh) = 0;
+        virtual Ref<RenderItem> CreateRenderItem(Ref<Mesh> mesh, const std::vector<Ref<Material>>& materials) = 0;
 
     protected:
 

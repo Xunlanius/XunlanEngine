@@ -14,7 +14,7 @@ namespace Xunlan::DX12
         rhi.DeferredRelease(m_texture);
     }
 
-    Ref<ImageTexture> DX12ImageTexture::Create(const CRef<RawTexture>& rawTexture)
+    Ref<ImageTexture> DX12ImageTexture::Create(CRef<RawTexture> rawTexture)
     {
         DX12RHI& rhi = DX12RHI::Instance();
         Device& device = rhi.GetDevice();

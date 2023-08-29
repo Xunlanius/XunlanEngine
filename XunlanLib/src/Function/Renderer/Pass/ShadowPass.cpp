@@ -31,14 +31,20 @@ namespace Xunlan
     {
         RHI& rhi = RHI::Instance();
 
-        rhi.SetRT(context, m_depth);
-        rhi.ClearRT(context, m_depth);
+        std::vector<CRef<RenderTarget>> rts = {
+            m_fluxLS,
+            m_positionLS,
+            m_normalLS
+        };
+
+        rhi.SetRT(context, rts, m_depth);
+        rhi.ClearRT(context, rts, m_depth);
         rhi.SetViewport(context, 0, 0, m_width, m_height);
 
         CollectRenderItems();
         RenderItems(context);
 
-        rhi.ResetRT(context, m_depth);
+        rhi.ResetRT(context, rts, m_depth);
 
         CStruct::ShadowMaps* shadowMapIndices = (CStruct::ShadowMaps*)m_shadowMaps->GetData();
         shadowMapIndices->m_shadowMapIndices[0] = m_depth->GetHeapIndex();

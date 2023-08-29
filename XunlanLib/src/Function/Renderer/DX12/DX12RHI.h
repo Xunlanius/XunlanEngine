@@ -58,30 +58,22 @@ namespace Xunlan::DX12
 
         virtual void SetViewport(Ref<RenderContext> context, uint32 x, uint32 y, uint32 width, uint32 height) override;
 
-        virtual Ref<Mesh> CreateMesh(const CRef<MeshRawData>& meshRawData) override;
+        virtual Ref<Mesh> CreateMesh(CRef<MeshRawData> meshRawData) override;
         virtual Ref<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, const std::string& functionName) override;
-        virtual Ref<ImageTexture> CreateImageTexture(const CRef<RawTexture>& rawTexture) override;
+        virtual Ref<ImageTexture> CreateImageTexture(CRef<RawTexture> rawTexture) override;
         virtual Ref<RenderTarget> CreateRT(uint32 width, uint32 height, TextureFormat format) override;
         virtual Ref<DepthBuffer> CreateDepthBuffer(uint32 width, uint32 height) override;
         virtual Ref<RasterizerState> CreateRasterizerState(const RasterizerStateDesc& desc) override;
         virtual Ref<DepthStencilState> CreateDepthStencilState() override;
         virtual Ref<CBuffer> CreateCBuffer(CBufferType type, uint32 size) override;
         virtual Ref<Material> CreateMaterial(const std::string& name, MaterialType type, const ShaderList& shaderList) override;
-        virtual Ref<RenderItem> CreateRenderItem(const Ref<Mesh>& mesh) override;
-        virtual Ref<RenderItem> CreateRenderItem(const Ref<Mesh>& mesh, const std::vector<Ref<Material>>& materials) override;
+        virtual Ref<RenderItem> CreateRenderItem(Ref<Mesh> mesh) override;
+        virtual Ref<RenderItem> CreateRenderItem(Ref<Mesh> mesh, const std::vector<Ref<Material>>& materials) override;
 
     public:
 
         template<typename T>
-        void DeferredRelease(Microsoft::WRL::ComPtr<T>& resource)
-        {
-            if (!resource) return;
-
-            Microsoft::WRL::ComPtr<IUnknown> res;
-            Check(resource.As(&res));
-            DeferredRelease(res);
-            resource.Reset();
-        }
+        void DeferredRelease(Microsoft::WRL::ComPtr<T>& resource);
         void DeferredRelease(Microsoft::WRL::ComPtr<IUnknown>& resource);
         void SetDeferredReleaseFlag(uint32 frameIndex) { m_deferredReleaseFlag[frameIndex] = 1; }
 
@@ -143,4 +135,15 @@ namespace Xunlan::DX12
             { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         };
     };
+
+    template<typename T>
+    inline void DX12RHI::DeferredRelease(Microsoft::WRL::ComPtr<T>& resource)
+    {
+        if (!resource) return;
+
+        Microsoft::WRL::ComPtr<IUnknown> res;
+        Check(resource.As(&res));
+        DeferredRelease(res);
+        resource.Reset();
+    }
 }

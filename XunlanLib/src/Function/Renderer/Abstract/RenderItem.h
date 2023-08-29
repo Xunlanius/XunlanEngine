@@ -11,8 +11,8 @@ namespace Xunlan
     {
     protected:
 
-        explicit RenderItem(const Ref<Mesh>& mesh);
-        explicit RenderItem(const Ref<Mesh>& mesh, const std::vector<Ref<Material>>& materials);
+        explicit RenderItem(Ref<Mesh> mesh);
+        explicit RenderItem(Ref<Mesh> mesh, const std::vector<Ref<Material>>& materials);
         DISABLE_COPY(RenderItem)
         DISABLE_MOVE(RenderItem)
         virtual ~RenderItem() = default;
@@ -22,8 +22,8 @@ namespace Xunlan
         Ref<CBuffer> GetPerObject() const { return m_perObject; }
         Ref<Material> GetMaterial(uint32 index) const { assert(index < m_materials.size()); return m_materials[index]; }
 
-        virtual void Render(const Ref<RenderContext>& context) const = 0;
-        virtual void Render(const Ref<RenderContext>& context, const CRef<Material>& overrideMaterial) const = 0;
+        virtual void Render(Ref<RenderContext> context) const = 0;
+        virtual void Render(Ref<RenderContext> context, CRef<Material> overrideMaterial) const = 0;
 
     protected:
 

@@ -9,18 +9,18 @@ namespace Xunlan::DX12
     {
     public:
 
-        explicit DX12RenderItem(const Ref<Mesh>& mesh)
+        explicit DX12RenderItem(Ref<Mesh> mesh)
             : RenderItem(mesh) {}
-        explicit DX12RenderItem(const Ref<Mesh>& mesh, const std::vector<Ref<Material>>& materials)
+        explicit DX12RenderItem(Ref<Mesh> mesh, const std::vector<Ref<Material>>& materials)
             : RenderItem(mesh, materials) {}
 
     public:
 
-        virtual void Render(const Ref<RenderContext>& context) const override;
-        virtual void Render(const Ref<RenderContext>& context, const CRef<Material>& overrideMaterial) const override;
+        virtual void Render(Ref<RenderContext> context) const override;
+        virtual void Render(Ref<RenderContext> context, CRef<Material> overrideMaterial) const override;
 
     private:
 
-        void DrawMesh(const Ref<RenderContext>& context, const CRef<Material>& overrideMaterial) const;
+        void DrawMesh(Ref<RenderContext> context, CRef<Material> overrideMaterial) const;
     };
 }
