@@ -1,5 +1,5 @@
-#ifndef TEXTURE
-#define TEXTURE
+#ifndef SAMPLER
+#define SAMPLER
 
 SamplerState PointWrap : register(s0);
 SamplerState PointClamp : register(s1);

@@ -80,6 +80,7 @@ struct MeshTextures
 
 struct GBuffer
 {
+    uint albedoIndex;
     uint positionIndex;
     uint normalIndex;
 };

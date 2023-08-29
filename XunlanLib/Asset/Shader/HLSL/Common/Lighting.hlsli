@@ -1,9 +1,9 @@
 #ifndef LIGHT
 #define LIGHT
 
-#include "CBuffer.hlsli"
-#include "Helper.hlsli"
-#include "TextureBuffer.hlsli"
+#include "Data/CBuffer.hlsli"
+#include "Data/Sampler.hlsli"
+#include "Transform.hlsli"
 
 float PercentageCloserFilteringSoftShadow(Texture2D shadowMap, SamplerState sample, float4 lightPos)
 {
@@ -36,7 +36,7 @@ float HardShadow(Texture2D shadowMap, SamplerState sample, float4 lightPos)
     return lightPos.z - bias > depth ? 0.0f : 1.0f;
 }
 
-float CalculationShadow(Texture2D shadowMap, SamplerState sample, float4 lightPos)
+float ComputeShadow(Texture2D shadowMap, SamplerState sample, float4 lightPos)
 {
     lightPos.xyz /= lightPos.w;
 
@@ -74,7 +74,7 @@ float3 ComputeDirectionLight(float3 worldPos, float3 worldNormal)
         const float3 lightColor = light.color * light.intensity;
         
         Texture2D shadowMap = ResourceDescriptorHeap[g_shadowMaps.shadowMapIndices[i]];
-        const float shadow = CalculationShadow(shadowMap, LinearWarp, mul(light.viewProj, float4(worldPos, 1.0f)));
+        const float shadow = ComputeShadow(shadowMap, LinearWarp, mul(light.viewProj, float4(worldPos, 1.0f)));
         
         color += (diffuse + specular) * lightColor * shadow;
     }

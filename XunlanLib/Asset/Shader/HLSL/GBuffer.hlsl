@@ -1,5 +1,4 @@
-#include "Common/VertexData.hlsli"
-#include "Common/Helper.hlsli"
+#include "Common/Common.hlsli"
 
 struct VSOutput
 {

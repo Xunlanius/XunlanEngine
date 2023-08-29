@@ -1,7 +1,7 @@
 #ifndef HELPER
 #define HELPER
 
-#include "CBuffer.hlsli"
+#include "Data/CBuffer.hlsli"
 
 float4 GetPos(float3 position)
 {

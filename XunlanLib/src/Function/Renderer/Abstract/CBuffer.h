@@ -127,6 +127,7 @@ namespace Xunlan
 
     struct CBufferGBuffer final
     {
+        uint32 m_albedoIndex;
         uint32 m_positionIndex;
         uint32 m_normalIndex;
     };
