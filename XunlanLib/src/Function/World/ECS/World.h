@@ -47,7 +47,7 @@ namespace Xunlan::ECS
     };
 
     template<typename SystemType, typename... ComArgs>
-    void World::RegisterSystem()
+    inline void World::RegisterSystem()
     {
         static_assert(sizeof...(ComArgs) > 0, "System needs at least one component.");
 
@@ -64,7 +64,7 @@ namespace Xunlan::ECS
     }
 
     template<ComponentConcept T>
-    bool World::HasComponent(EntityID entityID)
+    inline bool World::HasComponent(EntityID entityID)
     {
         if (!IDGetter<Component>::IsRegistered<T>()) return false;
 
@@ -73,14 +73,14 @@ namespace Xunlan::ECS
     }
 
     template<ComponentConcept... Args>
-    std::tuple<Args&...> World::GetComponent(EntityID entityID)
+    inline std::tuple<Args&...> World::GetComponent(EntityID entityID)
     {
         assert(HasComponent<Args>(entityID) && ...);
         return m_componentManager.GetComponent<Args...>(entityID);
     }
 
     template<ComponentConcept... Args>
-    void World::AddComponent(EntityID entityID, const Args&... components)
+    inline void World::AddComponent(EntityID entityID, const Args&... components)
     {
         assert(!HasComponent<Args>(entityID) && ...);
 
@@ -90,7 +90,7 @@ namespace Xunlan::ECS
     }
 
     template<ComponentConcept... Args>
-    void World::RemoveComponent(EntityID entityID)
+    inline void World::RemoveComponent(EntityID entityID)
     {
         assert(HasComponent<Args>(entityID) && ...);
 
