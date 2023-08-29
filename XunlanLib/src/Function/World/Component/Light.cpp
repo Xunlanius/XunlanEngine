@@ -11,8 +11,8 @@ namespace Xunlan
         const XMVECTOR pos = XMLoadFloat3(&transformer.m_position);
         const XMVECTOR dir = XMVector3Normalize(XMLoadFloat3(&direction));
 
-        const XMMATRIX view = XMMatrixLookToLH(pos, dir, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
-        const XMMATRIX proj = XMMatrixOrthographicLH(256, 256, 1.0f, 500.0f);
+        const XMMATRIX view = XMMatrixLookToLH(pos, dir, XMVectorSet(0.f, 1.f, 0.f, 0.f));
+        const XMMATRIX proj = XMMatrixOrthographicLH(128, 128, -256.f, 256.f);
 
         Math::float4x4 viewProj = {};
         XMStoreFloat4x4(&viewProj, view * proj);

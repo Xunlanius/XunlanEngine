@@ -22,6 +22,7 @@ namespace Xunlan
         FillMode m_fillMode = FillMode::SOLID;
         CullMode m_cullMode = CullMode::BACK;
         bool m_frontCounterClockWise = false;
+        bool m_depthClipEnable = true;
     };
 
     class RasterizerState
@@ -36,9 +37,14 @@ namespace Xunlan
     public:
 
         FillMode GetFillMode() const { return m_fillMode; }
-        void SetFillMode(FillMode value) { m_fillMode = value; }
         CullMode GetCullMode() const { return m_cullMode; }
+        bool GetFrontCounterClockWise() const { return m_frontCounterClockWise; }
+        bool GetDepthClipEnable() const { return m_depthClipEnable; }
+
+        void SetFillMode(FillMode value) { m_fillMode = value; }
         void SetCullMode(CullMode value) { m_cullMode = value; }
+        void SetFrontCounterClockWise(bool value) { m_frontCounterClockWise = value; }
+        void SetDepthClipEnable(bool value) { m_depthClipEnable = value; }
 
         friend bool operator==(const RasterizerState& lhs, const RasterizerState& rhs);
 
@@ -52,5 +58,6 @@ namespace Xunlan
         FillMode m_fillMode;
         CullMode m_cullMode;
         bool m_frontCounterClockWise;
+        bool m_depthClipEnable;
     };
 }

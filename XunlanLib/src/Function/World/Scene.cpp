@@ -102,7 +102,7 @@ namespace Xunlan
         // Create light
         {
             const TransformerInitDesc transformerDesc = {
-                { 0.0f, 50.0f, -50.0f },
+                { 0.0f, 10.0f, -10.0f },
                 { 0.785f, 0.0f, 0.0f },
                 { 1.0f, 1.0f, 1.0f },
             };

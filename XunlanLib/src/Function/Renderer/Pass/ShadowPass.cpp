@@ -20,6 +20,7 @@ namespace Xunlan
         list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shadowMappingShader, "VS");
 
         m_shadowMaterial = rhi.CreateMaterial("Shadow_Map_Material", MaterialType::ShadowMapping, list);
+        m_shadowMaterial->GetRasterizerState()->SetDepthClipEnable(false);
     }
 
     void ShadowPass::Render(Ref<RenderContext> context)

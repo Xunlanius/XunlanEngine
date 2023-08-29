@@ -8,16 +8,21 @@ namespace Xunlan::DX12
 
         switch (m_fillMode)
         {
-        case FillMode::SOLID: desc.FillMode = D3D12_FILL_MODE_SOLID; break;
-        case FillMode::WIRE_FRAME: desc.FillMode = D3D12_FILL_MODE_WIREFRAME; break;
+        case FillMode::SOLID: desc.FillMode = D3D12_FILL_MODE_SOLID;
+            break;
+        case FillMode::WIRE_FRAME: desc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+            break;
         default: assert(false);
         }
 
         switch (m_cullMode)
         {
-        case CullMode::NONE: desc.CullMode = D3D12_CULL_MODE_NONE; break;
-        case CullMode::FRONT: desc.CullMode = D3D12_CULL_MODE_FRONT; break;
-        case CullMode::BACK: desc.CullMode = D3D12_CULL_MODE_BACK; break;
+        case CullMode::NONE: desc.CullMode = D3D12_CULL_MODE_NONE;
+            break;
+        case CullMode::FRONT: desc.CullMode = D3D12_CULL_MODE_FRONT;
+            break;
+        case CullMode::BACK: desc.CullMode = D3D12_CULL_MODE_BACK;
+            break;
         default: assert(false);
         }
 
@@ -25,7 +30,7 @@ namespace Xunlan::DX12
         desc.DepthBias = 0;
         desc.DepthBiasClamp = 0.0f;
         desc.SlopeScaledDepthBias = 0.0f;
-        desc.DepthClipEnable = TRUE;
+        desc.DepthClipEnable = m_depthClipEnable;
         desc.MultisampleEnable = TRUE;
         desc.AntialiasedLineEnable = FALSE;
         desc.ForcedSampleCount = 0;

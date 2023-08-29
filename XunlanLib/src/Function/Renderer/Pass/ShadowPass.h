@@ -29,8 +29,8 @@ namespace Xunlan
 
     private:
 
-        static constexpr uint32 SHADOW_MAP_WIDTH = 1024;
-        static constexpr uint32 SHADOW_MAP_HEIGHT = 1024;
+        static constexpr uint32 SHADOW_MAP_WIDTH = 4096;
+        static constexpr uint32 SHADOW_MAP_HEIGHT = 4096;
 
         Ref<DepthBuffer> m_shadowMap;
         Ref<CBuffer> m_shadowMapIndices;
