@@ -10,9 +10,9 @@ namespace Xunlan
     {
         RHI& rhi = RHI::Instance();
 
-        m_albedo = rhi.CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
-        m_position = rhi.CreateRT(width, height, TextureFormat::R32G32B32A32_Float);
-        m_normal = rhi.CreateRT(width, height, TextureFormat::R16G16B16A16_Snorm);
+        m_albedoWS = rhi.CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
+        m_positionWS = rhi.CreateRT(width, height, TextureFormat::R32G32B32A32_Float);
+        m_normalWS = rhi.CreateRT(width, height, TextureFormat::R16G16B16A16_Snorm);
         m_depth = rhi.CreateDepthBuffer(width, height);
 
         m_gBuffer = rhi.CreateCBuffer(CBufferType::GBuffer, sizeof(CStruct::GBuffer));
@@ -23,9 +23,9 @@ namespace Xunlan
         RHI& rhi = RHI::Instance();
 
         std::vector<CRef<RenderTarget>> rts = {
-            m_albedo,
-            m_position,
-            m_normal
+            m_albedoWS,
+            m_positionWS,
+            m_normalWS
         };
 
         rhi.SetRT(context, rts, m_depth);
@@ -38,9 +38,9 @@ namespace Xunlan
         rhi.ResetRT(context, rts, m_depth);
 
         CStruct::GBuffer* gBuffer = (CStruct::GBuffer*)m_gBuffer->GetData();
-        gBuffer->m_albedoIndex = m_albedo->GetHeapIndex();
-        gBuffer->m_positionIndex = m_position->GetHeapIndex();
-        gBuffer->m_normalIndex = m_normal->GetHeapIndex();
+        gBuffer->m_albedoIndex = m_albedoWS->GetHeapIndex();
+        gBuffer->m_positionIndex = m_positionWS->GetHeapIndex();
+        gBuffer->m_normalIndex = m_normalWS->GetHeapIndex();
 
         m_gBuffer->Bind(context);
     }

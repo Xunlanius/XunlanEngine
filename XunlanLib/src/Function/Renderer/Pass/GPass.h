@@ -27,12 +27,12 @@ namespace Xunlan
 
     private:
 
-        uint32 m_width = 0;
-        uint32 m_height = 0;
+        uint32 m_width;
+        uint32 m_height;
 
-        Ref<RenderTarget> m_albedo;
-        Ref<RenderTarget> m_position;
-        Ref<RenderTarget> m_normal;
+        Ref<RenderTarget> m_albedoWS;
+        Ref<RenderTarget> m_positionWS;
+        Ref<RenderTarget> m_normalWS;
         Ref<DepthBuffer> m_depth;
 
         Ref<CBuffer> m_gBuffer;
