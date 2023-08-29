@@ -7,15 +7,13 @@
 
 namespace Xunlan
 {
-    class InputSystem final
+    class InputSystem final : public Singleton<InputSystem>
     {
         friend class Singleton<InputSystem>;
 
     private:
 
         InputSystem() = default;
-        DISABLE_COPY(InputSystem)
-        DISABLE_MOVE(InputSystem)
 
     public:
 

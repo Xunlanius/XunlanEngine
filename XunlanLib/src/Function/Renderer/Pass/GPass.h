@@ -33,7 +33,7 @@ namespace Xunlan
         Ref<RenderTarget> m_albedo;
         Ref<RenderTarget> m_position;
         Ref<RenderTarget> m_normal;
-        Ref<DepthBuffer> m_depthBuffer;
+        Ref<DepthBuffer> m_depth;
 
         Ref<CBuffer> m_gBuffer;
 

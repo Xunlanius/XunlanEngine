@@ -27,7 +27,7 @@ namespace Xunlan::DX12
         m_mainCommand = std::make_unique<DX12Command>(GetDevice(), D3D12_COMMAND_LIST_TYPE_DIRECT);
         m_uploadContext = std::make_unique<UploadContext>(GetDevice());
 
-        WindowSystem& windowSystem = Singleton<WindowSystem>::Instance();
+        WindowSystem& windowSystem = WindowSystem::Instance();
 
         const uint32 width = windowSystem.GetWidth();
         const uint32 height = windowSystem.GetHeight();

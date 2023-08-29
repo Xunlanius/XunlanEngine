@@ -5,8 +5,14 @@
 namespace Xunlan
 {
     template<typename T> requires std::is_class_v<T>
-    class Singleton final
+    class Singleton
     {
+    protected:
+
+        Singleton() = default;
+        DISABLE_COPY(Singleton)
+        DISABLE_MOVE(Singleton)
+
     public:
 
         static T& Instance()

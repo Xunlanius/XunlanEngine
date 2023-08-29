@@ -13,7 +13,7 @@ namespace Xunlan
         m_albedo = rhi.CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
         m_position = rhi.CreateRT(width, height, TextureFormat::R32G32B32A32_Float);
         m_normal = rhi.CreateRT(width, height, TextureFormat::R16G16B16A16_Snorm);
-        m_depthBuffer = rhi.CreateDepthBuffer(width, height);
+        m_depth = rhi.CreateDepthBuffer(width, height);
 
         m_gBuffer = rhi.CreateCBuffer(CBufferType::GBuffer, sizeof(CStruct::GBuffer));
     }
@@ -28,14 +28,14 @@ namespace Xunlan
             m_normal
         };
 
-        rhi.SetRT(context, rts, m_depthBuffer);
-        rhi.ClearRT(context, rts, m_depthBuffer);
+        rhi.SetRT(context, rts, m_depth);
+        rhi.ClearRT(context, rts, m_depth);
         rhi.SetViewport(context, 0, 0, m_width, m_height);
 
         CollectRenderItems();
         RenderItems(context);
 
-        rhi.ResetRT(context, rts, m_depthBuffer);
+        rhi.ResetRT(context, rts, m_depth);
 
         CStruct::GBuffer* gBuffer = (CStruct::GBuffer*)m_gBuffer->GetData();
         gBuffer->m_albedoIndex = m_albedo->GetHeapIndex();
@@ -49,7 +49,7 @@ namespace Xunlan
     {
         m_renderItems.clear();
 
-        WeakRef<Entity> refRoot = Singleton<Scene>::Instance().GetRoot();
+        WeakRef<Entity> refRoot = Scene::Instance().GetRoot();
         CollectVisableEntity(refRoot);
     }
 

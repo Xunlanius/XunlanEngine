@@ -6,7 +6,7 @@ namespace Xunlan
 {
     void MeshRenderSystem::Update()
     {
-        ECS::World& world = Singleton<ECS::World>::Instance();
+        ECS::World& world = ECS::World::Instance();
         const auto& entityIDs = world.GetView<MeshRenderSystem>();
 
         for (const ECS::EntityID entityID : entityIDs)

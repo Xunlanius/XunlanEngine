@@ -11,16 +11,13 @@
 
 namespace Xunlan
 {
-    class Scene final
+    class Scene final : public Singleton<Scene>
     {
         friend class Singleton<Scene>;
 
     private:
 
         Scene() = default;
-        DISABLE_COPY(Scene)
-        DISABLE_MOVE(Scene)
-        ~Scene() = default;
 
     public:
 

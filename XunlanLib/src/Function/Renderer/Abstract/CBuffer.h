@@ -45,32 +45,29 @@ namespace Xunlan
     {
         constexpr uint32 CBUFFER_ALIGN = 16;
 
-        struct PerObject
+        struct alignas(16) PerObject final
         {
             Math::float4x4 m_world;
             Math::float4x4 m_invWorld;
         };
-        static_assert(sizeof(PerObject) % CBUFFER_ALIGN == 0);
 
-        struct PerMaterial
+        struct alignas(16) PerMaterial final
         {
             Math::float4 m_albedo;
             float m_roughness;
             float m_metallic;
-            Math::float2 m_pad0;
 
             uint32 m_albedoIndex;
             uint32 m_roughnessIndex;
             uint32 m_metallicIndex;
             uint32 m_normalIndex;
         };
-        static_assert(sizeof(PerMaterial) % CBUFFER_ALIGN == 0);
 
         constexpr uint32 MAX_NUM_DIRECTIONAL_LIGHTS = 4;
         constexpr uint32 MAX_NUM_POINT_LIGHTS = 16;
         constexpr uint32 MAX_NUM_SPOT_LIGHTS = 16;
 
-        struct DirectionalLight final
+        struct alignas(16) DirectionalLight final
         {
             Math::float3 m_direction;
             float _0;
@@ -79,7 +76,7 @@ namespace Xunlan
             Math::float4x4 m_viewProj;
         };
 
-        struct PointLight final
+        struct alignas(16) PointLight final
         {
             Math::float3 m_position;
             float _0;
@@ -87,7 +84,7 @@ namespace Xunlan
             float m_intensity;
         };
 
-        struct SpotLight final
+        struct alignas(16) SpotLight final
         {
             Math::float3 m_position;
             float _0;
@@ -97,7 +94,7 @@ namespace Xunlan
             float m_intensity;
         };
 
-        struct PerFrame final
+        struct alignas(16) PerFrame final
         {
             Math::float4x4 m_view;
             Math::float4x4 m_proj;
@@ -124,7 +121,7 @@ namespace Xunlan
             SpotLight m_spotLights[MAX_NUM_SPOT_LIGHTS];
         };
 
-        struct GBuffer final
+        struct alignas(16) GBuffer final
         {
             uint32 m_albedoIndex;
             uint32 m_positionIndex;
@@ -133,7 +130,7 @@ namespace Xunlan
 
         constexpr uint32 MAX_NUM_SHADOW_MAPS = 4;
 
-        struct ShadowMaps final
+        struct alignas(16) ShadowMaps final
         {
             uint32 m_shadowMapIndices[MAX_NUM_SHADOW_MAPS];
         };

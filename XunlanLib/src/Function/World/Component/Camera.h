@@ -93,7 +93,7 @@ namespace Xunlan
 
         static CameraComponent& GetCamera(ECS::EntityID entityID)
         {
-            auto [camera] = Singleton<ECS::World>::Instance().GetComponent<CameraComponent>(entityID);
+            auto [camera] = ECS::World::Instance().GetComponent<CameraComponent>(entityID);
             return camera;
         }
     };

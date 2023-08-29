@@ -35,7 +35,7 @@ namespace Xunlan
     void PostProcessPass::CreateMaterials()
     {
         RHI& rhi = RHI::Instance();
-        ConfigSystem& configSystem = Singleton<ConfigSystem>::Instance();
+        ConfigSystem& configSystem = ConfigSystem::Instance();
 
         const std::filesystem::path noneEffectShaderPath = configSystem.GetHLSLFolder() / "PostProcessNone.hlsl";
 

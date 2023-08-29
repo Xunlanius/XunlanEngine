@@ -29,7 +29,7 @@ namespace Xunlan
     void Scene::LoadScene()
     {
         RHI& rhi = RHI::Instance();
-        ConfigSystem& configSystem = Singleton<ConfigSystem>::Instance();
+        ConfigSystem& configSystem = ConfigSystem::Instance();
 
         // Create camera
         {

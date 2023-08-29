@@ -5,7 +5,7 @@
 
 namespace Xunlan
 {
-    class ConfigSystem final
+    class ConfigSystem final : public Singleton<ConfigSystem>
     {
         friend class Singleton<ConfigSystem>;
 

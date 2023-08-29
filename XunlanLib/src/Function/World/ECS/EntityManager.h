@@ -7,15 +7,13 @@ namespace Xunlan::ECS
     template<typename T>
     concept ComIDConcept = std::same_as<T, ComponentID>;
 
-    class EntityManager final
+    class EntityManager final : public Singleton<EntityManager>
     {
         friend class Singleton<EntityManager>;
 
     private:
 
         EntityManager() = default;
-        DISABLE_COPY(EntityManager)
-        DISABLE_MOVE(EntityManager)
 
     public:
 

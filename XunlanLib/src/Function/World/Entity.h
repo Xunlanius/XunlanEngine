@@ -32,13 +32,13 @@ namespace Xunlan
         auto& GetChildren() { return m_children; }
 
         template<typename... Args>
-        void AddComponent(const Args&... components) { Singleton<ECS::World>::Instance().AddComponent(m_id, components...); }
+        void AddComponent(const Args&... components) { ECS::World::Instance().AddComponent(m_id, components...); }
         template<typename... Args>
-        void RemoveComponent() { Singleton<ECS::World>::Instance().RemoveComponent<Args...>(m_id); }
+        void RemoveComponent() { ECS::World::Instance().RemoveComponent<Args...>(m_id); }
         template<typename T>
-        bool HasComponent() { return Singleton<ECS::World>::Instance().HasComponent<T>(m_id); }
+        bool HasComponent() { return ECS::World::Instance().HasComponent<T>(m_id); }
         template<typename... Args>
-        std::tuple<Args&...> GetComponent() { return Singleton<ECS::World>::Instance().GetComponent<Args...>(m_id); }
+        std::tuple<Args&...> GetComponent() { return ECS::World::Instance().GetComponent<Args...>(m_id); }
 
     private:
 

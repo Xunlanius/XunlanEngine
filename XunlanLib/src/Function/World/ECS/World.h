@@ -9,16 +9,13 @@
 
 namespace Xunlan::ECS
 {
-    class World final
+    class World final : public Singleton<World>
     {
         friend class Singleton<World>;
 
     private:
 
         World() = default;
-        DISABLE_COPY(World)
-        DISABLE_MOVE(World)
-        ~World() = default;
 
     public:
 
@@ -44,7 +41,7 @@ namespace Xunlan::ECS
 
     private:
 
-        EntityManager& m_entityManager = Singleton<EntityManager>::Instance();
+        EntityManager& m_entityManager = EntityManager::Instance();
         ComponentManager m_componentManager;
         SystemManager m_systemManager;
     };

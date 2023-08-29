@@ -7,16 +7,13 @@
 
 namespace Xunlan
 {
-    class RenderSystem final
+    class RenderSystem final : public Singleton<RenderSystem>
     {
         friend class Singleton<RenderSystem>;
 
     private:
 
         RenderSystem() = default;
-        DISABLE_COPY(RenderSystem)
-        DISABLE_MOVE(RenderSystem)
-        ~RenderSystem() = default;
 
     public:
 

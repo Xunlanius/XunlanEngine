@@ -6,16 +6,13 @@
 
 namespace Xunlan
 {
-    class GeometryImportSystem final
+    class GeometryImportSystem final : public Singleton<GeometryImportSystem>
     {
         friend class Singleton<GeometryImportSystem>;
 
     private:
 
         GeometryImportSystem() = default;
-        DISABLE_COPY(GeometryImportSystem)
-        DISABLE_MOVE(GeometryImportSystem)
-        ~GeometryImportSystem() = default;
 
     public:
 

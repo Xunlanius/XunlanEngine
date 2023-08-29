@@ -25,7 +25,7 @@ namespace Xunlan
 
     bool GeometryImportSystem::LoadFromFBX()
     {
-        const std::filesystem::path& modelFolder = Singleton<ConfigSystem>::Instance().GetModelFolder();
+        const std::filesystem::path& modelFolder = ConfigSystem::Instance().GetModelFolder();
 
         for (const std::string& name : m_names)
         {

@@ -43,7 +43,6 @@ struct CBufferPerMaterial
     float4 albedo;
     float roughness;
     float metallic;
-    float2 pad0;
     
     uint albedoIndex;
     uint roughnessIndex;

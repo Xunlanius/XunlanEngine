@@ -24,7 +24,7 @@ namespace Xunlan
         virtual void OnDestroy() override {}
         virtual void OnUpdate(float deltaTime) override
         {
-            InputSystem& inputSystem = Singleton<InputSystem>::Instance();
+            InputSystem& inputSystem = InputSystem::Instance();
 
             if (inputSystem.Get(InputDevice::MOUSE, InputCode::MOUSE_RIGHT).m_curr.x > 0)
             {
@@ -52,7 +52,7 @@ namespace Xunlan
         {
             if (device == InputDevice::MOUSE && code == InputCode::MOUSE_POS)
             {
-                const InputValue mouseRight = Singleton<InputSystem>::Instance().Get(InputDevice::MOUSE, InputCode::MOUSE_RIGHT);
+                const InputValue mouseRight = InputSystem::Instance().Get(InputDevice::MOUSE, InputCode::MOUSE_RIGHT);
                 if (mouseRight.m_curr.x == 0.0f) return;
 
                 constexpr float scale = 0.002f;

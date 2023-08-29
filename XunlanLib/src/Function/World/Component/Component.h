@@ -10,7 +10,7 @@ namespace Xunlan
 {
     inline void RegisterECS()
     {
-        ECS::World& world = Singleton<ECS::World>::Instance();
+        ECS::World& world = ECS::World::Instance();
         world.RegisterSystem<ScriptSystem, NativeScriptComponent>();
         world.RegisterSystem<CameraSystem, TransformerComponent, CameraComponent>();
         world.RegisterSystem<MeshRenderSystem, MeshRenderComponent, TransformerComponent>();

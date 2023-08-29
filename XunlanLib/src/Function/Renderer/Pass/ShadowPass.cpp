@@ -10,16 +10,16 @@ namespace Xunlan
     {
         RHI& rhi = RHI::Instance();
 
-        m_shadowMap = rhi.CreateDepthBuffer(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
-        m_shadowMapIndices = rhi.CreateCBuffer(CBufferType::ShadowMaps, sizeof(CStruct::ShadowMaps));
+        m_depth = rhi.CreateDepthBuffer(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+        m_shadowMaps = rhi.CreateCBuffer(CBufferType::ShadowMaps, sizeof(CStruct::ShadowMaps));
 
-        ConfigSystem& configSystem = Singleton<ConfigSystem>::Instance();
+        ConfigSystem& configSystem = ConfigSystem::Instance();
         const std::filesystem::path shadowMappingShader = configSystem.GetHLSLFolder() / "ShadowMapping.hlsl";
 
         ShaderList list = {};
         list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shadowMappingShader, "VS");
 
-        m_shadowMaterial = rhi.CreateMaterial("Shadow_Map_Material", MaterialType::ShadowMapping, list);
+        m_shadowMaterial = rhi.CreateMaterial("Mat_Shadow_Mapping", MaterialType::ShadowMapping, list);
         m_shadowMaterial->GetRasterizerState()->SetDepthClipEnable(false);
     }
 
@@ -27,26 +27,26 @@ namespace Xunlan
     {
         RHI& rhi = RHI::Instance();
 
-        rhi.SetRT(context, m_shadowMap);
-        rhi.ClearRT(context, m_shadowMap);
+        rhi.SetRT(context, m_depth);
+        rhi.ClearRT(context, m_depth);
         rhi.SetViewport(context, 0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 
         CollectRenderItems();
         RenderItems(context);
 
-        rhi.ResetRT(context, m_shadowMap);
+        rhi.ResetRT(context, m_depth);
 
-        CStruct::ShadowMaps* shadowMapIndices = (CStruct::ShadowMaps*)m_shadowMapIndices->GetData();
-        shadowMapIndices->m_shadowMapIndices[0] = m_shadowMap->GetHeapIndex();
+        CStruct::ShadowMaps* shadowMapIndices = (CStruct::ShadowMaps*)m_shadowMaps->GetData();
+        shadowMapIndices->m_shadowMapIndices[0] = m_depth->GetHeapIndex();
 
-        m_shadowMapIndices->Bind(context);
+        m_shadowMaps->Bind(context);
     }
 
     void ShadowPass::CollectRenderItems()
     {
         m_renderItems.clear();
 
-        WeakRef<Entity> refRoot = Singleton<Scene>::Instance().GetRoot();
+        WeakRef<Entity> refRoot = Scene::Instance().GetRoot();
         CollectVisableEntity(refRoot);
     }
 

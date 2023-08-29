@@ -31,7 +31,7 @@ int main()
 
     SetCurrDirExecutablePath();
 
-    Xunlan::EngineSystem& engine = Xunlan::Singleton<Xunlan::EngineSystem>::Instance();
+    Xunlan::EngineSystem& engine = Xunlan::EngineSystem::Instance();
 
     if (!engine.Initialize()) return 0;
 

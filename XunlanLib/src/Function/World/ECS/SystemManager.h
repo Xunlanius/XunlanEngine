@@ -65,7 +65,7 @@ namespace Xunlan::ECS
 
     inline void SystemManager::OnEntityChanged(EntityID entityID)
     {
-        EntityManager& entityManager = Singleton<EntityManager>::Instance();
+        EntityManager& entityManager = EntityManager::Instance();
 
         for (auto& [systemID, info] : m_systems)
         {

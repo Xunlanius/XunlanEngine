@@ -5,16 +5,13 @@
 
 namespace Xunlan
 {
-    class EngineSystem final
+    class EngineSystem final : public Singleton<EngineSystem>
     {
         friend class Singleton<EngineSystem>;
 
     private:
 
         EngineSystem() = default;
-        DISABLE_COPY(EngineSystem)
-        DISABLE_MOVE(EngineSystem)
-        ~EngineSystem() = default;
 
     public:
 

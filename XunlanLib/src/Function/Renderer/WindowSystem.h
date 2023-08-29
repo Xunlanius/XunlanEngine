@@ -6,16 +6,13 @@
 
 namespace Xunlan
 {
-    class WindowSystem final
+    class WindowSystem final : public Singleton<WindowSystem>
     {
         friend class Singleton<WindowSystem>;
 
     private:
 
         WindowSystem() = default;
-        DISABLE_COPY(WindowSystem)
-        DISABLE_MOVE(WindowSystem)
-        ~WindowSystem() = default;
 
     public:
 

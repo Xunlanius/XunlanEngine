@@ -23,7 +23,7 @@ namespace Xunlan
     {
         RHI& rhi = RHI::Instance();
         Ref<RenderContext> context = rhi.CreateRenderContext();
-        Scene& scene = Singleton<Scene>::Instance();
+        Scene& scene = Scene::Instance();
 
         scene.GetCBufferPerScene()->Bind(context);
 

@@ -32,7 +32,7 @@ namespace Xunlan
     Ref<Material> MeshLightPass::CreateMaterial()
     {
         RHI& rhi = RHI::Instance();
-        ConfigSystem& configSystem = Singleton<ConfigSystem>::Instance();
+        ConfigSystem& configSystem = ConfigSystem::Instance();
 
         const std::filesystem::path shaderPath = configSystem.GetHLSLFolder() / "Lighting.hlsl";
 

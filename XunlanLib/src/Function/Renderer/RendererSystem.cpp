@@ -8,25 +8,25 @@ namespace Xunlan
 {
     bool RenderSystem::Initialize(Platform platform)
     {
-        WindowSystem& windowSystem = Singleton<WindowSystem>::Instance();
+        WindowSystem& windowSystem = WindowSystem::Instance();
 
         // Initialize RHI
         RHI::Create(platform);
 
-        RenderPipeline& renderPipeline = Singleton<RenderPipeline>::Instance();
+        RenderPipeline& renderPipeline = RenderPipeline::Instance();
         renderPipeline.Initialize(windowSystem.GetWidth(), windowSystem.GetHeight());
 
         return true;
     }
     void RenderSystem::Shutdown()
     {
-        Singleton<RenderPipeline>::Instance().Shutdown();
+        RenderPipeline::Instance().Shutdown();
         RHI::Shutdown();
     }
     void RenderSystem::Render(float deltaTime)
     {
-        Singleton<Scene>::Instance().UpdateCBufferPerScene();
-        Singleton<RenderPipeline>::Instance().RenderForward();
+        Scene::Instance().UpdateCBufferPerScene();
+        RenderPipeline::Instance().RenderForward();
     }
 
     uint32 RenderSystem::GetWidth() const { return RHI::Instance().GetWidth(); }

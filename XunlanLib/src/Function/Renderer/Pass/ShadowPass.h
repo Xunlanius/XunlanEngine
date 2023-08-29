@@ -19,7 +19,7 @@ namespace Xunlan
 
         void Render(Ref<RenderContext> context);
 
-        Ref<DepthBuffer> GetShadowMap() const { return m_shadowMap; }
+        Ref<DepthBuffer> GetShadowMap() const { return m_depth; }
 
     private:
 
@@ -29,11 +29,15 @@ namespace Xunlan
 
     private:
 
-        static constexpr uint32 SHADOW_MAP_WIDTH = 4096;
-        static constexpr uint32 SHADOW_MAP_HEIGHT = 4096;
+        static constexpr uint32 SHADOW_MAP_WIDTH = 1024;
+        static constexpr uint32 SHADOW_MAP_HEIGHT = 1024;
 
-        Ref<DepthBuffer> m_shadowMap;
-        Ref<CBuffer> m_shadowMapIndices;
+        Ref<RenderTarget> m_fluxLS;
+        Ref<RenderTarget> m_positionLS;
+        Ref<RenderTarget> m_normalLS;
+        Ref<DepthBuffer> m_depth;
+
+        Ref<CBuffer> m_shadowMaps;
         Ref<Material> m_shadowMaterial;
 
         std::vector<WeakRef<RenderItem>> m_renderItems;

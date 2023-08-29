@@ -8,16 +8,13 @@
 
 namespace Xunlan
 {
-    class RenderPipeline final
+    class RenderPipeline final : public Singleton<RenderPipeline>
     {
         friend class Singleton<RenderPipeline>;
 
     private:
 
         RenderPipeline() = default;
-        DISABLE_COPY(RenderPipeline)
-        DISABLE_MOVE(RenderPipeline)
-        ~RenderPipeline() = default;
 
     public:
 

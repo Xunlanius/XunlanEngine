@@ -5,10 +5,10 @@ namespace Xunlan
 {
     InputHandlerBase::InputHandlerBase()
     {
-        Singleton<InputSystem>::Instance().RegisterHandler(this);
+        InputSystem::Instance().RegisterHandler(this);
     }
     InputHandlerBase::~InputHandlerBase()
     {
-        Singleton<InputSystem>::Instance().UnregisterHandler(this);
+        InputSystem::Instance().UnregisterHandler(this);
     }
 }

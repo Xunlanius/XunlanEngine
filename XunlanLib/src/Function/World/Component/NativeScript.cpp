@@ -5,8 +5,8 @@ namespace Xunlan
 {
 	void ScriptSystem::Create()
 	{
-		Scene& scene = Singleton<Scene>::Instance();
-		ECS::World& world = Singleton<ECS::World>::Instance();
+		Scene& scene = Scene::Instance();
+		ECS::World& world = ECS::World::Instance();
 		const auto& entityIDs = world.GetView<ScriptSystem>();
 
 		for (const ECS::EntityID entityID : entityIDs)
@@ -19,7 +19,7 @@ namespace Xunlan
 	}
 	void ScriptSystem::Destroy()
 	{
-		ECS::World& world = Singleton<ECS::World>::Instance();
+		ECS::World& world = ECS::World::Instance();
 		const auto& entityIDs = world.GetView<ScriptSystem>();
 
 		for (const ECS::EntityID entityID : entityIDs)
@@ -31,7 +31,7 @@ namespace Xunlan
 
 	void ScriptSystem::Initialize()
 	{
-		ECS::World& world = Singleton<ECS::World>::Instance();
+		ECS::World& world = ECS::World::Instance();
 		const auto& entityIDs = world.GetView<ScriptSystem>();
 
 		for (const ECS::EntityID entityID : entityIDs)
@@ -42,7 +42,7 @@ namespace Xunlan
 	}
 	void ScriptSystem::Update(float deltaTime)
 	{
-		ECS::World& world = Singleton<ECS::World>::Instance();
+		ECS::World& world = ECS::World::Instance();
 		const auto& entityIDs = world.GetView<ScriptSystem>();
 
 		for (const ECS::EntityID entityID : entityIDs)
@@ -53,7 +53,7 @@ namespace Xunlan
 	}
 	void ScriptSystem::OnDestroy()
 	{
-		ECS::World& world = Singleton<ECS::World>::Instance();
+		ECS::World& world = ECS::World::Instance();
 		const auto& entityIDs = world.GetView<ScriptSystem>();
 
 		for (const ECS::EntityID entityID : entityIDs)

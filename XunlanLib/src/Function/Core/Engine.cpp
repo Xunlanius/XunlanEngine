@@ -12,20 +12,20 @@ namespace Xunlan
     {
         RegisterECS();
 
-        GeometryImportSystem& geometryImportSystem = Singleton<GeometryImportSystem>::Instance();
+        GeometryImportSystem& geometryImportSystem = GeometryImportSystem::Instance();
         if (!geometryImportSystem.Initialize()) return false;
 
         WindowInitDesc windowInitDesc = {};
         windowInitDesc.caption = L"Xunlan Game";
         windowInitDesc.isCenter = true;
 
-        WindowSystem& windowSystem = Singleton<WindowSystem>::Instance();
+        WindowSystem& windowSystem = WindowSystem::Instance();
         if (!windowSystem.Initialize(windowInitDesc)) return false;
 
-        RenderSystem& renderSystem = Singleton<RenderSystem>::Instance();
+        RenderSystem& renderSystem = RenderSystem::Instance();
         if (!renderSystem.Initialize(Platform::DX12)) return false;
 
-        Scene& scene = Singleton<Scene>::Instance();
+        Scene& scene = Scene::Instance();
         scene.Initialize();
         scene.LoadScene();
         scene.OnScenePlay();
@@ -36,8 +36,8 @@ namespace Xunlan
     }
     void EngineSystem::Shutdown()
     {
-        Scene& scene = Singleton<Scene>::Instance();
-        RenderSystem& renderSystem = Singleton<RenderSystem>::Instance();
+        Scene& scene = Scene::Instance();
+        RenderSystem& renderSystem = RenderSystem::Instance();
 
         scene.OnSceneDestroy();
         scene.Shutdown();
@@ -76,6 +76,6 @@ namespace Xunlan
     }
     void EngineSystem::TickRender(float deltaTime)
     {
-        Singleton<RenderSystem>::Instance().Render(deltaTime);
+        RenderSystem::Instance().Render(deltaTime);
     }
 }

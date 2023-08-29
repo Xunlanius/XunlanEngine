@@ -27,7 +27,7 @@ namespace Xunlan
 
     void CameraSystem::Update()
     {
-        ECS::World& world = Singleton<ECS::World>::Instance();
+        ECS::World& world = ECS::World::Instance();
         const auto& entityIDs = world.GetView<CameraSystem>();
 
         for (const ECS::EntityID entityID : entityIDs)
