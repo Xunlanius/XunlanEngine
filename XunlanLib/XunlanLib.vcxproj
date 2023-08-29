@@ -50,7 +50,7 @@
     <ClInclude Include="src\Function\Renderer\Pass\ShadowPass.h" />
     <ClInclude Include="src\Function\Renderer\Pass\RenderPassBase.h" />
     <ClInclude Include="src\Function\Renderer\Pass\LightingPass.h" />
-    <ClInclude Include="src\Function\Renderer\Pass\RenderPipeline.h" />
+    <ClInclude Include="src\Function\Renderer\RenderPipeline.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\RasterizerState.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\RenderContext.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\RenderItem.h" />
@@ -136,7 +136,7 @@
     <ClCompile Include="src\Function\Renderer\Pass\RenderPassBase.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\ShadowPass.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\LightingPass.cpp" />
-    <ClCompile Include="src\Function\Renderer\Pass\RenderPipeline.cpp" />
+    <ClCompile Include="src\Function\Renderer\RenderPipeline.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\RasterizerState.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\RenderItem.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\RHI.cpp" />

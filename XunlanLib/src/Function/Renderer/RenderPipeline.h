@@ -1,10 +1,10 @@
 #pragma once
 
 #include "src/Common/Common.h"
-#include "ShadowPass.h"
-#include "GPass.h"
-#include "LightingPass.h"
-#include "PostProcessPass.h"
+#include "Pass/ShadowPass.h"
+#include "Pass/GPass.h"
+#include "Pass/LightingPass.h"
+#include "Pass/PostProcessPass.h"
 
 namespace Xunlan
 {

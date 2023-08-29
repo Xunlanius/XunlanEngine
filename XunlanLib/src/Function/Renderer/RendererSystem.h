@@ -3,7 +3,7 @@
 #include "RenderCommon.h"
 #include "Abstract/RHI.h"
 #include "WindowSystem.h"
-#include "Pass/RenderPipeline.h"
+#include "RenderPipeline.h"
 
 namespace Xunlan
 {

@@ -1,12 +1,12 @@
 #include "RenderPipeline.h"
-#include "src/Function/Renderer/Abstract/RHI.h"
+#include "Abstract/RHI.h"
 #include "src/Function/World/Scene.h"
 
 namespace Xunlan
 {
     void RenderPipeline::Initialize(uint32 width, uint32 height)
     {
-        m_shadowPass = std::make_unique<ShadowPass>();
+        m_shadowPass = std::make_unique<ShadowPass>(1024, 1024);
         m_gPass = std::make_unique<GPass>(width, height);
         m_meshLightPass = std::make_unique<MeshLightPass>(width, height);
         m_postProcessPass = std::make_unique<PostProcessPass>();

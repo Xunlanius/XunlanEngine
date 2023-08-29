@@ -52,7 +52,7 @@
     <ClInclude Include="src\Function\World\Component\Light.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12CBuffer.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Helper\d3dx12.h" />
-    <ClInclude Include="src\Function\Renderer\Pass\RenderPipeline.h" />
+    <ClInclude Include="src\Function\Renderer\RenderPipeline.h" />
     <ClInclude Include="src\Function\Renderer\Pass\RenderPassBase.h" />
     <ClInclude Include="src\Function\Renderer\Pass\ShadowPass.h" />
     <ClInclude Include="src\Common\Ref.h" />
@@ -112,7 +112,7 @@
     <ClCompile Include="src\Function\World\Entity.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\RHI.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12CBuffer.cpp" />
-    <ClCompile Include="src\Function\Renderer\Pass\RenderPipeline.cpp" />
+    <ClCompile Include="src\Function\Renderer\RenderPipeline.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\ShadowPass.cpp" />
     <ClCompile Include="src\Function\World\Component\Light.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Mesh.cpp" />
