@@ -75,7 +75,7 @@
     <ClInclude Include="src\Function\Renderer\DX12\DX12Material.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12RenderItem.h" />
     <ClInclude Include="src\Function\World\Component\MeshRender.h" />
-    <ClInclude Include="src\Function\Renderer\Pass\MeshLightPass.h" />
+    <ClInclude Include="src\Function\Renderer\Pass\LightingPass.h" />
     <ClInclude Include="src\Function\Renderer\Pass\PostProcessPass.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12RootSignature.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12GPUVisibleDescriptorHeap.h" />
@@ -130,7 +130,7 @@
     <ClCompile Include="src\Function\Renderer\DX12\DX12RenderItem.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\RenderItem.cpp" />
     <ClCompile Include="src\Function\World\Component\MeshRender.cpp" />
-    <ClCompile Include="src\Function\Renderer\Pass\MeshLightPass.cpp" />
+    <ClCompile Include="src\Function\Renderer\Pass\LightingPass.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\PostProcessPass.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12RootSignature.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12GPUVisibleDescriptorHeap.cpp" />
@@ -150,16 +150,16 @@
     <None Include="Asset\Shader\HLSL\TriangleVS.hlsl" />
     <None Include="Asset\Shader\HLSL\TrianglePS.hlsl" />
     <None Include="Asset\Shader\HLSL\Common\Fractal.hlsli" />
-    <None Include="Asset\Shader\HLSL\Common\VertexData.hlsli" />
-    <None Include="Asset\Shader\HLSL\Common\CBuffer.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Data\VertexData.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Data\CBuffer.hlsli" />
     <None Include="Asset\Shader\HLSL\Lighting.hlsli" />
     <None Include="Asset\Shader\HLSL\Common\Common.hlsli" />
-    <None Include="Asset\Shader\HLSL\Common\TextureBuffer.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Data\Sampler.hlsli" />
     <None Include="Asset\Shader\HLSL\PostProcessNone.hlsl" />
     <None Include="Asset\Shader\HLSL\ShadowMapping.hlsl" />
-    <None Include="Asset\Shader\HLSL\Common\Helper.hlsli" />
-    <None Include="Asset\Shader\HLSL\Common\Light.hlsli" />
-    <None Include="Asset\Shader\HLSL\GBuffer.hlsl" />
+    <None Include="Asset\Shader\HLSL\Common\Transform.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Lighting.hlsli" />
+    <None Include="Asset\Shader\HLSL\GPass.hlsl" />
     <None Include="Asset\Shader\HLSL\Lighting.hlsl" />
   </ItemGroup>
 </Project>

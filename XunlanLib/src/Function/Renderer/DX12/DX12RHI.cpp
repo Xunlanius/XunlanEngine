@@ -380,9 +380,8 @@ namespace Xunlan::DX12
         params[(uint32)RootParam::PerMaterial].InitAsConstantBufferView(1);
         params[(uint32)RootParam::PerFrame].InitAsConstantBufferView(2);
         params[(uint32)RootParam::VertexBuffer].InitAsShaderResourceView(0);
-        params[(uint32)RootParam::MeshTextures].InitAsConstantBufferView(3);
-        params[(uint32)RootParam::GBuffer].InitAsConstantBufferView(4);
-        params[(uint32)RootParam::ShadowMaps].InitAsConstantBufferView(5);
+        params[(uint32)RootParam::GBuffer].InitAsConstantBufferView(3);
+        params[(uint32)RootParam::ShadowMaps].InitAsConstantBufferView(4);
 
         const std::array<CD3DX12_STATIC_SAMPLER_DESC, 6> samplers = GetStaticSamplers();
 

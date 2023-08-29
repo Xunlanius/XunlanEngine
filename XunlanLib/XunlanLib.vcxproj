@@ -49,7 +49,7 @@
     <ClInclude Include="src\Function\Renderer\Pass\PostProcessPass.h" />
     <ClInclude Include="src\Function\Renderer\Pass\ShadowPass.h" />
     <ClInclude Include="src\Function\Renderer\Pass\RenderPassBase.h" />
-    <ClInclude Include="src\Function\Renderer\Pass\MeshLightPass.h" />
+    <ClInclude Include="src\Function\Renderer\Pass\LightingPass.h" />
     <ClInclude Include="src\Function\Renderer\Pass\RenderPipeline.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\RasterizerState.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\RenderContext.h" />
@@ -135,7 +135,7 @@
     <ClCompile Include="src\Function\Renderer\Pass\PostProcessPass.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\RenderPassBase.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\ShadowPass.cpp" />
-    <ClCompile Include="src\Function\Renderer\Pass\MeshLightPass.cpp" />
+    <ClCompile Include="src\Function\Renderer\Pass\LightingPass.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\RenderPipeline.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\RasterizerState.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\RenderItem.cpp" />
@@ -165,13 +165,13 @@
     <ClCompile Include="src\Utility\Math\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Asset\Shader\HLSL\Common\CBuffer.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Data\CBuffer.hlsli" />
     <None Include="Asset\Shader\HLSL\Common\Common.hlsli" />
     <None Include="Asset\Shader\HLSL\Common\Fractal.hlsli" />
-    <None Include="Asset\Shader\HLSL\Common\Helper.hlsli" />
-    <None Include="Asset\Shader\HLSL\Common\Light.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Transform.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Lighting.hlsli" />
     <None Include="Asset\Shader\HLSL\Lighting.hlsli" />
-    <None Include="Asset\Shader\HLSL\Common\TextureBuffer.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Data\Sampler.hlsli" />
     <None Include="Asset\Shader\HLSL\TriangleVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='DebugEditor|x64'">Vertex</ShaderType>
@@ -179,7 +179,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='ReleaseEditor|x64'">Vertex</ShaderType>
       <FileType>Document</FileType>
     </None>
-    <None Include="Asset\Shader\HLSL\Common\VertexData.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Data\VertexData.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Asset\Shader\HLSL\TrianglePS.hlsl">
@@ -207,7 +207,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Asset\Shader\HLSL\GBuffer.hlsl">
+    <None Include="Asset\Shader\HLSL\GPass.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='DebugEditor|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>

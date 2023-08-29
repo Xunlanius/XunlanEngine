@@ -43,7 +43,6 @@ namespace Xunlan::DX12
         cmdList->SetPipelineState(pso.Get());
 
         // Bind material params
-        m_perMaterial->Bind(context);
         CollectTextureSRVs(context);
     }
 
@@ -67,9 +66,12 @@ namespace Xunlan::DX12
         Ref<DX12RenderContext> dx12Context = CastTo<DX12RenderContext>(context);
         GraphicsCommandList* cmdList = dx12Context->m_cmdList;
 
-        CBufferTextures* pTextureIndices = (CBufferTextures*)m_textureIndices->GetData();
-        memcpy(pTextureIndices, textureIndices.data(), sizeof(CBufferTextures));
-        m_textureIndices->Bind(context);
+        CStruct::PerMaterial* perMaterial = (CStruct::PerMaterial*)m_perMaterial->GetData();
+        perMaterial->m_albedoIndex = textureIndices[(uint32)TextureCategory::Albedo];
+        perMaterial->m_roughnessIndex = textureIndices[(uint32)TextureCategory::Roughness];
+        perMaterial->m_metallicIndex = textureIndices[(uint32)TextureCategory::Metallic];
+        perMaterial->m_normalIndex = textureIndices[(uint32)TextureCategory::Normal];
+        m_perMaterial->Bind(context);
     }
 
     ComPtr<ID3D12PipelineState> DX12Material::GetPSO() const

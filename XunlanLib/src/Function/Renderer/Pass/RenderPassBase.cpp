@@ -6,7 +6,7 @@ namespace Xunlan
 {
     void RenderPassBase::UpdateCBufferPerObject(const TransformerComponent& transformer, Ref<CBuffer> cBufferPerObject)
     {
-        CBufferPerObject* perObject = (CBufferPerObject*)cBufferPerObject->GetData();
+        CStruct::PerObject* perObject = (CStruct::PerObject*)cBufferPerObject->GetData();
         perObject->m_world = TransformerSystem::GetWorld(transformer);
         perObject->m_invWorld = Math::GetInverse(perObject->m_world);
     }

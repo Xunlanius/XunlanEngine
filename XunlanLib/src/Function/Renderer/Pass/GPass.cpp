@@ -10,40 +10,39 @@ namespace Xunlan
     {
         RHI& rhi = RHI::Instance();
 
-        m_worldPos = rhi.CreateRT(width, height);
+        m_albedo = rhi.CreateRT(width, height);
+        m_position = rhi.CreateRT(width, height);
         m_normal = rhi.CreateRT(width, height);
         m_depthBuffer = rhi.CreateDepthBuffer(width, height);
 
-        m_gBufferIndices = rhi.CreateCBuffer(CBufferType::GBuffer, sizeof(CBufferGBuffer));
+        m_gBuffer = rhi.CreateCBuffer(CBufferType::GBuffer, sizeof(CStruct::GBuffer));
     }
 
     void GPass::Render(Ref<RenderContext> context)
     {
         RHI& rhi = RHI::Instance();
 
-        std::vector<CRef<RenderTarget>> rts = { m_worldPos, m_normal };
+        std::vector<CRef<RenderTarget>> rts = {
+            m_albedo,
+            m_position,
+            m_normal
+        };
 
         rhi.SetRT(context, rts, m_depthBuffer);
         rhi.ClearRT(context, rts, m_depthBuffer);
         rhi.SetViewport(context, 0, 0, m_width, m_height);
 
         CollectRenderItems();
-
-        for (const WeakRef<RenderItem>& refItem : m_renderItems)
-        {
-            Ref<RenderItem> item = refItem.lock();
-            assert(item);
-
-            item->Render(context);
-        }
+        RenderItems(context);
 
         rhi.ResetRT(context, rts, m_depthBuffer);
 
-        CBufferGBuffer* gBufferIndices = (CBufferGBuffer*)m_gBufferIndices->GetData();
-        gBufferIndices->m_positionIndex = m_worldPos->GetHeapIndex();
-        gBufferIndices->m_normalIndex = m_normal->GetHeapIndex();
+        CStruct::GBuffer* gBuffer = (CStruct::GBuffer*)m_gBuffer->GetData();
+        gBuffer->m_albedoIndex = m_albedo->GetHeapIndex();
+        gBuffer->m_positionIndex = m_position->GetHeapIndex();
+        gBuffer->m_normalIndex = m_normal->GetHeapIndex();
 
-        m_gBufferIndices->Bind(context);
+        m_gBuffer->Bind(context);
     }
 
     void GPass::CollectRenderItems()
@@ -70,6 +69,17 @@ namespace Xunlan
         for (const WeakRef<Entity>& child : node->GetChildren())
         {
             CollectVisableEntity(child);
+        }
+    }
+
+    void GPass::RenderItems(Ref<RenderContext> context)
+    {
+        for (const WeakRef<RenderItem>& refItem : m_renderItems)
+        {
+            Ref<RenderItem> item = refItem.lock();
+            assert(item);
+
+            item->Render(context);
         }
     }
 }

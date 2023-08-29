@@ -19,13 +19,15 @@ VSOutput VS(uint vertexIndex : SV_VertexID)
 
 float4 PS(VSOutput input) : SV_TARGET
 {
+    const Texture2D albedoMap = ResourceDescriptorHeap[g_GBuffer.albedoIndex];
     const Texture2D positionMap = ResourceDescriptorHeap[g_GBuffer.positionIndex];
     const Texture2D normalMap = ResourceDescriptorHeap[g_GBuffer.normalIndex];
     
+    const float3 albedo = albedoMap.Sample(LinearClamp, input.uv).xyz;
     const float3 worldPos = positionMap.Sample(LinearClamp, input.uv).xyz;
     const float3 worldNormal = normalize(normalMap.Sample(LinearClamp, input.uv).xyz);
     
-    const float3 color = ComputeDirectionLight(worldPos, worldNormal);
+    const float3 color = albedo * ComputeDirectionLight(worldPos, worldNormal);
     
     return float4(color.xyz, 1.0f);
 }

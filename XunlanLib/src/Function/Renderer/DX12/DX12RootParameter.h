@@ -10,7 +10,6 @@ namespace Xunlan::DX12
 
         VertexBuffer,
 
-        MeshTextures,
         GBuffer,
         ShadowMaps,
 

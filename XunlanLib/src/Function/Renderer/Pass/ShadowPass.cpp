@@ -11,7 +11,7 @@ namespace Xunlan
         RHI& rhi = RHI::Instance();
 
         m_shadowMap = rhi.CreateDepthBuffer(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
-        m_shadowMapIndices = rhi.CreateCBuffer(CBufferType::ShadowMaps, sizeof(CBufferShadowMaps));
+        m_shadowMapIndices = rhi.CreateCBuffer(CBufferType::ShadowMaps, sizeof(CStruct::ShadowMaps));
 
         ConfigSystem& configSystem = Singleton<ConfigSystem>::Instance();
         const std::filesystem::path shadowMappingShader = configSystem.GetHLSLFolder() / "ShadowMapping.hlsl";
@@ -31,17 +31,11 @@ namespace Xunlan
         rhi.SetViewport(context, 0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 
         CollectRenderItems();
-
-        for (const WeakRef<RenderItem>& refItem : m_renderItems)
-        {
-            Ref<RenderItem> item = refItem.lock();
-            assert(item);
-            item->Render(context, m_shadowMaterial);
-        }
+        RenderItems(context);
 
         rhi.ResetRT(context, m_shadowMap);
 
-        CBufferShadowMaps* shadowMapIndices = (CBufferShadowMaps*)m_shadowMapIndices->GetData();
+        CStruct::ShadowMaps* shadowMapIndices = (CStruct::ShadowMaps*)m_shadowMapIndices->GetData();
         shadowMapIndices->m_shadowMapIndices[0] = m_shadowMap->GetHeapIndex();
 
         m_shadowMapIndices->Bind(context);
@@ -54,6 +48,7 @@ namespace Xunlan
         WeakRef<Entity> refRoot = Singleton<Scene>::Instance().GetRoot();
         CollectVisableEntity(refRoot);
     }
+
     void ShadowPass::CollectVisableEntity(const WeakRef<Entity>& refNode)
     {
         Ref<Entity> node = refNode.lock();
@@ -73,6 +68,16 @@ namespace Xunlan
         for (const WeakRef<Entity>& child : node->GetChildren())
         {
             CollectVisableEntity(child);
+        }
+    }
+
+    void ShadowPass::RenderItems(Ref<RenderContext> context)
+    {
+        for (const WeakRef<RenderItem>& refItem : m_renderItems)
+        {
+            Ref<RenderItem> item = refItem.lock();
+            assert(item);
+            item->Render(context, m_shadowMaterial);
         }
     }
 }

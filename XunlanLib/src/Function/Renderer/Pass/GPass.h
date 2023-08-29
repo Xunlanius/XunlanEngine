@@ -23,17 +23,19 @@ namespace Xunlan
 
         void CollectRenderItems();
         void CollectVisableEntity(const WeakRef<Entity>& refNode);
+        void RenderItems(Ref<RenderContext> context);
 
     private:
 
         uint32 m_width = 0;
         uint32 m_height = 0;
 
-        Ref<RenderTarget> m_worldPos;
+        Ref<RenderTarget> m_albedo;
+        Ref<RenderTarget> m_position;
         Ref<RenderTarget> m_normal;
         Ref<DepthBuffer> m_depthBuffer;
 
-        Ref<CBuffer> m_gBufferIndices;
+        Ref<CBuffer> m_gBuffer;
 
         std::vector<WeakRef<RenderItem>> m_renderItems;
     };

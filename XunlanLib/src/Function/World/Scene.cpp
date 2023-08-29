@@ -13,7 +13,7 @@ namespace Xunlan
     bool Scene::Initialize()
     {
         m_root = Ref<Entity>(new Entity("root", {}));
-        m_cBufferPerScene = RHI::Instance().CreateCBuffer(CBufferType::PerFrame, sizeof(CBufferPerFrame));
+        m_cBufferPerScene = RHI::Instance().CreateCBuffer(CBufferType::PerFrame, sizeof(CStruct::PerFrame));
         return true;
     }
     void Scene::Shutdown()
@@ -51,13 +51,15 @@ namespace Xunlan
 
         // Create models
         {
-            const std::filesystem::path shaderPath = configSystem.GetHLSLFolder() / "GBuffer.hlsl";
+            const std::filesystem::path shaderPath = configSystem.GetHLSLFolder() / "GPass.hlsl";
 
             ShaderList list = {};
             list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shaderPath, "VS");
             list.m_PS = rhi.CreateShader(ShaderType::PIXEL_SHADER, shaderPath, "PS");
 
-            Ref<Material> mat = rhi.CreateMaterial("Mat_GBuffer", MaterialType::MeshRenderer, list);
+            Ref<Material> mat0 = rhi.CreateMaterial("Mat_GPass_0", MaterialType::MeshRenderer, list);
+            Ref<Material> mat1 = rhi.CreateMaterial("Mat_GPass_1", MaterialType::MeshRenderer, list);
+            mat0->SetAlbedo({ 1.0f, 0.0f, 0.0f, 1.0f });
 
             const std::filesystem::path& modelFolderPath = configSystem.GetModelFolder();
             const std::filesystem::path fioraPath = modelFolderPath / "Fiora.model";
@@ -76,8 +78,8 @@ namespace Xunlan
                 submesh->SetMaterialIndex(0);
             }
 
-            Ref<RenderItem> fiora = rhi.CreateRenderItem(modelFiora, { mat });
-            Ref<RenderItem> plane = rhi.CreateRenderItem(modelPlane, { mat });
+            Ref<RenderItem> fiora = rhi.CreateRenderItem(modelFiora, { mat0 });
+            Ref<RenderItem> plane = rhi.CreateRenderItem(modelPlane, { mat1 });
 
             const TransformerInitDesc transformerDescFiora = {
                 { 0.0f, -2.0f, 0.0f },
@@ -207,7 +209,7 @@ namespace Xunlan
         assert(mainCamera && "Main camera not existed.");
 
         auto [transformer, camera] = mainCamera->GetComponent<TransformerComponent, CameraComponent>();
-        CBufferPerFrame* perFrame = (CBufferPerFrame*)m_cBufferPerScene->GetData();
+        CStruct::PerFrame* perFrame = (CStruct::PerFrame*)m_cBufferPerScene->GetData();
 
         perFrame->m_view = camera.m_view;
         perFrame->m_proj = camera.m_projection;
@@ -224,7 +226,7 @@ namespace Xunlan
         uint32 numPointLights = 0;
         uint32 numSpotLights = 0;
 
-        CBufferPerFrame* perFrame = (CBufferPerFrame*)m_cBufferPerScene->GetData();
+        CStruct::PerFrame* perFrame = (CStruct::PerFrame*)m_cBufferPerScene->GetData();
 
         for (auto& refLight : m_lights)
         {
@@ -239,7 +241,7 @@ namespace Xunlan
             {
                 const Math::float3 direction = TransformerSystem::GetForward(transformer);
 
-                CBufferDirectionLight& directionalLight = perFrame->m_directionLights[numDirectionalLights];
+                CStruct::DirectionalLight& directionalLight = perFrame->m_directionLights[numDirectionalLights];
                 directionalLight.m_direction = direction;
                 directionalLight.m_color = light.m_color;
                 directionalLight.m_intensity = light.m_intensity;
@@ -251,7 +253,7 @@ namespace Xunlan
 
             case LightType::POINT:
             {
-                CBufferPointLight& pointLight = perFrame->m_pointLights[numPointLights];
+                CStruct::PointLight& pointLight = perFrame->m_pointLights[numPointLights];
                 pointLight.m_position = transformer.m_position;
                 pointLight.m_color = light.m_color;
                 pointLight.m_intensity = light.m_intensity;
@@ -262,7 +264,7 @@ namespace Xunlan
 
             case LightType::SPOT:
             {
-                CBufferSpotLight& spotLight = perFrame->m_spotLights[numSpotLights];
+                CStruct::SpotLight& spotLight = perFrame->m_spotLights[numSpotLights];
                 spotLight.m_position = transformer.m_position;
                 spotLight.m_direction = TransformerSystem::GetForward(transformer);
                 spotLight.m_color = light.m_color;
@@ -276,8 +278,8 @@ namespace Xunlan
             }
         }
 
-        assert(numDirectionalLights <= MAX_NUM_DIRECTIONAL_LIGHTS && "Too much directional lights.");
-        assert(numPointLights <= MAX_NUM_POINT_LIGHTS && "Too much point lights.");
+        assert(numDirectionalLights <= CStruct::MAX_NUM_DIRECTIONAL_LIGHTS && "Too much directional lights.");
+        assert(numPointLights <= CStruct::MAX_NUM_POINT_LIGHTS && "Too much point lights.");
 
         perFrame->m_ambientLight = { 0.2f, 0.2f, 0.2f };
         perFrame->m_numDirectionalLights = numDirectionalLights;

@@ -51,8 +51,15 @@ namespace Xunlan
         Ref<RasterizerState> GetRasterizerState() const { return m_rasterizerState; }
         Ref<DepthStencilState> GetDepthStencilState() const { return m_depthStencilState; }
 
-        CRef<Texture> GetTexture(TextureCategory category) const { return m_textureParams[(uint32)category]; }
-        void SetTexture(TextureCategory category, CRef<Texture> value) { assert(value); m_textureParams[(uint32)category] = value; }
+        Math::float4 GetAlbedo() const;
+        float GetRoughness() const;
+        float GetMetallic() const;
+        CRef<Texture> GetTexture(TextureCategory category) const;
+
+        void SetAlbedo(const Math::float4& value);
+        void SetRoughness(float value);
+        void SetMetallic(float value);
+        void SetTexture(TextureCategory category, CRef<Texture> value);
 
         virtual void Apply(Ref<RenderContext> context) const = 0;
 
@@ -68,7 +75,6 @@ namespace Xunlan
         Ref<DepthStencilState> m_depthStencilState;
 
         Ref<CBuffer> m_perMaterial;
-        Ref<CBuffer> m_textureIndices;
 
         std::array<CRef<Texture>, (size_t)TextureCategory::Count> m_textureParams;
     };

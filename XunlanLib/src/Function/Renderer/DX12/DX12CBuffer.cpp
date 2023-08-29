@@ -59,11 +59,6 @@ namespace Xunlan::DX12
             cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::PerFrame, gpuAddress);
         }
         break;
-        case CBufferType::MeshTextures:
-        {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::MeshTextures, gpuAddress);
-        }
-        break;
         case CBufferType::GBuffer:
         {
             cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::GBuffer, gpuAddress);

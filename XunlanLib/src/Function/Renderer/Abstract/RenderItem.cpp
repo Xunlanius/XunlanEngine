@@ -6,11 +6,11 @@ namespace Xunlan
     RenderItem::RenderItem(const Ref<Mesh>& mesh)
         : m_mesh(mesh)
     {
-        m_perObject = RHI::Instance().CreateCBuffer(CBufferType::PerObject, sizeof(CBufferPerObject));
+        m_perObject = RHI::Instance().CreateCBuffer(CBufferType::PerObject, sizeof(CStruct::PerObject));
     }
     RenderItem::RenderItem(const Ref<Mesh>& mesh, const std::vector<Ref<Material>>& materials)
         : m_mesh(mesh), m_materials(materials)
     {
-        m_perObject = RHI::Instance().CreateCBuffer(CBufferType::PerObject, sizeof(CBufferPerObject));
+        m_perObject = RHI::Instance().CreateCBuffer(CBufferType::PerObject, sizeof(CStruct::PerObject));
     }
 }

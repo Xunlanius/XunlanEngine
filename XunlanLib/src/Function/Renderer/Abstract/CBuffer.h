@@ -11,8 +11,6 @@ namespace Xunlan
         PerObject,
         PerMaterial,
         PerFrame,
-
-        MeshTextures,
         GBuffer,
         ShadowMaps,
 
@@ -43,92 +41,101 @@ namespace Xunlan
         std::unique_ptr<byte[]> m_data;
     };
 
-    constexpr uint32 CBUFFER_ALIGN = 16;
-
-    struct CBufferPerObject
+    namespace CStruct
     {
-        Math::float4x4 m_world;
-        Math::float4x4 m_invWorld;
-    };
-    static_assert(sizeof(CBufferPerObject) % CBUFFER_ALIGN == 0);
+        constexpr uint32 CBUFFER_ALIGN = 16;
 
-    constexpr uint32 MAX_NUM_DIRECTIONAL_LIGHTS = 4;
-    constexpr uint32 MAX_NUM_POINT_LIGHTS = 16;
-    constexpr uint32 MAX_NUM_SPOT_LIGHTS = 16;
+        struct PerObject
+        {
+            Math::float4x4 m_world;
+            Math::float4x4 m_invWorld;
+        };
+        static_assert(sizeof(PerObject) % CBUFFER_ALIGN == 0);
 
-    struct CBufferDirectionLight final
-    {
-        Math::float3 m_direction;
-        float _0;
-        Math::float3 m_color;
-        float m_intensity;
-        Math::float4x4 m_viewProj;
-    };
+        struct PerMaterial
+        {
+            Math::float4 m_albedo;
+            float m_roughness;
+            float m_metallic;
+            Math::float2 m_pad0;
 
-    struct CBufferPointLight final
-    {
-        Math::float3 m_position;
-        float _0;
-        Math::float3 m_color;
-        float m_intensity;
-    };
+            uint32 m_albedoIndex;
+            uint32 m_roughnessIndex;
+            uint32 m_metallicIndex;
+            uint32 m_normalIndex;
+        };
+        static_assert(sizeof(PerMaterial) % CBUFFER_ALIGN == 0);
 
-    struct CBufferSpotLight final
-    {
-        Math::float3 m_position;
-        float _0;
-        Math::float3 m_direction;
-        float _1;
-        Math::float3 m_color;
-        float m_intensity;
-    };
+        constexpr uint32 MAX_NUM_DIRECTIONAL_LIGHTS = 4;
+        constexpr uint32 MAX_NUM_POINT_LIGHTS = 16;
+        constexpr uint32 MAX_NUM_SPOT_LIGHTS = 16;
 
-    struct CBufferPerFrame final
-    {
-        Math::float4x4 m_view;
-        Math::float4x4 m_proj;
-        Math::float4x4 m_invProj;
-        Math::float4x4 m_viewProj;
-        Math::float4x4 m_invViewProj;
+        struct DirectionalLight final
+        {
+            Math::float3 m_direction;
+            float _0;
+            Math::float3 m_color;
+            float m_intensity;
+            Math::float4x4 m_viewProj;
+        };
 
-        Math::float3 m_cameraPos;
-        float _0;
-        Math::float3 m_cameraDir;
-        float _1;
+        struct PointLight final
+        {
+            Math::float3 m_position;
+            float _0;
+            Math::float3 m_color;
+            float m_intensity;
+        };
 
-        Math::float3 m_ambientLight;
+        struct SpotLight final
+        {
+            Math::float3 m_position;
+            float _0;
+            Math::float3 m_direction;
+            float _1;
+            Math::float3 m_color;
+            float m_intensity;
+        };
 
-        uint32 m_numDirectionalLights;
-        CBufferDirectionLight m_directionLights[MAX_NUM_DIRECTIONAL_LIGHTS];
+        struct PerFrame final
+        {
+            Math::float4x4 m_view;
+            Math::float4x4 m_proj;
+            Math::float4x4 m_invProj;
+            Math::float4x4 m_viewProj;
+            Math::float4x4 m_invViewProj;
 
-        uint32 m_numPointLights;
-        Math::float3 _2;
-        CBufferPointLight m_pointLights[MAX_NUM_POINT_LIGHTS];
+            Math::float3 m_cameraPos;
+            float _0;
+            Math::float3 m_cameraDir;
+            float _1;
 
-        uint32 m_numSpotLights;
-        Math::float3 _3;
-        CBufferSpotLight m_spotLights[MAX_NUM_SPOT_LIGHTS];
-    };
+            Math::float3 m_ambientLight;
 
-    constexpr uint32 MAX_NUM_SHADOW_MAPS = 4;
+            uint32 m_numDirectionalLights;
+            DirectionalLight m_directionLights[MAX_NUM_DIRECTIONAL_LIGHTS];
 
-    struct CBufferShadowMaps final
-    {
-        uint32 m_shadowMapIndices[MAX_NUM_SHADOW_MAPS];
-    };
+            uint32 m_numPointLights;
+            Math::float3 _2;
+            PointLight m_pointLights[MAX_NUM_POINT_LIGHTS];
 
-    struct CBufferTextures final
-    {
-        uint32 m_albedoIndex;
-        uint32 m_roughnessIndex;
-        uint32 m_metallicIndex;
-        uint32 m_normalIndex;
-    };
+            uint32 m_numSpotLights;
+            Math::float3 _3;
+            SpotLight m_spotLights[MAX_NUM_SPOT_LIGHTS];
+        };
 
-    struct CBufferGBuffer final
-    {
-        uint32 m_albedoIndex;
-        uint32 m_positionIndex;
-        uint32 m_normalIndex;
-    };
+        struct GBuffer final
+        {
+            uint32 m_albedoIndex;
+            uint32 m_positionIndex;
+            uint32 m_normalIndex;
+        };
+
+        constexpr uint32 MAX_NUM_SHADOW_MAPS = 4;
+
+        struct ShadowMaps final
+        {
+            uint32 m_shadowMapIndices[MAX_NUM_SHADOW_MAPS];
+        };
+    }
 }

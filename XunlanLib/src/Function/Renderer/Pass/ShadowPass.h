@@ -25,6 +25,7 @@ namespace Xunlan
 
         void CollectRenderItems();
         void CollectVisableEntity(const WeakRef<Entity>& refNode);
+        void RenderItems(Ref<RenderContext> context);
 
     private:
 

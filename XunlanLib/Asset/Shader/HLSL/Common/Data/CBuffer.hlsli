@@ -40,7 +40,15 @@ struct CBufferPerObject
 
 struct CBufferPerMaterial
 {
+    float4 albedo;
+    float roughness;
+    float metallic;
+    float2 pad0;
     
+    uint albedoIndex;
+    uint roughnessIndex;
+    uint metallicIndex;
+    uint normalIndex;
 };
 
 struct CBufferPerFrame
@@ -70,14 +78,6 @@ struct CBufferPerFrame
     SpotLight spotLights[MAX_NUM_SPOT_LIGHTS];
 };
 
-struct MeshTextures
-{
-    uint albedoIndex;
-    uint roughnessIndex;
-    uint metallicIndex;
-    uint normalIndex;
-};
-
 struct GBuffer
 {
     uint albedoIndex;
@@ -93,8 +93,7 @@ struct ShadowMaps
 ConstantBuffer<CBufferPerObject> g_perObject : register(b0);
 ConstantBuffer<CBufferPerMaterial> g_perMaterial : register(b1);
 ConstantBuffer<CBufferPerFrame> g_perFrame : register(b2);
-ConstantBuffer<MeshTextures> g_meshTextures : register(b3);
-ConstantBuffer<GBuffer> g_GBuffer : register(b4);
-ConstantBuffer<ShadowMaps> g_shadowMaps : register(b5);
+ConstantBuffer<GBuffer> g_GBuffer : register(b3);
+ConstantBuffer<ShadowMaps> g_shadowMaps : register(b4);
 
 #endif
