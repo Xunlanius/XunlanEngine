@@ -6,11 +6,15 @@
 
 namespace Xunlan
 {
-    ShadowPass::ShadowPass()
+    ShadowPass::ShadowPass(uint32 width, uint32 height)
+        : m_width(width), m_height(height)
     {
         RHI& rhi = RHI::Instance();
 
-        m_depth = rhi.CreateDepthBuffer(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+        m_fluxLS = rhi.CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
+        m_positionLS = rhi.CreateRT(width, height, TextureFormat::R32G32B32A32_Float);
+        m_normalLS = rhi.CreateRT(width, height, TextureFormat::R16G16B16A16_Snorm);
+        m_depth = rhi.CreateDepthBuffer(width, height);
         m_shadowMaps = rhi.CreateCBuffer(CBufferType::ShadowMaps, sizeof(CStruct::ShadowMaps));
 
         ConfigSystem& configSystem = ConfigSystem::Instance();
@@ -29,7 +33,7 @@ namespace Xunlan
 
         rhi.SetRT(context, m_depth);
         rhi.ClearRT(context, m_depth);
-        rhi.SetViewport(context, 0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+        rhi.SetViewport(context, 0, 0, m_width, m_height);
 
         CollectRenderItems();
         RenderItems(context);

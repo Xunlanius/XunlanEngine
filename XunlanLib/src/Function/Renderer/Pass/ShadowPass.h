@@ -13,7 +13,7 @@ namespace Xunlan
     {
     public:
 
-        ShadowPass();
+        ShadowPass(uint32 width, uint32 height);
 
     public:
 
@@ -29,8 +29,8 @@ namespace Xunlan
 
     private:
 
-        static constexpr uint32 SHADOW_MAP_WIDTH = 1024;
-        static constexpr uint32 SHADOW_MAP_HEIGHT = 1024;
+        uint32 m_width;
+        uint32 m_height;
 
         Ref<RenderTarget> m_fluxLS;
         Ref<RenderTarget> m_positionLS;
