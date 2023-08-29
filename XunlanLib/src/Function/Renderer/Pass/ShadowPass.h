@@ -32,9 +32,9 @@ namespace Xunlan
         uint32 m_width;
         uint32 m_height;
 
-        Ref<RenderTarget> m_fluxLS;
-        Ref<RenderTarget> m_positionLS;
-        Ref<RenderTarget> m_normalLS;
+        Ref<RenderTarget> m_flux;
+        Ref<RenderTarget> m_posWS;
+        Ref<RenderTarget> m_normalWS;
         Ref<DepthBuffer> m_depth;
 
         Ref<CBuffer> m_shadowMaps;

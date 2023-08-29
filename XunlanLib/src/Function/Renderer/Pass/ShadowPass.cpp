@@ -11,9 +11,9 @@ namespace Xunlan
     {
         RHI& rhi = RHI::Instance();
 
-        m_fluxLS = rhi.CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
-        m_positionLS = rhi.CreateRT(width, height, TextureFormat::R32G32B32A32_Float);
-        m_normalLS = rhi.CreateRT(width, height, TextureFormat::R16G16B16A16_Snorm);
+        m_flux = rhi.CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
+        m_posWS = rhi.CreateRT(width, height, TextureFormat::R32G32B32A32_Float);
+        m_normalWS = rhi.CreateRT(width, height, TextureFormat::R16G16B16A16_Snorm);
         m_depth = rhi.CreateDepthBuffer(width, height);
         m_shadowMaps = rhi.CreateCBuffer(CBufferType::ShadowMaps, sizeof(CStruct::ShadowMaps));
 
@@ -32,9 +32,9 @@ namespace Xunlan
         RHI& rhi = RHI::Instance();
 
         std::vector<CRef<RenderTarget>> rts = {
-            m_fluxLS,
-            m_positionLS,
-            m_normalLS
+            m_flux,
+            m_posWS,
+            m_normalWS
         };
 
         rhi.SetRT(context, rts, m_depth);
@@ -47,7 +47,11 @@ namespace Xunlan
         rhi.ResetRT(context, rts, m_depth);
 
         CStruct::ShadowMaps* shadowMapIndices = (CStruct::ShadowMaps*)m_shadowMaps->GetData();
-        shadowMapIndices->m_shadowMapIndices[0] = m_depth->GetHeapIndex();
+        CStruct::ShadowMap& map = shadowMapIndices->m_maps[0];
+        map.m_fluxIndex = m_flux->GetHeapIndex();
+        map.m_posWSIndex = m_posWS->GetHeapIndex();
+        map.m_normalWSIndex = m_normalWS->GetHeapIndex();
+        map.m_depthIndex = m_depth->GetHeapIndex();
 
         m_shadowMaps->Bind(context);
     }
