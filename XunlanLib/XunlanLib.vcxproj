@@ -167,6 +167,7 @@
   <ItemGroup>
     <None Include="Asset\Shader\HLSL\Common\Data\CBuffer.hlsli" />
     <None Include="Asset\Shader\HLSL\Common\Common.hlsli" />
+    <None Include="Asset\Shader\HLSL\Common\Data\Light.hlsli" />
     <None Include="Asset\Shader\HLSL\Common\Fractal.hlsli" />
     <None Include="Asset\Shader\HLSL\Common\Transform.hlsli" />
     <None Include="Asset\Shader\HLSL\Common\Lighting.hlsli" />

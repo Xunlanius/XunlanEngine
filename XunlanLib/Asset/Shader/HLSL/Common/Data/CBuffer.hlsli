@@ -1,36 +1,7 @@
 #ifndef CBUFFER
 #define CBUFFER
 
-static const uint MAX_NUM_DIRECTIONAL_LIGHTS = 4;
-static const uint MAX_NUM_POINT_LIGHTS = 16;
-static const uint MAX_NUM_SPOT_LIGHTS = 16;
-
-struct DirectionalLight
-{
-    float3 direction;
-    float _0;
-    float3 color;
-    float intensity;
-    float4x4 viewProj;
-};
-
-struct PointLight
-{
-    float3 position;
-    float _0;
-    float3 color;
-    float intensity;
-};
-
-struct SpotLight
-{
-    float3 position;
-    float _0;
-    float3 direction;
-    float _1;
-    float3 color;
-    float intensity;
-};
+#include "Light.hlsli"
 
 struct CBufferPerObject
 {
@@ -64,9 +35,8 @@ struct CBufferPerFrame
     float _1;
     
     float3 ambientLight;
-
-    uint numDirectionalLights;
-    DirectionalLight directionLights[MAX_NUM_DIRECTIONAL_LIGHTS];
+    
+    DirectionalLight directionalLight;
 
     uint numPointLights;
     float3 _2;
@@ -80,13 +50,21 @@ struct CBufferPerFrame
 struct GBuffer
 {
     uint albedoIndex;
-    uint positionIndex;
-    uint normalIndex;
+    uint posWSIndex;
+    uint normalWSIndex;
+};
+
+struct ShadowMap
+{
+    uint fluxIndex;
+    uint posWSIndex;
+    uint normalWSIndex;
+    uint depthIndex;
 };
 
 struct ShadowMaps
 {
-    uint shadowMapIndices[MAX_NUM_DIRECTIONAL_LIGHTS];
+    ShadowMap maps[4];
 };
 
 ConstantBuffer<CBufferPerObject> g_perObject : register(b0);

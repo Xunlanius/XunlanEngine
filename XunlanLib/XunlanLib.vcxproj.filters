@@ -161,5 +161,6 @@
     <None Include="Asset\Shader\HLSL\Common\Lighting.hlsli" />
     <None Include="Asset\Shader\HLSL\GPass.hlsl" />
     <None Include="Asset\Shader\HLSL\Lighting.hlsl" />
+    <None Include="Asset\Shader\HLSL\Common\Data\Light.hlsli" />
   </ItemGroup>
 </Project>

@@ -239,9 +239,11 @@ namespace Xunlan
             {
             case LightType::DIRECTIONAL:
             {
+                assert(numDirectionalLights == 0);
+
                 const Math::float3 direction = TransformerSystem::GetForward(transformer);
 
-                CStruct::DirectionalLight& directionalLight = perFrame->m_directionLights[numDirectionalLights];
+                CStruct::DirectionalLight& directionalLight = perFrame->m_directionalLight;
                 directionalLight.m_direction = direction;
                 directionalLight.m_color = light.m_color;
                 directionalLight.m_intensity = light.m_intensity;
@@ -278,11 +280,9 @@ namespace Xunlan
             }
         }
 
-        assert(numDirectionalLights <= CStruct::MAX_NUM_DIRECTIONAL_LIGHTS && "Too much directional lights.");
         assert(numPointLights <= CStruct::MAX_NUM_POINT_LIGHTS && "Too much point lights.");
 
         perFrame->m_ambientLight = { 0.2f, 0.2f, 0.2f };
-        perFrame->m_numDirectionalLights = numDirectionalLights;
         perFrame->m_numPointLights = numPointLights;
         perFrame->m_numSpotLights = numSpotLights;
     }

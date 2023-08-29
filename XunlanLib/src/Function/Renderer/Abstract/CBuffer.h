@@ -63,7 +63,6 @@ namespace Xunlan
             uint32 m_normalIndex;
         };
 
-        constexpr uint32 MAX_NUM_DIRECTIONAL_LIGHTS = 4;
         constexpr uint32 MAX_NUM_POINT_LIGHTS = 16;
         constexpr uint32 MAX_NUM_SPOT_LIGHTS = 16;
 
@@ -109,8 +108,7 @@ namespace Xunlan
 
             Math::float3 m_ambientLight;
 
-            uint32 m_numDirectionalLights;
-            DirectionalLight m_directionLights[MAX_NUM_DIRECTIONAL_LIGHTS];
+            DirectionalLight m_directionalLight;
 
             uint32 m_numPointLights;
             Math::float3 _2;
@@ -130,9 +128,17 @@ namespace Xunlan
 
         constexpr uint32 MAX_NUM_SHADOW_MAPS = 4;
 
+        struct alignas(16) ShadowMap final
+        {
+            uint32 m_fluxIndex;
+            uint32 m_posWSIndex;
+            uint32 m_normalWSIndex;
+            uint32 m_depthIndex;
+        };
+
         struct alignas(16) ShadowMaps final
         {
-            uint32 m_shadowMapIndices[MAX_NUM_SHADOW_MAPS];
+            ShadowMap m_maps[MAX_NUM_SHADOW_MAPS];
         };
     }
 }

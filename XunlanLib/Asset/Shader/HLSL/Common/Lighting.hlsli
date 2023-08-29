@@ -1,5 +1,5 @@
-#ifndef LIGHT
-#define LIGHT
+#ifndef LIGHTING
+#define LIGHTING
 
 #include "Data/CBuffer.hlsli"
 #include "Data/Sampler.hlsli"
@@ -57,29 +57,25 @@ float ComputeShadow(Texture2D shadowMap, SamplerState sample, float4 lightPos)
     return shadow;
 }
 
-float3 ComputeDirectionLight(float3 worldPos, float3 worldNormal)
+float3 ComputeDirectionalLight(float3 worldPos, float3 worldNormal)
 {
     const float3 viewDir = GetViewDir(worldPos);
-    
-    float3 color = 0;
-    for (uint i = 0; i < g_perFrame.numDirectionalLights; ++i)
-    {
-        const DirectionalLight light = g_perFrame.directionLights[i];
-        const float3 lightDir = light.direction;
+
+    const DirectionalLight light = g_perFrame.directionalLight;
+    const float3 lightDir = light.direction;
         
-        const float diffuse = max(0.0f, dot(worldNormal, -lightDir));
-        const float3 halfDir = normalize(lightDir + viewDir);
-        const float specular = pow(max(0.0f, dot(halfDir, worldNormal)), 16) * 0.5f;
+    const float diffuse = max(0.0f, dot(worldNormal, -lightDir));
+    const float3 halfDir = normalize(lightDir + viewDir);
+    const float specular = pow(max(0.0f, dot(halfDir, worldNormal)), 16) * 0.5f;
         
-        const float3 lightColor = light.color * light.intensity;
+    const float3 lightColor = light.color * light.intensity;
         
-        Texture2D shadowMap = ResourceDescriptorHeap[g_shadowMaps.shadowMapIndices[i]];
-        const float shadow = ComputeShadow(shadowMap, LinearWarp, mul(light.viewProj, float4(worldPos, 1.0f)));
+    Texture2D shadowMap = ResourceDescriptorHeap[g_shadowMaps.maps[0].depthIndex];
+    const float shadow = ComputeShadow(shadowMap, LinearWarp, mul(light.viewProj, float4(worldPos, 1.0f)));
         
-        color += (diffuse + specular) * lightColor * shadow;
-    }
-    
+    float3 color = (diffuse + specular) * lightColor * shadow;
     color = saturate(color + g_perFrame.ambientLight);
+    
     return color;
 }
 
