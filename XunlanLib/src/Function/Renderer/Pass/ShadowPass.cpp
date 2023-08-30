@@ -18,10 +18,11 @@ namespace Xunlan
         m_shadowMaps = rhi.CreateCBuffer(CBufferType::ShadowMaps, sizeof(CStruct::ShadowMaps));
 
         ConfigSystem& configSystem = ConfigSystem::Instance();
-        const std::filesystem::path shadowMappingShader = configSystem.GetHLSLFolder() / "ShadowMapping.hlsl";
+        const std::filesystem::path shader = configSystem.GetHLSLFolder() / "ShadowMapping.hlsl";
 
         ShaderList list = {};
-        list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shadowMappingShader, "VS");
+        list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shader, "VS");
+        list.m_PS = rhi.CreateShader(ShaderType::PIXEL_SHADER, shader, "PS");
 
         m_shadowMaterial = rhi.CreateMaterial("Mat_Shadow_Mapping", MaterialType::ShadowMapping, list);
         m_shadowMaterial->GetRasterizerState()->SetDepthClipEnable(false);
