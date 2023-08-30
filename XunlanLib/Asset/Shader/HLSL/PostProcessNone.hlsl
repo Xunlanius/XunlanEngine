@@ -10,7 +10,7 @@ VertexOutput VS(uint vertexIndex : SV_VertexID)
 {
     VertexOutput output;
     
-    const Vertex vertex = Vertices[vertexIndex];
+    const Vertex vertex = g_vertices[vertexIndex];
     output.pos = float4(vertex.position, 1.0f);
     output.uv = vertex.uv;
     

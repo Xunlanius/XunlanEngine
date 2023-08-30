@@ -8,7 +8,7 @@ struct VSOutput
 
 VSOutput VS(uint vertexIndex : SV_VertexID)
 {
-    const Vertex vertex = Vertices[vertexIndex];
+    const Vertex vertex = g_vertices[vertexIndex];
     
     VSOutput output;
     output.pos = float4(vertex.position, 1.0f);

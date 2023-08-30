@@ -8,6 +8,6 @@ struct Vertex
     float3 tangent;
     float2 uv;
 };
-StructuredBuffer<Vertex> Vertices : register(t0);
+StructuredBuffer<Vertex> g_vertices : register(t0);
 
 #endif
