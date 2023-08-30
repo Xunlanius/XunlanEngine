@@ -4,6 +4,7 @@
 #include "src/Common/Win32Common.h"
 
 #include <string>
+#include <iostream>
 
 #include <dxgi1_6.h>
 #include <d3d12.h>
@@ -44,20 +45,17 @@ namespace Xunlan::DX12
 
 #define NAME_OBJECT(obj, name)                                      \
         {                                                           \
-            (obj)->SetName(name);                                   \
-            OutputDebugString(L"________D3D12 Object Created: ");   \
-            OutputDebugString(name);                                \
-            OutputDebugString(L"\n");                               \
+            std::wstring str = name;                                \
+            (obj)->SetName(str.c_str());                            \
+            /* std::wcout << L"D3D12 Object Created: " << str << '\n'; */ \
         }
 
-#define NAME_OBJECT_INDEX(obj, name, index)                         \
-        {                                                           \
-            std::wstring indexName = name;                          \
-            indexName += L" " + std::to_wstring(index);             \
-            (obj)->SetName(indexName.c_str());                      \
-            OutputDebugString(L"________D3D12 Object Created: ");   \
-            OutputDebugString(indexName.c_str());                   \
-            OutputDebugString(L"\n");                               \
+#define NAME_OBJECT_INDEX(obj, name, index)                                 \
+        {                                                                   \
+            std::wstring str = name;                                        \
+            str += L" " + std::to_wstring(index);                           \
+            (obj)->SetName(str.c_str());                                    \
+            /* std::wcout << L"D3D12 Object Created: " << str.c_str() << '\n'; */ \
         }
 
 #else
