@@ -1,7 +1,9 @@
 #include "DX12Shader.h"
+#include "d3d12shader.h"
 
 #include <dxcapi.h>
 #include <fstream>
+#include <iostream>
 
 #pragma comment(lib, "dxcompiler.lib")
 
@@ -24,7 +26,7 @@ namespace Xunlan::DX12
 
     public:
 
-        ComPtr<IDxcBlob> Compile(ShaderType type, const std::filesystem::path& filePath, const std::string& functionName)
+        bool Compile(ShaderType type, const std::filesystem::path& filePath, const std::string& functionName)
         {
             assert(m_compiler && m_utils && m_includeHandler);
 
@@ -56,18 +58,17 @@ namespace Xunlan::DX12
                 L"-Qstrip_debug",
             };
 
-            OutputDebugStringW(L"Compiling: ");
-            OutputDebugStringW(fileName.c_str());
-            OutputDebugStringW(L" ");
-            OutputDebugStringW(funcName.c_str());
-            OutputDebugStringW(L"...\n");
+            std::wcout << "Compile: " << fileName.c_str() << " - " << funcName.c_str() << '\n';
 
             return _Compile(sourceBlob.Get(), args, _countof(args));
         }
 
+        ComPtr<IDxcBlob> GetCompiledShader() const { return m_compiledShader; }
+        ComPtr<ID3D12ShaderReflection> GetReflection() const { return m_reflection; }
+
     private:
 
-        ComPtr<IDxcBlob> _Compile(IDxcBlobEncoding* sourceBlob, LPCWSTR* args, uint32 numArgs)
+        bool _Compile(IDxcBlobEncoding* sourceBlob, LPCWSTR* args, uint32 numArgs)
         {
             DxcBuffer buffer = {};
             buffer.Ptr = sourceBlob->GetBufferPointer();
@@ -75,46 +76,73 @@ namespace Xunlan::DX12
             buffer.Encoding = DXC_CP_ACP;
 
             // Get the compiling result
-            ComPtr<IDxcResult> result = nullptr;
+            ComPtr<IDxcResult> result;
             Check(m_compiler->Compile(&buffer, args, numArgs, m_includeHandler.Get(), IID_PPV_ARGS(&result)));
 
             // Get different types of the compiling result
-            ComPtr<IDxcBlobUtf8> errors = nullptr;
+            ComPtr<IDxcBlobUtf8> errors;
             Check(result->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&errors), nullptr));
 
             // Output compiling result
             if (errors && errors->GetStringLength() > 0)
             {
-                MessageBoxA(nullptr, errors->GetStringPointer(), "Shader Compiling Error", MB_ICONERROR);
-                OutputDebugStringA("Shader compiling error:\n");
-                OutputDebugStringA(errors->GetStringPointer());
+                std::wcout << "Error: " << errors->GetStringPointer() << '\n';
             }
-            else
-            {
-                OutputDebugStringA("Succeeded");
-            }
-            OutputDebugStringA("\n");
 
             HRESULT status = S_OK;
             Check(result->GetStatus(&status));
-            if (FAILED(status)) return nullptr;
+            if (FAILED(status)) return false;
 
-            ComPtr<IDxcBlob> compiledShader = nullptr;
-            Check(result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&compiledShader), nullptr));
+            ComPtr<IDxcBlob> reflectionData;
+            Check(result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&m_compiledShader), nullptr));
+            Check(result->GetOutput(DXC_OUT_REFLECTION, IID_PPV_ARGS(&reflectionData), nullptr));
 
-            return compiledShader;
+            if (reflectionData)
+            {
+                DxcBuffer ReflectionBuffer = {};
+                ReflectionBuffer.Ptr = reflectionData->GetBufferPointer();
+                ReflectionBuffer.Size = reflectionData->GetBufferSize();
+                ReflectionBuffer.Encoding = DXC_CP_ACP;
+
+                m_utils->CreateReflection(&ReflectionBuffer, IID_PPV_ARGS(&m_reflection));
+            }
+
+            D3D12_SHADER_DESC shader_desc;
+            m_reflection->GetDesc(&shader_desc);
+
+            for (uint32 i = 0; i < shader_desc.BoundResources; i++)
+            {
+                D3D12_SHADER_INPUT_BIND_DESC  desc = {};
+                m_reflection->GetResourceBindingDesc(i, &desc);
+
+                const char* shaderVarName = desc.Name;
+                uint32 bindPoint = desc.BindPoint;
+                D3D_SHADER_INPUT_TYPE resourceType = desc.Type;
+                uint32 registerSpace = desc.Space;
+
+                std::cout << "    name: " << shaderVarName << std::endl;
+                std::cout << "    bind point: " << bindPoint << std::endl;
+                std::cout << "    resource type: " << resourceType << std::endl;
+                std::cout << "    register space: " << registerSpace << std::endl;
+                std::cout << std::endl;
+            }
+
+            return true;
         }
 
     private:
 
-        ComPtr<IDxcCompiler3> m_compiler = nullptr;
-        ComPtr<IDxcUtils> m_utils = nullptr;
-        ComPtr<IDxcIncludeHandler> m_includeHandler = nullptr;
+        ComPtr<IDxcCompiler3> m_compiler;
+        ComPtr<IDxcUtils> m_utils;
+        ComPtr<IDxcIncludeHandler> m_includeHandler;
 
         static constexpr const char* m_shaderModels[] = {
             "vs_6_6", "hs_6_6", "ds_6_6", "gs_6_6", "ps_6_6", "cs_6_6", "as_6_6", "ms_6_6"
         };
         static_assert(_countof(m_shaderModels) == (uint32)ShaderType::COUNT);
+
+        ComPtr<IDxcBlob> m_compiledShader;
+        ComPtr<ID3D12ShaderReflection> m_reflection;
     };
 
     DX12Shader::DX12Shader(ShaderType type, const void* byteCode, size_t byteCodeLength)
@@ -127,8 +155,12 @@ namespace Xunlan::DX12
     Ref<DX12Shader> DX12Shader::Create(ShaderType type, const std::filesystem::path& path, const std::string& functionName)
     {
         ShaderCompiler compiler;
-        ComPtr<IDxcBlob> compiledShader = compiler.Compile(type, path, functionName);
-        assert(compiledShader && "Shader compiled error.");
+
+        bool succeed = compiler.Compile(type, path, functionName);
+        assert(succeed && "Shader compiled error.");
+
+        ComPtr<IDxcBlob> compiledShader = compiler.GetCompiledShader();
+        ComPtr<ID3D12ShaderReflection> reflection = compiler.GetReflection();
 
         const void* byteCode = compiledShader->GetBufferPointer();
         const size_t byteCodeLength = compiledShader->GetBufferSize();
