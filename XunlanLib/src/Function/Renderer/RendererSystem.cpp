@@ -25,7 +25,6 @@ namespace Xunlan
     }
     void RenderSystem::Render(float deltaTime)
     {
-        Scene::Instance().UpdateCBufferPerScene();
         RenderPipeline::Instance().RenderForward();
     }
 

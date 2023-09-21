@@ -1,7 +1,6 @@
 #include "DX12CBuffer.h"
 #include "DX12RenderContext.h"
 #include "DX12RHI.h"
-#include "DX12RootParameter.h"
 #include "Helper/d3dx12.h"
 #include "src/Utility/Math/Math.h"
 
@@ -9,7 +8,8 @@ using namespace Microsoft::WRL;
 
 namespace Xunlan::DX12
 {
-    DX12CBuffer::DX12CBuffer(CBufferType type, uint32 size) : CBuffer(type, size)
+    DX12CBuffer::DX12CBuffer(size_t size)
+        : CBuffer(size)
     {
         DX12RHI& rhi = (DX12RHI&)RHI::Instance();
         Device& device = rhi.GetDevice();
@@ -31,45 +31,5 @@ namespace Xunlan::DX12
     DX12CBuffer::~DX12CBuffer()
     {
         m_buffer->Unmap(0, nullptr);
-    }
-
-    void DX12CBuffer::Bind(Ref<RenderContext> context) const
-    {
-        Ref<DX12RenderContext> dx12Context = std::dynamic_pointer_cast<DX12RenderContext>(context);
-        GraphicsCommandList* cmdList = dx12Context->m_cmdList;
-
-        memcpy(m_dst, GetData(), m_size);
-
-        const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = m_buffer->GetGPUVirtualAddress();
-
-        switch (m_type)
-        {
-        case CBufferType::PerObject:
-        {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::PerObject, gpuAddress);
-        }
-        break;
-        case CBufferType::PerMaterial:
-        {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::PerMaterial, gpuAddress);
-        }
-        break;
-        case CBufferType::PerFrame:
-        {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::PerFrame, gpuAddress);
-        }
-        break;
-        case CBufferType::GBuffer:
-        {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::GBuffer, gpuAddress);
-        }
-        break;
-        case CBufferType::ShadowMaps:
-        {
-            cmdList->SetGraphicsRootConstantBufferView((uint32)RootParam::ShadowMaps, gpuAddress);
-        }
-        break;
-        default: assert(false);
-        }
     }
 }

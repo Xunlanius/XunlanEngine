@@ -6,6 +6,11 @@ struct VertexOutput
     float2 uv : TEXCOORD;
 };
 
+cbuffer g_postProcess
+{
+    uint g_mainRTIndex;
+};
+
 VertexOutput VS(uint vertexIndex : SV_VertexID)
 {
     VertexOutput output;
@@ -19,7 +24,7 @@ VertexOutput VS(uint vertexIndex : SV_VertexID)
 
 float4 PS(VertexOutput input) : SV_TARGET
 {
-    Texture2D baseColor = ResourceDescriptorHeap[g_perMaterial.albedoIndex];
+    Texture2D baseColor = ResourceDescriptorHeap[g_mainRTIndex];
     float4 color = baseColor.Sample(LinearClamp, input.uv);
     return float4(color.xyz, 1.0f);
 }

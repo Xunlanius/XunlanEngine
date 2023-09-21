@@ -15,20 +15,11 @@ namespace Xunlan
         m_posWS = rhi.CreateRT(width, height, TextureFormat::R32G32B32A32_Float);
         m_normalWS = rhi.CreateRT(width, height, TextureFormat::R16G16B16A16_Snorm);
         m_depth = rhi.CreateDepthBuffer(width, height);
-        m_shadowMaps = rhi.CreateCBuffer(CBufferType::ShadowMaps, sizeof(CStruct::ShadowMaps));
 
-        ConfigSystem& configSystem = ConfigSystem::Instance();
-        const std::filesystem::path shader = configSystem.GetHLSLFolder() / "ShadowMapping.hlsl";
-
-        ShaderList list = {};
-        list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shader, "VS");
-        list.m_PS = rhi.CreateShader(ShaderType::PIXEL_SHADER, shader, "PS");
-
-        m_shadowMaterial = rhi.CreateMaterial("Mat_Shadow_Mapping", MaterialType::ShadowMapping, list);
-        m_shadowMaterial->GetRasterizerState()->SetDepthClipEnable(false);
+        CreateMaterial();
     }
 
-    void ShadowPass::Render(Ref<RenderContext> context)
+    void ShadowPass::Render(Ref<RenderContext> context, const std::vector<Ref<RenderItem>>& items)
     {
         RHI& rhi = RHI::Instance();
 
@@ -42,57 +33,35 @@ namespace Xunlan
         rhi.ClearRT(context, rts, m_depth);
         rhi.SetViewport(context, 0, 0, m_width, m_height);
 
-        CollectRenderItems();
-        RenderItems(context);
+        RenderItems(context, items);
 
         rhi.ResetRT(context, rts, m_depth);
-
-        CStruct::ShadowMaps* shadowMapIndices = (CStruct::ShadowMaps*)m_shadowMaps->GetData();
-        CStruct::ShadowMap& map = shadowMapIndices->m_maps[0];
-        map.m_fluxIndex = m_flux->GetHeapIndex();
-        map.m_posWSIndex = m_posWS->GetHeapIndex();
-        map.m_normalWSIndex = m_normalWS->GetHeapIndex();
-        map.m_depthIndex = m_depth->GetHeapIndex();
-
-        m_shadowMaps->Bind(context);
     }
 
-    void ShadowPass::CollectRenderItems()
+    void ShadowPass::CreateMaterial()
     {
-        m_renderItems.clear();
+        RHI& rhi = RHI::Instance();
+        ConfigSystem& configSystem = ConfigSystem::Instance();
 
-        WeakRef<Entity> refRoot = Scene::Instance().GetRoot();
-        CollectVisableEntity(refRoot);
+        const std::filesystem::path shaderPath = configSystem.GetHLSLFolder() / "ShadowMapping.hlsl";
+
+        ShaderInitDesc shaderDesc = {};
+        shaderDesc.m_createVS = true;
+        shaderDesc.m_createPS = true;
+
+        Ref<Shader> shader = rhi.CreateShader("Shadow_Mapping", shaderDesc, shaderPath);
+        shader->GetRasterizerState()->SetDepthClipEnable(false);
+
+        m_shadowMaterial = rhi.CreateMaterial(shader);
     }
 
-    void ShadowPass::CollectVisableEntity(const WeakRef<Entity>& refNode)
+    void ShadowPass::RenderItems(Ref<RenderContext> context, const std::vector<Ref<RenderItem>>& items)
     {
-        Ref<Entity> node = refNode.lock();
-        assert(node);
-
-        if (node->HasComponent<MeshRenderComponent>())
+        for (const Ref<RenderItem>& item : items)
         {
-            auto [transformer, meshRender] = node->GetComponent<TransformerComponent, MeshRenderComponent>();
-
-            if (meshRender.m_castShadow)
-            {
-                UpdateCBufferPerObject(transformer, meshRender.m_renderItem->GetPerObject());
-                m_renderItems.push_back(meshRender.m_renderItem);
-            }
-        }
-
-        for (const WeakRef<Entity>& child : node->GetChildren())
-        {
-            CollectVisableEntity(child);
-        }
-    }
-
-    void ShadowPass::RenderItems(Ref<RenderContext> context)
-    {
-        for (const WeakRef<RenderItem>& refItem : m_renderItems)
-        {
-            Ref<RenderItem> item = refItem.lock();
             assert(item);
+
+            context->SetParam("g_perObject", item->GetPerObject());
             item->Render(context, m_shadowMaterial);
         }
     }

@@ -17,15 +17,17 @@ namespace Xunlan
 
     public:
 
-        void Render(Ref<RenderContext> context);
+        void Render(Ref<RenderContext> context, const std::vector<Ref<RenderItem>>& items);
 
-        Ref<DepthBuffer> GetShadowMap() const { return m_depth; }
+        CRef<RenderTarget> GetFlux() const { return m_flux; }
+        CRef<RenderTarget> GetPosWS() const { return m_posWS; }
+        CRef<RenderTarget> GetNormalWS() const { return m_normalWS; }
+        CRef<DepthBuffer> GetDepthMap() const { return m_depth; }
 
     private:
 
-        void CollectRenderItems();
-        void CollectVisableEntity(const WeakRef<Entity>& refNode);
-        void RenderItems(Ref<RenderContext> context);
+        void CreateMaterial();
+        void RenderItems(Ref<RenderContext> context, const std::vector<Ref<RenderItem>>& items);
 
     private:
 
@@ -37,9 +39,6 @@ namespace Xunlan
         Ref<RenderTarget> m_normalWS;
         Ref<DepthBuffer> m_depth;
 
-        Ref<CBuffer> m_shadowMaps;
         Ref<Material> m_shadowMaterial;
-
-        std::vector<WeakRef<RenderItem>> m_renderItems;
     };
 }

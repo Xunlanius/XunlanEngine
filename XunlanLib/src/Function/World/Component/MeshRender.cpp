@@ -13,7 +13,7 @@ namespace Xunlan
         {
             auto [transformer, meshRender] = world.GetComponent<TransformerComponent, MeshRenderComponent>(entityID);
 
-            CStruct::PerObject* perObject = (CStruct::PerObject*)meshRender.m_renderItem->GetPerObject()->GetData();
+            CB::PerObject* perObject = meshRender.m_renderItem->GetPerObject()->GetData<CB::PerObject>();
             perObject->m_world = TransformerSystem::GetWorld(transformer);
             perObject->m_invWorld = Math::GetInverse(perObject->m_world);
         }

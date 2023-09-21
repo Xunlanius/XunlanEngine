@@ -13,7 +13,6 @@ namespace Xunlan
     bool Scene::Initialize()
     {
         m_root = Ref<Entity>(new Entity("root", {}));
-        m_cBufferPerScene = RHI::Instance().CreateCBuffer(CBufferType::PerFrame, sizeof(CStruct::PerFrame));
         return true;
     }
     void Scene::Shutdown()
@@ -22,8 +21,6 @@ namespace Xunlan
         m_entities.clear();
         m_cameras.clear();
         m_lights.clear();
-
-        m_cBufferPerScene.reset();
     }
 
     void Scene::LoadScene()
@@ -53,13 +50,18 @@ namespace Xunlan
         {
             const std::filesystem::path shaderPath = configSystem.GetHLSLFolder() / "GPass.hlsl";
 
-            ShaderList list = {};
-            list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shaderPath, "VS");
-            list.m_PS = rhi.CreateShader(ShaderType::PIXEL_SHADER, shaderPath, "PS");
+            ShaderInitDesc shaderDesc = {};
+            shaderDesc.m_createVS = true;
+            shaderDesc.m_createPS = true;
+            Ref<Shader> shader = rhi.CreateShader("PBR", shaderDesc, shaderPath);
 
-            Ref<Material> mat0 = rhi.CreateMaterial("Mat_GPass_0", MaterialType::MeshRenderer, list);
-            Ref<Material> mat1 = rhi.CreateMaterial("Mat_GPass_1", MaterialType::MeshRenderer, list);
-            mat0->SetAlbedo({ 1.0f, 0.0f, 0.0f, 1.0f });
+            Ref<Material> mat0 = rhi.CreateMaterial(shader);
+            Ref<Material> mat1 = rhi.CreateMaterial(shader);
+
+            CB::PBR* cbPBR0 = mat0->GetPBRData();
+            cbPBR0->m_albedo = { 1.0f, 0.0f, 0.0f, 1.0f };
+            CB::PBR* cbPBR1 = mat1->GetPBRData();
+            cbPBR1->m_albedo = { 1.0f, 1.0f, 1.0f, 1.0f };
 
             const std::filesystem::path& modelFolderPath = configSystem.GetModelFolder();
             const std::filesystem::path fioraPath = modelFolderPath / "Fiora.model";
@@ -79,24 +81,32 @@ namespace Xunlan
             }
 
             Ref<RenderItem> fiora = rhi.CreateRenderItem(modelFiora, { mat0 });
-            Ref<RenderItem> plane = rhi.CreateRenderItem(modelPlane, { mat1 });
+            Ref<RenderItem> plane0 = rhi.CreateRenderItem(modelPlane, { mat1 });
+            Ref<RenderItem> plane1 = rhi.CreateRenderItem(modelPlane, { mat1 });
 
             const TransformerInitDesc transformerDescFiora = {
-                { 0.0f, -2.0f, 0.0f },
+                { 0.0f, -3.0f, 0.0f },
                 { -1.57f, 3.14f, 0.0f },
                 { 1.0f, 1.0f, 1.0f },
             };
-            const TransformerInitDesc transformerDescPlane = {
+            const TransformerInitDesc transformerDescPlane0 = {
                 { 0.0f, -5.0f, 0.0f },
                 { -1.57f, 3.14f, 0.0f },
-                { 1.0f, 1.0f, 1.0f },
+                { 0.3f, 0.3f, 0.3f },
+            };
+            const TransformerInitDesc transformerDescPlane1 = {
+                { 2.0f, 0.0f, 0.0f },
+                { 3.14f, 1.57f, 0.0f },
+                { 0.3f, 0.3f, 0.3f },
             };
 
             Ref<Entity> entityFiora = CreateEntity("Fiora", transformerDescFiora, {}).lock();
-            Ref<Entity> entityPlane = CreateEntity("Plane", transformerDescPlane, {}).lock();
+            Ref<Entity> entityPlane0 = CreateEntity("Plane0", transformerDescPlane0, {}).lock();
+            Ref<Entity> entityPlane1 = CreateEntity("Plane1", transformerDescPlane1, {}).lock();
 
             entityFiora->AddComponent(MeshRenderComponent{ fiora, true });
-            entityPlane->AddComponent(MeshRenderComponent{ plane, true });
+            entityPlane0->AddComponent(MeshRenderComponent{ plane0, true });
+            entityPlane1->AddComponent(MeshRenderComponent{ plane1, true });
         }
 
         // Create light
@@ -176,12 +186,6 @@ namespace Xunlan
         m_lights.push_back(lightEntity);
     }
 
-    void Scene::UpdateCBufferPerScene()
-    {
-        UpdateCBufferCamera();
-        UpdateCBufferLight();
-    }
-
     WeakRef<Entity> Scene::GetEntity(ECS::EntityID entityID) const
     {
         auto it = m_entities.find(entityID);
@@ -200,90 +204,5 @@ namespace Xunlan
         }
 
         m_entities.erase(entity->GetID());
-    }
-
-    void Scene::UpdateCBufferCamera()
-    {
-        Ref<Entity> mainCamera = m_mainCamera.lock();
-
-        assert(mainCamera && "Main camera not existed.");
-
-        auto [transformer, camera] = mainCamera->GetComponent<TransformerComponent, CameraComponent>();
-        CStruct::PerFrame* perFrame = (CStruct::PerFrame*)m_cBufferPerScene->GetData();
-
-        perFrame->m_view = camera.m_view;
-        perFrame->m_proj = camera.m_projection;
-        perFrame->m_invProj = camera.m_invProjection;
-        perFrame->m_viewProj = camera.m_viewProjection;
-        perFrame->m_invViewProj = camera.m_invViewProjection;
-
-        perFrame->m_cameraPos = transformer.m_position;
-        perFrame->m_cameraDir = TransformerSystem::GetForward(transformer);
-    }
-    void Scene::UpdateCBufferLight()
-    {
-        uint32 numDirectionalLights = 0;
-        uint32 numPointLights = 0;
-        uint32 numSpotLights = 0;
-
-        CStruct::PerFrame* perFrame = (CStruct::PerFrame*)m_cBufferPerScene->GetData();
-
-        for (auto& refLight : m_lights)
-        {
-            Ref<Entity> lightEntity = refLight.lock();
-            if (!lightEntity) continue;
-
-            auto [transformer, light] = lightEntity->GetComponent<TransformerComponent, LightComponent>();
-
-            switch (light.m_type)
-            {
-            case LightType::DIRECTIONAL:
-            {
-                assert(numDirectionalLights == 0);
-
-                const Math::float3 direction = TransformerSystem::GetForward(transformer);
-
-                CStruct::DirectionalLight& directionalLight = perFrame->m_directionalLight;
-                directionalLight.m_direction = direction;
-                directionalLight.m_color = light.m_color;
-                directionalLight.m_intensity = light.m_intensity;
-                directionalLight.m_viewProj = GetDirectionalLightViewProj(transformer);
-
-                ++numDirectionalLights;
-            }
-            break;
-
-            case LightType::POINT:
-            {
-                CStruct::PointLight& pointLight = perFrame->m_pointLights[numPointLights];
-                pointLight.m_position = transformer.m_position;
-                pointLight.m_color = light.m_color;
-                pointLight.m_intensity = light.m_intensity;
-
-                ++numPointLights;
-            }
-            break;
-
-            case LightType::SPOT:
-            {
-                CStruct::SpotLight& spotLight = perFrame->m_spotLights[numSpotLights];
-                spotLight.m_position = transformer.m_position;
-                spotLight.m_direction = TransformerSystem::GetForward(transformer);
-                spotLight.m_color = light.m_color;
-                spotLight.m_intensity = light.m_intensity;
-
-                ++numSpotLights;
-            }
-            break;
-
-            default: assert(false && "Unknown light type.");
-            }
-        }
-
-        assert(numPointLights <= CStruct::MAX_NUM_POINT_LIGHTS && "Too much point lights.");
-
-        perFrame->m_ambientLight = { 0.2f, 0.2f, 0.2f };
-        perFrame->m_numPointLights = numPointLights;
-        perFrame->m_numSpotLights = numSpotLights;
     }
 }

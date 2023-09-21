@@ -4,14 +4,13 @@
 #include "DX12Command.h"
 #include "DX12RenderContext.h"
 #include "DX12Mesh.h"
-#include "DX12Shader.h"
+#include "Shader/DX12Shader.h"
 #include "Texture/DX12ImageTexture.h"
 #include "DX12DepthStencilState.h"
 #include "DX12RasterizerState.h"
 #include "DX12CBuffer.h"
 #include "DX12Material.h"
 #include "DX12RenderItem.h"
-#include "DX12RootParameter.h"
 #include "Helper/d3dx12.h"
 
 using namespace Microsoft::WRL;
@@ -41,7 +40,7 @@ namespace Xunlan::DX12
             GetRTVHeap()
         );
 
-        CreateRootSignature();
+        // CreateRootSignature();
     }
 
     DX12RHI::~DX12RHI()
@@ -49,7 +48,7 @@ namespace Xunlan::DX12
         Flush();
 
         m_psoContainer.clear();
-        m_defaultRootSig.Reset();
+        // m_defaultRootSig.Reset();
 
         m_surface.reset();
         m_mainCommand.reset();
@@ -82,7 +81,7 @@ namespace Xunlan::DX12
 
         ID3D12DescriptorHeap* const heaps[] = { GetSRVHeap().GetHeap() };
         cmdList->SetDescriptorHeaps(_countof(heaps), heaps);
-        cmdList->SetGraphicsRootSignature(m_defaultRootSig.Get());
+        // cmdList->SetGraphicsRootSignature(m_defaultRootSig.Get());
 
         ProcessDeferredRelease(GetCurrFrameIndex());
 
@@ -244,6 +243,114 @@ namespace Xunlan::DX12
         ResetRT(*cmdList, rts, depthBuffer);
     }
 
+    void DX12RHI::SetRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
+    {
+        m_currRTFormats.clear();
+
+        std::vector<CD3DX12_RESOURCE_BARRIER> barriers;
+        std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
+        D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};
+
+        for (auto& rt : rts)
+        {
+            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(rt);
+            assert(dx12RT);
+
+            rtvs.push_back(dx12RT->GetRTV().handleCPU);
+
+            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+                dx12RT->GetResource(),
+                dx12RT->RT_INIT_STATE,
+                D3D12_RESOURCE_STATE_RENDER_TARGET)
+            );
+
+            m_currRTFormats.push_back(dx12RT->GetDXFormat());
+        }
+
+        if (depthBuffer)
+        {
+            const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
+
+            m_currDSFormat = dx12DepthBuffer->GetDXFormat();
+            dsv = dx12DepthBuffer->GetDSV().handleCPU;
+
+            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+                dx12DepthBuffer->GetResource(),
+                dx12DepthBuffer->DS_INIT_STATE,
+                D3D12_RESOURCE_STATE_DEPTH_WRITE
+            ));
+        }
+        else
+        {
+            m_currDSFormat = DXGI_FORMAT_UNKNOWN;
+        }
+
+        assert(barriers.size() > 0);
+
+        cmdList.ResourceBarrier((uint32)barriers.size(), barriers.data());
+        cmdList.OMSetRenderTargets(
+            (uint32)rtvs.size(),
+            (rtvs.size() > 0) ? rtvs.data() : nullptr,
+            FALSE,
+            depthBuffer ? &dsv : nullptr
+        );
+    }
+
+    void DX12RHI::ClearRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
+    {
+        for (auto& rt : rts)
+        {
+            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(rt);
+            assert(dx12RT);
+
+            cmdList.ClearRenderTargetView(dx12RT->GetRTV().handleCPU, m_clearColor, 0, nullptr);
+        }
+
+        if (depthBuffer)
+        {
+            const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
+
+            cmdList.ClearDepthStencilView(
+                dx12DepthBuffer->GetDSV().handleCPU,
+                D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
+                1.0f, 0,
+                0, nullptr
+            );
+        }
+    }
+
+    void DX12RHI::ResetRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
+    {
+        std::vector<CD3DX12_RESOURCE_BARRIER> barriers;
+
+        for (auto& rt : rts)
+        {
+            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(rt);
+            assert(dx12RT);
+
+            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+                dx12RT->GetResource(),
+                D3D12_RESOURCE_STATE_RENDER_TARGET,
+                dx12RT->RT_INIT_STATE)
+            );
+        }
+
+        if (depthBuffer)
+        {
+            const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
+
+            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+                dx12DepthBuffer->GetResource(),
+                D3D12_RESOURCE_STATE_DEPTH_WRITE,
+                dx12DepthBuffer->DS_INIT_STATE)
+            );
+        }
+
+        assert(barriers.size() > 0);
+
+        cmdList.ResourceBarrier((uint32)barriers.size(), barriers.data());
+    }
+
 #pragma endregion
 
     void DX12RHI::SetViewport(Ref<RenderContext> context, uint32 x, uint32 y, uint32 width, uint32 height)
@@ -262,9 +369,9 @@ namespace Xunlan::DX12
     {
         return DX12Mesh::Create(meshRawData);
     }
-    Ref<Shader> DX12RHI::CreateShader(ShaderType type, const std::filesystem::path& path, const std::string& functionName)
+    Ref<Shader> DX12RHI::CreateShader(const std::string& name, const ShaderInitDesc& desc, const std::filesystem::path& path)
     {
-        return DX12Shader::Create(type, path, functionName);
+        return MakeRef<DX12Shader>(name, desc, path);
     }
     Ref<ImageTexture> DX12RHI::CreateImageTexture(CRef<RawTexture> rawTexture)
     {
@@ -286,13 +393,13 @@ namespace Xunlan::DX12
     {
         return MakeRef<DX12DepthStencilState>();
     }
-    Ref<CBuffer> DX12RHI::CreateCBuffer(CBufferType type, uint32 size)
+    Ref<CBuffer> DX12RHI::CreateCBuffer(size_t size)
     {
-        return MakeRef<DX12CBuffer>(type, size);
+        return MakeRef<DX12CBuffer>(size);
     }
-    Ref<Material> DX12RHI::CreateMaterial(const std::string& name, MaterialType type, const ShaderList& shaderList)
+    Ref<Material> DX12RHI::CreateMaterial(Ref<Shader> shader)
     {
-        return MakeRef<DX12Material>(name, type, shaderList);
+        return MakeRef<DX12Material>(shader);
     }
     Ref<RenderItem> DX12RHI::CreateRenderItem(Ref<Mesh> mesh)
     {
@@ -378,7 +485,7 @@ namespace Xunlan::DX12
         NAME_OBJECT(m_srvHeap->GetHeap(), L"SRV Descriptor Heap");
     }
     
-    void DX12RHI::CreateRootSignature()
+    /*void DX12RHI::CreateRootSignature()
     {
         CD3DX12_ROOT_PARAMETER1 params[(uint32)RootParam::Count] = {};
         params[(uint32)RootParam::PerObject].InitAsConstantBufferView(0);
@@ -411,54 +518,66 @@ namespace Xunlan::DX12
 
         Check(m_device->CreateRootSignature(0, sigBlob->GetBufferPointer(), sigBlob->GetBufferSize(), IID_PPV_ARGS(&m_defaultRootSig)));
         NAME_OBJECT(m_defaultRootSig, L"Default Root Signature");
-    }
+    }*/
 
-    std::array<CD3DX12_STATIC_SAMPLER_DESC, 6> DX12RHI::GetStaticSamplers() const
+    /*std::array<CD3DX12_STATIC_SAMPLER_DESC, 6> DX12RHI::GetStaticSamplers() const
     {
         //过滤器POINT,寻址模式WRAP的静态采样器
-        CD3DX12_STATIC_SAMPLER_DESC pointWarp(0,	//着色器寄存器
-            D3D12_FILTER_MIN_MAG_MIP_POINT,		//过滤器类型为POINT(常量插值)
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP,	//U方向上的寻址模式为WRAP（重复寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP,	//V方向上的寻址模式为WRAP（重复寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP);	//W方向上的寻址模式为WRAP（重复寻址模式）
+        CD3DX12_STATIC_SAMPLER_DESC pointWarp(
+            0,                                  //着色器寄存器
+            D3D12_FILTER_MIN_MAG_MIP_POINT,     //过滤器类型为POINT(常量插值)
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP,    //U方向上的寻址模式为WRAP（重复寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP,    //V方向上的寻址模式为WRAP（重复寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP     //W方向上的寻址模式为WRAP（重复寻址模式）
+        );
 
         //过滤器POINT,寻址模式CLAMP的静态采样器
-        CD3DX12_STATIC_SAMPLER_DESC pointClamp(1,	//着色器寄存器
-            D3D12_FILTER_MIN_MAG_MIP_POINT,		//过滤器类型为POINT(常量插值)
-            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,	//U方向上的寻址模式为CLAMP（钳位寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,	//V方向上的寻址模式为CLAMP（钳位寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_CLAMP);	//W方向上的寻址模式为CLAMP（钳位寻址模式）
+        CD3DX12_STATIC_SAMPLER_DESC pointClamp(
+            1,                                  //着色器寄存器
+            D3D12_FILTER_MIN_MAG_MIP_POINT,     //过滤器类型为POINT(常量插值)
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   //U方向上的寻址模式为CLAMP（钳位寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   //V方向上的寻址模式为CLAMP（钳位寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP    //W方向上的寻址模式为CLAMP（钳位寻址模式）
+        );
 
         //过滤器LINEAR,寻址模式WRAP的静态采样器
-        CD3DX12_STATIC_SAMPLER_DESC linearWarp(2,	//着色器寄存器
-            D3D12_FILTER_MIN_MAG_MIP_LINEAR,		//过滤器类型为LINEAR(线性插值)
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP,	//U方向上的寻址模式为WRAP（重复寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP,	//V方向上的寻址模式为WRAP（重复寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP);	//W方向上的寻址模式为WRAP（重复寻址模式）
+        CD3DX12_STATIC_SAMPLER_DESC linearWarp(
+            2,                                  //着色器寄存器
+            D3D12_FILTER_MIN_MAG_MIP_LINEAR,    //过滤器类型为LINEAR(线性插值)
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP,    //U方向上的寻址模式为WRAP（重复寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP,    //V方向上的寻址模式为WRAP（重复寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP     //W方向上的寻址模式为WRAP（重复寻址模式）
+        );
 
         //过滤器LINEAR,寻址模式CLAMP的静态采样器
-        CD3DX12_STATIC_SAMPLER_DESC linearClamp(3,	//着色器寄存器
-            D3D12_FILTER_MIN_MAG_MIP_LINEAR,		//过滤器类型为LINEAR(线性插值)
-            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,	//U方向上的寻址模式为CLAMP（钳位寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,	//V方向上的寻址模式为CLAMP（钳位寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_CLAMP);	//W方向上的寻址模式为CLAMP（钳位寻址模式）
+        CD3DX12_STATIC_SAMPLER_DESC linearClamp(
+            3,                                  //着色器寄存器
+            D3D12_FILTER_MIN_MAG_MIP_LINEAR,    //过滤器类型为LINEAR(线性插值)
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   //U方向上的寻址模式为CLAMP（钳位寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   //V方向上的寻址模式为CLAMP（钳位寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP    //W方向上的寻址模式为CLAMP（钳位寻址模式）
+        );
 
         //过滤器ANISOTROPIC,寻址模式WRAP的静态采样器
-        CD3DX12_STATIC_SAMPLER_DESC anisotropicWarp(4,	//着色器寄存器
-            D3D12_FILTER_ANISOTROPIC,			//过滤器类型为ANISOTROPIC(各向异性)
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP,	//U方向上的寻址模式为WRAP（重复寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP,	//V方向上的寻址模式为WRAP（重复寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP);	//W方向上的寻址模式为WRAP（重复寻址模式）
+        CD3DX12_STATIC_SAMPLER_DESC anisotropicWarp(
+            4,                                  //着色器寄存器
+            D3D12_FILTER_ANISOTROPIC,           //过滤器类型为ANISOTROPIC(各向异性)
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP,    //U方向上的寻址模式为WRAP（重复寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP,    //V方向上的寻址模式为WRAP（重复寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP     //W方向上的寻址模式为WRAP（重复寻址模式）
+        );
 
         //过滤器LINEAR,寻址模式CLAMP的静态采样器
-        CD3DX12_STATIC_SAMPLER_DESC anisotropicClamp(5,	//着色器寄存器
-            D3D12_FILTER_ANISOTROPIC,			//过滤器类型为ANISOTROPIC(各向异性)
-            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,	//U方向上的寻址模式为CLAMP（钳位寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,	//V方向上的寻址模式为CLAMP（钳位寻址模式）
-            D3D12_TEXTURE_ADDRESS_MODE_CLAMP);	//W方向上的寻址模式为CLAMP（钳位寻址模式）
+        CD3DX12_STATIC_SAMPLER_DESC anisotropicClamp(
+            5,                                  //着色器寄存器
+            D3D12_FILTER_ANISOTROPIC,           //过滤器类型为ANISOTROPIC(各向异性)
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   //U方向上的寻址模式为CLAMP（钳位寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   //V方向上的寻址模式为CLAMP（钳位寻址模式）
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP    //W方向上的寻址模式为CLAMP（钳位寻址模式）
+        );
 
         return { pointWarp, pointClamp, linearWarp, linearClamp, anisotropicWarp, anisotropicClamp };
-    }
+    }*/
 
     void DX12RHI::ProcessDeferredRelease(uint32 frameIndex)
     {
@@ -490,113 +609,5 @@ namespace Xunlan::DX12
         m_rtvHeap.reset();
         m_dsvHeap.reset();
         m_srvHeap.reset();
-    }
-
-    void DX12RHI::SetRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
-    {
-        m_currRTFormats.clear();
-
-        std::vector<CD3DX12_RESOURCE_BARRIER> barriers;
-        std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
-        D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};
-
-        for (auto& rt : rts)
-        {
-            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(rt);
-            assert(dx12RT);
-
-            rtvs.push_back(dx12RT->GetRTV().handleCPU);
-
-            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
-                dx12RT->GetResource(),
-                dx12RT->RT_INIT_STATE,
-                D3D12_RESOURCE_STATE_RENDER_TARGET)
-            );
-
-            m_currRTFormats.push_back(dx12RT->GetDXFormat());
-        }
-
-        if (depthBuffer)
-        {
-            const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
-
-            m_currDSFormat = dx12DepthBuffer->GetDXFormat();
-            dsv = dx12DepthBuffer->GetDSV().handleCPU;
-
-            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
-                dx12DepthBuffer->GetResource(),
-                dx12DepthBuffer->DS_INIT_STATE,
-                D3D12_RESOURCE_STATE_DEPTH_WRITE
-            ));
-        }
-        else
-        {
-            m_currDSFormat = DXGI_FORMAT_UNKNOWN;
-        }
-
-        assert(barriers.size() > 0);
-
-        cmdList.ResourceBarrier((uint32)barriers.size(), barriers.data());
-        cmdList.OMSetRenderTargets(
-            (uint32)rtvs.size(),
-            (rtvs.size() > 0) ? rtvs.data() : nullptr,
-            FALSE,
-            depthBuffer ? &dsv : nullptr
-        );
-    }
-    
-    void DX12RHI::ClearRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
-    {
-        for (auto& rt : rts)
-        {
-            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(rt);
-            assert(dx12RT);
-
-            cmdList.ClearRenderTargetView(dx12RT->GetRTV().handleCPU, m_clearColor, 0, nullptr);
-        }
-
-        if (depthBuffer)
-        {
-            const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
-
-            cmdList.ClearDepthStencilView(
-                dx12DepthBuffer->GetDSV().handleCPU,
-                D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
-                1.0f, 0,
-                0, nullptr
-            );
-        }
-    }
-    
-    void DX12RHI::ResetRT(GraphicsCommandList& cmdList, const std::vector<CRef<RenderTarget>>& rts, CRef<DepthBuffer> depthBuffer)
-    {
-        std::vector<CD3DX12_RESOURCE_BARRIER> barriers;
-
-        for (auto& rt : rts)
-        {
-            const CRef<DX12RenderTarget> dx12RT = std::dynamic_pointer_cast<const DX12RenderTarget>(rt);
-            assert(dx12RT);
-
-            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
-                dx12RT->GetResource(),
-                D3D12_RESOURCE_STATE_RENDER_TARGET,
-                dx12RT->RT_INIT_STATE)
-            );
-        }
-
-        if (depthBuffer)
-        {
-            const CRef<DX12DepthBuffer> dx12DepthBuffer = std::dynamic_pointer_cast<const DX12DepthBuffer>(depthBuffer);
-
-            barriers.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
-                dx12DepthBuffer->GetResource(),
-                D3D12_RESOURCE_STATE_DEPTH_WRITE,
-                dx12DepthBuffer->DS_INIT_STATE)
-            );
-        }
-
-        assert(barriers.size() > 0);
-
-        cmdList.ResourceBarrier((uint32)barriers.size(), barriers.data());
     }
 }

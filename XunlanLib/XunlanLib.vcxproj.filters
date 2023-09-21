@@ -32,7 +32,6 @@
     <ClInclude Include="src\Function\Core\Engine.h" />
     <ClInclude Include="src\Function\Core\Timer.h" />
     <ClInclude Include="src\Function\Resource\AssetSystem.h" />
-    <ClInclude Include="src\Function\Renderer\DX12\DX12RootParameter.h" />
     <ClInclude Include="src\Function\Resource\AssetCommon.h" />
     <ClInclude Include="src\Function\Resource\ConfigSystem.h" />
     <ClInclude Include="src\Function\Renderer\RenderCommon.h" />
@@ -64,7 +63,7 @@
     <ClInclude Include="src\Function\Renderer\Abstract\DataBuffer.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12Mesh.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12DataBuffer.h" />
-    <ClInclude Include="src\Function\Renderer\DX12\DX12Shader.h" />
+    <ClInclude Include="src\Function\Renderer\DX12\Shader\DX12Shader.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\Texture.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Texture\DX12ImageTexture.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Texture\DX12RenderTarget.h" />
@@ -91,6 +90,8 @@
     <ClInclude Include="src\Function\Renderer\DX12\Helper\DDSTextureLoader12.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Texture\DX12DepthBuffer.h" />
     <ClInclude Include="src\Function\Renderer\Pass\GPass.h" />
+    <ClInclude Include="src\Function\Renderer\DX12\Shader\DX12ShaderCompiler.h" />
+    <ClInclude Include="src\Function\Renderer\Pass\RSMPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Function\Core\Engine.cpp" />
@@ -117,7 +118,7 @@
     <ClCompile Include="src\Function\World\Component\Light.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Mesh.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12DataBuffer.cpp" />
-    <ClCompile Include="src\Function\Renderer\DX12\DX12Shader.cpp" />
+    <ClCompile Include="src\Function\Renderer\DX12\Shader\DX12Shader.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\Texture.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\Texture\DX12ImageTexture.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\Texture\DX12RenderTarget.cpp" />
@@ -145,6 +146,11 @@
     <ClCompile Include="src\Function\Renderer\DX12\Texture\DX12DepthBuffer.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\GPass.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\RenderPassBase.cpp" />
+    <ClCompile Include="src\Function\Renderer\Abstract\Shader.cpp" />
+    <ClCompile Include="src\Function\Renderer\DX12\Shader\DX12ShaderCompiler.cpp" />
+    <ClCompile Include="src\Function\Renderer\DX12\DX12RenderContext.cpp" />
+    <ClCompile Include="src\Function\Renderer\Abstract\RenderContext.cpp" />
+    <ClCompile Include="src\Function\Renderer\Pass\RSMPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Asset\Shader\HLSL\TriangleVS.hlsl" />
@@ -162,5 +168,6 @@
     <None Include="Asset\Shader\HLSL\GPass.hlsl" />
     <None Include="Asset\Shader\HLSL\Lighting.hlsl" />
     <None Include="Asset\Shader\HLSL\Common\Data\Light.hlsli" />
+    <None Include="Asset\Shader\HLSL\RSM.hlsl" />
   </ItemGroup>
 </Project>

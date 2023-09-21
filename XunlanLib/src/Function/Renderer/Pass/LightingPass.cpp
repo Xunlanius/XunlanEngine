@@ -1,21 +1,50 @@
 #include "LightingPass.h"
-#include "src/Function/Renderer/Abstract/RHI.h"
-#include "src/Function/World/Scene.h"
-#include "src/Function/World/Component/MeshRender.h"
 #include "src/Function/Resource/ConfigSystem.h"
+#include "src/Function/Renderer/Abstract/RHI.h"
 
 namespace Xunlan
 {
-    MeshLightPass::MeshLightPass(uint32 width, uint32 height)
-        : m_width(width), m_height(height)
+    namespace CB
     {
-        m_mainRT = RHI::Instance().CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
-        m_canvas = RenderPassBase::CreateCanvas();
-        m_lighting = CreateMaterial();
+        struct alignas(16) ShadowMapAndGBuffer final
+        {
+            uint32 m_albedoIndex;
+            uint32 m_posWSIndex;
+            uint32 m_normalWSIndex;
+
+            uint32 m_rsmIndex;
+            uint32 m_shadowMapIndex;
+        };
     }
 
-    void MeshLightPass::Render(Ref<RenderContext> context)
+    LightingPass::LightingPass(uint32 width, uint32 height)
+        : m_width(width), m_height(height)
     {
+        RHI& rhi = RHI::Instance();
+
+        m_mainRT = rhi.CreateRT(width, height, TextureFormat::R8G8B8A8_Unorm);
+        m_canvas = RenderPassBase::CreateCanvas();
+        m_cBuffer = rhi.CreateCBuffer<CB::ShadowMapAndGBuffer>();
+
+        CreateMaterial();
+    }
+
+    void LightingPass::Render(
+        Ref<RenderContext> context,
+        CRef<RenderTarget> albedo,
+        CRef<RenderTarget> posWS,
+        CRef<RenderTarget> normalWS,
+        CRef<RenderTarget> rsm,
+        CRef<DepthBuffer> shadowMap)
+    {
+        CB::ShadowMapAndGBuffer* cbPerMaterial = m_cBuffer->GetData<CB::ShadowMapAndGBuffer>();
+        cbPerMaterial->m_albedoIndex = albedo->GetHeapIndex();
+        cbPerMaterial->m_posWSIndex = posWS->GetHeapIndex();
+        cbPerMaterial->m_normalWSIndex = normalWS->GetHeapIndex();
+        cbPerMaterial->m_rsmIndex = rsm->GetHeapIndex();
+        cbPerMaterial->m_shadowMapIndex = shadowMap->GetHeapIndex();
+        context->SetParam("g_lightingPass", m_cBuffer);
+
         RHI& rhi = RHI::Instance();
 
         std::vector<CRef<RenderTarget>> rts = { m_mainRT };
@@ -29,21 +58,21 @@ namespace Xunlan
         rhi.ResetRT(context, rts);
     }
 
-    Ref<Material> MeshLightPass::CreateMaterial()
+    void LightingPass::CreateMaterial()
     {
         RHI& rhi = RHI::Instance();
         ConfigSystem& configSystem = ConfigSystem::Instance();
 
         const std::filesystem::path shaderPath = configSystem.GetHLSLFolder() / "Lighting.hlsl";
 
-        ShaderList list = {};
-        list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, shaderPath, "VS");
-        list.m_PS = rhi.CreateShader(ShaderType::PIXEL_SHADER, shaderPath, "PS");
+        ShaderInitDesc shaderDesc = {};
+        shaderDesc.m_createVS = true;
+        shaderDesc.m_createPS = true;
 
-        Ref<Material> lighting = rhi.CreateMaterial("Mat_lighting", MaterialType::PostProcess, list);
-        lighting->GetDepthStencilState()->SetDepthEnable(false);
-        lighting->GetRasterizerState()->SetCullMode(CullMode::NONE);
+        Ref<Shader> shader = rhi.CreateShader("Lighting", shaderDesc, shaderPath);
+        shader->GetDepthStencilState()->SetDepthEnable(false);
+        shader->GetRasterizerState()->SetCullMode(CullMode::NONE);
 
-        return lighting;
+        m_lighting = rhi.CreateMaterial(shader);
     }
 }

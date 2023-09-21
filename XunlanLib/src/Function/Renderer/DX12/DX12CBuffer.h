@@ -9,12 +9,16 @@ namespace Xunlan::DX12
     {
     public:
 
-        DX12CBuffer(CBufferType type, uint32 size);
+        explicit DX12CBuffer(size_t size);
         virtual ~DX12CBuffer() override;
 
     public:
 
-        virtual void Bind(Ref<RenderContext> context) const override;
+        D3D12_GPU_VIRTUAL_ADDRESS GetGPUAddress() const { return m_buffer->GetGPUVirtualAddress(); }
+
+    private:
+
+        virtual void* GetData() const override { return m_dst; }
 
     private:
 

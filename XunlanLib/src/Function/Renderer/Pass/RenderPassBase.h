@@ -17,8 +17,6 @@ namespace Xunlan
 
     protected:
 
-        static void UpdateCBufferPerObject(const TransformerComponent& transformer, Ref<CBuffer> cBufferPerObject);
-
         static Ref<RenderItem> CreateCanvas();
     };
 }

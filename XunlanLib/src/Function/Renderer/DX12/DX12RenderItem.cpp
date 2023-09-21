@@ -1,6 +1,5 @@
 #include "DX12RenderItem.h"
 #include "DX12RenderContext.h"
-#include "DX12RootParameter.h"
 #include "DX12DataBuffer.h"
 #include "DX12RHI.h"
 
@@ -27,6 +26,11 @@ namespace Xunlan::DX12
 
         for (const Ref<Submesh>& submesh : submeshes)
         {
+            Ref<DX12DataBuffer> verticesView = CastTo<DX12DataBuffer>(submesh->GetVerticesView());
+            Ref<DX12DataBuffer> indicesView = CastTo<DX12DataBuffer>(submesh->GetIndicesView());
+
+            context->SetParam("g_vertices", verticesView);
+
             if (overrideMaterial)
             {
                 overrideMaterial->Apply(context);
@@ -39,23 +43,11 @@ namespace Xunlan::DX12
                 material->Apply(context);
             }
 
-            m_perObject->Bind(context);
-
-            Ref<DX12DataBuffer> verticesView = CastTo<DX12DataBuffer>(submesh->GetVerticesView());
-            Ref<DX12DataBuffer> indicesView = CastTo<DX12DataBuffer>(submesh->GetIndicesView());
-
-            /*D3D12_VERTEX_BUFFER_VIEW dx12VerticesView = {};
-            dx12VerticesView.BufferLocation = verticesView->GetGPUAddress();
-            dx12VerticesView.SizeInBytes = verticesView->GetNumElement() * verticesView->GetStride();
-            dx12VerticesView.StrideInBytes = verticesView->GetStride();*/
-
             D3D12_INDEX_BUFFER_VIEW dx12IndicesView = {};
             dx12IndicesView.BufferLocation = indicesView->GetGPUAddress();
             dx12IndicesView.SizeInBytes = indicesView->GetNumElement() * indicesView->GetStride();
             dx12IndicesView.Format = DXGI_FORMAT_R32_UINT;
 
-            //cmdList->IASetVertexBuffers(0, 1, &dx12VerticesView);
-            cmdList->SetGraphicsRootShaderResourceView((uint32)RootParam::VertexBuffer, verticesView->GetGPUAddress());
             cmdList->IASetIndexBuffer(&dx12IndicesView);
             cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

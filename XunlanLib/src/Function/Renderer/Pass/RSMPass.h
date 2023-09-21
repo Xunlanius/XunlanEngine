@@ -9,23 +9,23 @@
 
 namespace Xunlan
 {
-    class LightingPass final : public RenderPassBase
+    class RSMPass final : public RenderPassBase
     {
     public:
 
-        explicit LightingPass(uint32 width, uint32 height);
+        explicit RSMPass(uint32 width, uint32 height);
 
     public:
 
         void Render(
             Ref<RenderContext> context,
-            CRef<RenderTarget> albedo,
             CRef<RenderTarget> posWS,
             CRef<RenderTarget> normalWS,
-            CRef<RenderTarget> rsm,
-            CRef<DepthBuffer> shadowMap);
+            CRef<RenderTarget> flux,
+            CRef<RenderTarget> posWSLight,
+            CRef<RenderTarget> normalWSLight);
 
-        Ref<RenderTarget> GetMainRT() const { return m_mainRT; }
+        Ref<RenderTarget> GetRSM() const { return m_mainRT; }
 
     private:
 
@@ -38,6 +38,6 @@ namespace Xunlan
 
         Ref<RenderItem> m_canvas;
         Ref<CBuffer> m_cBuffer;
-        Ref<Material> m_lighting;
+        Ref<Material> m_material;
     };
 }

@@ -22,7 +22,7 @@ VSOutput VS(uint vertexIndex : SV_VertexID)
     const float3 worldPos = GetWorldPos(vertex.position);
     
     VSOutput output;
-    output.pos = mul(g_perFrame.directionalLight.viewProj, float4(worldPos, 1.0f));
+    output.pos = mul(g_lights.directionalLight.viewProj, float4(worldPos, 1.0f));
     output.posWS = worldPos;
     output.normalWS = GetWorldNormal(vertex.normal);
     output.uv = vertex.uv;
@@ -33,7 +33,7 @@ VSOutput VS(uint vertexIndex : SV_VertexID)
 PSOutput PS(VSOutput input)
 {
     PSOutput output;
-    output.flux = float4(g_perMaterial.albedo.xyz * g_perFrame.directionalLight.color, 1.0f);
+    output.flux = float4(g_pbr.albedo.xyz * g_lights.directionalLight.color, 1.0f);
     output.posWS = float4(input.posWS, 1.0f);
     output.normalWS = float4(normalize(input.normalWS), 0.0f);
     

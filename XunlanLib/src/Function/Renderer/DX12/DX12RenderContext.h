@@ -1,7 +1,7 @@
 #pragma once
 
-#include "DX12Common.h"
 #include "src/Function/Renderer/Abstract/RenderContext.h"
+#include "DX12Common.h"
 
 namespace Xunlan::DX12
 {
@@ -9,7 +9,7 @@ namespace Xunlan::DX12
     {
     public:
 
-        DX12RenderContext(GraphicsCommandList* cmdList) : m_cmdList(cmdList) {}
+        explicit DX12RenderContext(GraphicsCommandList* cmdList) : m_cmdList(cmdList) {}
 
     public:
 

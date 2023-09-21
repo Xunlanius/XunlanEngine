@@ -31,6 +31,7 @@
     <ClInclude Include="src\Function\Renderer\Abstract\DepthStencilState.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Helper\d3dx12.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12DepthStencilState.h" />
+    <ClInclude Include="src\Function\Renderer\DX12\Shader\DX12ShaderCompiler.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Texture\DX12DepthBuffer.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Texture\DX12ImageTexture.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12Material.h" />
@@ -42,11 +43,12 @@
     <ClInclude Include="src\Function\Renderer\DX12\DX12RenderItem.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Texture\DX12RenderTarget.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12RootSignature.h" />
-    <ClInclude Include="src\Function\Renderer\DX12\DX12Shader.h" />
+    <ClInclude Include="src\Function\Renderer\DX12\Shader\DX12Shader.h" />
     <ClInclude Include="src\Function\Renderer\DX12\DX12GPUVisibleDescriptorHeap.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Helper\DDSTextureLoader12.h" />
     <ClInclude Include="src\Function\Renderer\Pass\GPass.h" />
     <ClInclude Include="src\Function\Renderer\Pass\PostProcessPass.h" />
+    <ClInclude Include="src\Function\Renderer\Pass\RSMPass.h" />
     <ClInclude Include="src\Function\Renderer\Pass\ShadowPass.h" />
     <ClInclude Include="src\Function\Renderer\Pass\RenderPassBase.h" />
     <ClInclude Include="src\Function\Renderer\Pass\LightingPass.h" />
@@ -66,7 +68,6 @@
     <ClInclude Include="src\Function\World\Component\MeshRender.h" />
     <ClInclude Include="src\Function\World\Component\NativeScript.h" />
     <ClInclude Include="src\Function\Core\Engine.h" />
-    <ClInclude Include="src\Function\Renderer\DX12\DX12RootParameter.h" />
     <ClInclude Include="src\Function\Renderer\RenderCommon.h" />
     <ClInclude Include="src\Function\Resource\AssetCommon.h" />
     <ClInclude Include="src\Function\Resource\AssetSystem.h" />
@@ -116,7 +117,11 @@
     <ClCompile Include="src\Function\Input\Win32\Win32Input.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\CBuffer.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\DepthStencilState.cpp" />
+    <ClCompile Include="src\Function\Renderer\Abstract\RenderContext.cpp" />
+    <ClCompile Include="src\Function\Renderer\Abstract\Shader.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12DepthStencilState.cpp" />
+    <ClCompile Include="src\Function\Renderer\DX12\DX12RenderContext.cpp" />
+    <ClCompile Include="src\Function\Renderer\DX12\Shader\DX12ShaderCompiler.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\Texture\DX12DepthBuffer.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\Texture\DX12ImageTexture.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12Material.cpp" />
@@ -126,7 +131,7 @@
     <ClCompile Include="src\Function\Renderer\DX12\DX12Mesh.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12RenderItem.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12RootSignature.cpp" />
-    <ClCompile Include="src\Function\Renderer\DX12\DX12Shader.cpp" />
+    <ClCompile Include="src\Function\Renderer\DX12\Shader\DX12Shader.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\Texture\DX12RenderTarget.cpp" />
     <ClCompile Include="src\Function\Renderer\DX12\DX12GPUVisibleDescriptorHeap.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\Material.cpp" />
@@ -134,6 +139,7 @@
     <ClCompile Include="src\Function\Renderer\Pass\GPass.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\PostProcessPass.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\RenderPassBase.cpp" />
+    <ClCompile Include="src\Function\Renderer\Pass\RSMPass.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\ShadowPass.cpp" />
     <ClCompile Include="src\Function\Renderer\Pass\LightingPass.cpp" />
     <ClCompile Include="src\Function\Renderer\RenderPipeline.cpp" />
@@ -218,6 +224,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Asset\Shader\HLSL\Lighting.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='DebugEditor|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='ReleaseEditor|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Asset\Shader\HLSL\RSM.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='DebugEditor|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>

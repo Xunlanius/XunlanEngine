@@ -17,13 +17,15 @@ namespace Xunlan
 
     public:
 
-        void Render(Ref<RenderContext> context);
+        void Render(Ref<RenderContext> context, const std::vector<Ref<RenderItem>>& items);
+
+        CRef<RenderTarget> GetAlbedoWS() const { return m_albedoWS; }
+        CRef<RenderTarget> GetPosWS() const { return m_posWS; }
+        CRef<RenderTarget> GetNormalWS() const { return m_normalWS; }
 
     private:
 
-        void CollectRenderItems();
-        void CollectVisableEntity(const WeakRef<Entity>& refNode);
-        void RenderItems(Ref<RenderContext> context);
+        void RenderItems(Ref<RenderContext> context, const std::vector<Ref<RenderItem>>& items);
 
     private:
 
@@ -31,12 +33,8 @@ namespace Xunlan
         uint32 m_height;
 
         Ref<RenderTarget> m_albedoWS;
-        Ref<RenderTarget> m_positionWS;
+        Ref<RenderTarget> m_posWS;
         Ref<RenderTarget> m_normalWS;
         Ref<DepthBuffer> m_depth;
-
-        Ref<CBuffer> m_gBuffer;
-
-        std::vector<WeakRef<RenderItem>> m_renderItems;
     };
 }

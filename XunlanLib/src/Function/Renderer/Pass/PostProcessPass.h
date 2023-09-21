@@ -31,6 +31,7 @@ namespace Xunlan
     private:
 
         Ref<RenderItem> m_canvas;
+        Ref<CBuffer> m_cBuffer;
         Ref<Material> m_noneEffect;
     };
 }

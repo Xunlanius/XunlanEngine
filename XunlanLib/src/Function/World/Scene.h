@@ -34,18 +34,14 @@ namespace Xunlan
         void RegisterMainCamera(const WeakRef<Entity>& refEntity);
         void RegisterLight(const WeakRef<Entity>& refEntity);
 
-        void UpdateCBufferPerScene();
-
         WeakRef<Entity> GetEntity(ECS::EntityID entityID) const;
         WeakRef<Entity> GetRoot() const { return m_root; }
-        Ref<CBuffer> GetCBufferPerScene() const { return m_cBufferPerScene; }
+        WeakRef<Entity> GetMainCamera() const { return m_mainCamera; }
+        const std::vector<WeakRef<Entity>>& GetLights() const { return m_lights; }
 
     private:
 
         void _RemoveEntity(const Ref<Entity>& entity);
-
-        void UpdateCBufferCamera();
-        void UpdateCBufferLight();
 
     private:
 
@@ -55,7 +51,5 @@ namespace Xunlan
         WeakRef<Entity> m_mainCamera;
         std::vector<WeakRef<Entity>> m_cameras;
         std::vector<WeakRef<Entity>> m_lights;
-
-        Ref<CBuffer> m_cBufferPerScene;
     };
 }

@@ -4,14 +4,27 @@
 
 namespace Xunlan
 {
+    namespace CB
+    {
+        struct alignas(16) PostProcess final
+        {
+            uint32 m_mainRTIndex;
+        };
+    }
+
     PostProcessPass::PostProcessPass()
     {
-        CreateMaterials();
         m_canvas = RenderPassBase::CreateCanvas();
+        m_cBuffer = RHI::Instance().CreateCBuffer<CB::PostProcess>();
+        CreateMaterials();
     }
 
     void PostProcessPass::Render(Ref<RenderContext> context, PostProcessEffect effect, CRef<RenderTarget> inputRT)
     {
+        CB::PostProcess* cbPostProcess = m_cBuffer->GetData<CB::PostProcess>();
+        cbPostProcess->m_mainRTIndex = inputRT->GetHeapIndex();
+        context->SetParam("g_postProcess", m_cBuffer);
+
         RHI& rhi = RHI::Instance();
 
         rhi.SetRT(context);
@@ -22,7 +35,6 @@ namespace Xunlan
         {
         case PostProcessEffect::NONE:
         {
-            m_noneEffect->SetTexture(TextureCategory::Albedo, inputRT);
             m_canvas->Render(context, m_noneEffect);
             break;
         }
@@ -37,14 +49,16 @@ namespace Xunlan
         RHI& rhi = RHI::Instance();
         ConfigSystem& configSystem = ConfigSystem::Instance();
 
-        const std::filesystem::path noneEffectShaderPath = configSystem.GetHLSLFolder() / "PostProcessNone.hlsl";
+        const std::filesystem::path shaderPath = configSystem.GetHLSLFolder() / "PostProcessNone.hlsl";
 
-        ShaderList list = {};
-        list.m_VS = rhi.CreateShader(ShaderType::VERTEX_SHADER, noneEffectShaderPath, "VS");
-        list.m_PS = rhi.CreateShader(ShaderType::PIXEL_SHADER, noneEffectShaderPath, "PS");
+        ShaderInitDesc shaderDesc = {};
+        shaderDesc.m_createVS = true;
+        shaderDesc.m_createPS = true;
 
-        m_noneEffect = rhi.CreateMaterial("Mat_PostProcess_None", MaterialType::PostProcess, list);
-        m_noneEffect->GetDepthStencilState()->SetDepthEnable(false);
-        m_noneEffect->GetRasterizerState()->SetCullMode(CullMode::NONE);
+        Ref<Shader> shader = rhi.CreateShader("PostProcess_None", shaderDesc, shaderPath);
+        shader->GetDepthStencilState()->SetDepthEnable(false);
+        shader->GetRasterizerState()->SetCullMode(CullMode::NONE);
+
+        m_noneEffect = rhi.CreateMaterial(shader);
     }
 }

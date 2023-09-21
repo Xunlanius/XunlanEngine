@@ -59,14 +59,14 @@ namespace Xunlan::DX12
         virtual void SetViewport(Ref<RenderContext> context, uint32 x, uint32 y, uint32 width, uint32 height) override;
 
         virtual Ref<Mesh> CreateMesh(CRef<MeshRawData> meshRawData) override;
-        virtual Ref<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, const std::string& functionName) override;
+        virtual Ref<Shader> CreateShader(const std::string& name, const ShaderInitDesc& desc, const std::filesystem::path& path) override;
         virtual Ref<ImageTexture> CreateImageTexture(CRef<RawTexture> rawTexture) override;
         virtual Ref<RenderTarget> CreateRT(uint32 width, uint32 height, TextureFormat format) override;
         virtual Ref<DepthBuffer> CreateDepthBuffer(uint32 width, uint32 height) override;
         virtual Ref<RasterizerState> CreateRasterizerState(const RasterizerStateDesc& desc) override;
         virtual Ref<DepthStencilState> CreateDepthStencilState() override;
-        virtual Ref<CBuffer> CreateCBuffer(CBufferType type, uint32 size) override;
-        virtual Ref<Material> CreateMaterial(const std::string& name, MaterialType type, const ShaderList& shaderList) override;
+        virtual Ref<CBuffer> CreateCBuffer(size_t size) override;
+        virtual Ref<Material> CreateMaterial(Ref<Shader> shader) override;
         virtual Ref<RenderItem> CreateRenderItem(Ref<Mesh> mesh) override;
         virtual Ref<RenderItem> CreateRenderItem(Ref<Mesh> mesh, const std::vector<Ref<Material>>& materials) override;
 
@@ -85,15 +85,15 @@ namespace Xunlan::DX12
         DX12DescriptorHeap& GetDSVHeap() { return *m_dsvHeap; }
         DX12DescriptorHeap& GetSRVHeap() { return *m_srvHeap; }
         UploadContext& GetUploadContext() { return *m_uploadContext; }
-        ID3D12RootSignature* GetDefaultRootSig() const { return m_defaultRootSig.Get(); }
+        // ID3D12RootSignature* GetDefaultRootSig() const { return m_defaultRootSig.Get(); }
         auto& GetPSOContainer() { return m_psoContainer; }
 
         void EnableDebugLayer();
         void CreateDevice();
         void CreateDescriptorHeap();
-        void CreateRootSignature();
+        // void CreateRootSignature();
 
-        std::array<CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers() const;
+        // std::array<CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers() const;
 
         void ProcessDeferredRelease(uint32 frameIndex);
         void ReleaseHeapsAndDeferredResources();
@@ -116,7 +116,6 @@ namespace Xunlan::DX12
         std::unique_ptr<DX12DescriptorHeap> m_srvHeap;
         std::unique_ptr<UploadContext> m_uploadContext;
 
-        Microsoft::WRL::ComPtr<ID3D12RootSignature> m_defaultRootSig;
         std::unordered_map<DX12PSO, Microsoft::WRL::ComPtr<ID3D12PipelineState>, DX12PSO::Hash> m_psoContainer;
 
         std::vector<DXGI_FORMAT> m_currRTFormats;
@@ -128,12 +127,12 @@ namespace Xunlan::DX12
 
         static constexpr float m_clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-        static constexpr D3D12_INPUT_ELEMENT_DESC m_elements[] = {
+        /*static constexpr D3D12_INPUT_ELEMENT_DESC m_elements[] = {
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
             { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
             { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
             { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        };
+        };*/
     };
 
     template<typename T>
