@@ -27,7 +27,6 @@ namespace Xunlan
 
     private:
 
-        bool m_running = false;
         Timer m_timer;
     };
 }

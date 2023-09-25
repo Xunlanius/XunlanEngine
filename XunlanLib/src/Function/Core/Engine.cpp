@@ -30,8 +30,6 @@ namespace Xunlan
         scene.LoadScene();
         scene.OnScenePlay();
 
-        m_running = true;
-
         return true;
     }
     void EngineSystem::Shutdown()
