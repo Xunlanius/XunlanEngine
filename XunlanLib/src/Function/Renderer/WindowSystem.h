@@ -31,9 +31,9 @@ namespace Xunlan
         using OnMoveFunc = std::function<void(int x, int y)>;
         using OnClosedFunc = std::function<void()>;
 
-        void RegisterResizeFunc(OnResizeFunc func) { m_onResizeFuncs.push_back(func); }
-        void RegisterMoveFunc(OnResizeFunc func) { m_onMoveFuncs.push_back(func); }
-        void RegisterClosedFunc(OnClosedFunc func) { m_onClosedFuncs.push_back(func); }
+        auto RegisterResizeFunc(OnResizeFunc func) { return m_onResizeFuncs.emplace(m_onResizeFuncs.end(), func); }
+        auto RegisterMoveFunc(OnResizeFunc func) { return m_onMoveFuncs.emplace(m_onMoveFuncs.end(), func); }
+        auto RegisterClosedFunc(OnClosedFunc func) { return m_onClosedFuncs.emplace(m_onClosedFuncs.end(), func); }
 
     private:
 
