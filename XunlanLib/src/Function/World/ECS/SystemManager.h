@@ -16,7 +16,7 @@ namespace Xunlan::ECS
 
         /// <returns> T* if T is registered, nullptr if T is not registered </returns>
         template<typename T>
-        std::unordered_set<EntityID>& GetView();
+        auto GetView() -> std::unordered_set<EntityID>&;
 
         void OnEntityChanged(EntityID entityID);
         void OnEntityRemoved(EntityID entityID);
@@ -53,7 +53,7 @@ namespace Xunlan::ECS
     }
 
     template<typename T>
-    inline std::unordered_set<EntityID>& SystemManager::GetView()
+    inline auto SystemManager::GetView() -> std::unordered_set<EntityID>&
     {
         assert(IDGetter<System>::IsRegistered<T>() && "Non-registered system.");
         const SystemID systemID = IDGetter<System>::GetID<T>();

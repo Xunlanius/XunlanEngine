@@ -21,13 +21,13 @@ namespace Xunlan::ECS
         void Emplace(EntityID entity, const component_type& component);
         void Remove(EntityID entity);
 
-        component_type& operator[](EntityID entity) { return m_components[m_entityToIndexMap[entity]]; }
+        auto operator[](EntityID entity) -> component_type& { return m_components[m_entityToIndexMap[entity]]; }
 
         void OnEntityRemoved(EntityID entity) { if (IsExisted(entity)) Remove(entity); }
 
     private:
 
-        bool IsExisted(EntityID entity) { return m_entityToIndexMap.find(entity) != m_entityToIndexMap.end(); }
+        auto IsExisted(EntityID entity) -> bool { return m_entityToIndexMap.find(entity) != m_entityToIndexMap.end(); }
 
     private:
 

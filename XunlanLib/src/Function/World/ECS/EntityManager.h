@@ -17,7 +17,7 @@ namespace Xunlan::ECS
 
     public:
 
-        [[nodiscard]] EntityID CreateEntity();
+        [[nodiscard]] auto CreateEntity() -> EntityID;
         void RemoveEntity(EntityID entityID);
 
         const auto& GetEntities() const { return m_entities; }
@@ -27,8 +27,8 @@ namespace Xunlan::ECS
         template<ComIDConcept... ComIDs>
         void RemoveComponent(EntityID entityID, ComIDs... comIDs) { (m_signatures[entityID].reset(comIDs), ...); }
 
-        bool HasComponent(EntityID entityID, ComponentID comID) const { return m_signatures[entityID][comID]; }
-        bool BelongToSystem(EntityID entityID, Signature systemSig) { return (m_signatures[entityID] & systemSig) == systemSig; }
+        auto HasComponent(EntityID entityID, ComponentID comID) const -> bool { return m_signatures[entityID][comID]; }
+        auto BelongToSystem(EntityID entityID, Signature systemSig) -> bool { return (m_signatures[entityID] & systemSig) == systemSig; }
 
     private:
 

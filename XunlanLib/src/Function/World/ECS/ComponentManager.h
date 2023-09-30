@@ -21,7 +21,7 @@ namespace Xunlan::ECS
         void RegisterComponent();
 
         template<ComponentConcept... Args>
-        std::tuple<Args&...> GetComponent(EntityID entity);
+        auto GetComponent(EntityID entity) -> std::tuple<Args&...>;
         template<ComponentConcept T, ComponentConcept... Args>
         void AddComponent(EntityID entity, const T& component, const Args&... args);
         template<ComponentConcept T, ComponentConcept... Args>
@@ -32,7 +32,7 @@ namespace Xunlan::ECS
     private:
 
         template<ComponentConcept T>
-        ComponentContainer<T>& GetComponentContainer();
+        auto GetComponentContainer() -> ComponentContainer<T>&;
 
     private:
 
@@ -49,7 +49,7 @@ namespace Xunlan::ECS
     }
 
     template<ComponentConcept... Args>
-    inline std::tuple<Args&...> ComponentManager::GetComponent(EntityID entity)
+    inline auto ComponentManager::GetComponent(EntityID entity) -> std::tuple<Args&...>
     {
         return std::tuple<Args&...>(GetComponentContainer<Args>()[entity]...);
     }
@@ -83,7 +83,7 @@ namespace Xunlan::ECS
     }
 
     template<ComponentConcept T>
-    inline ComponentContainer<T>& ComponentManager::GetComponentContainer()
+    inline auto ComponentManager::GetComponentContainer() -> ComponentContainer<T>&
     {
         static ComponentContainer<T> container;
         return container;

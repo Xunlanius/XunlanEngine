@@ -22,14 +22,14 @@ namespace Xunlan::ECS
         template<typename SystemType, typename... ComArgs>
         void RegisterSystem();
 
-        [[nodiscard]] EntityID CreateEntity() { return m_entityManager.CreateEntity(); }
+        [[nodiscard]] auto CreateEntity() -> EntityID { return m_entityManager.CreateEntity(); }
         void RemoveEntity(EntityID& entityID);
         void ExecuteRemoveEntities() {}
 
         template<ComponentConcept T>
         bool HasComponent(EntityID entityID);
         template<ComponentConcept... Args>
-        std::tuple<Args&...> GetComponent(EntityID entityID);
+        auto GetComponent(EntityID entityID) -> std::tuple<Args&...>;
 
         template<ComponentConcept... Args>
         void AddComponent(EntityID entityID, const Args&... components);
@@ -37,7 +37,7 @@ namespace Xunlan::ECS
         void RemoveComponent(EntityID entityID);
 
         template<typename SystemType>
-        std::unordered_set<EntityID>& GetView() { return m_systemManager.GetView<SystemType>(); }
+        auto GetView() -> std::unordered_set<EntityID>& { return m_systemManager.GetView<SystemType>(); }
 
     private:
 
@@ -64,7 +64,7 @@ namespace Xunlan::ECS
     }
 
     template<ComponentConcept T>
-    inline bool World::HasComponent(EntityID entityID)
+    inline auto World::HasComponent(EntityID entityID) -> bool
     {
         if (!IDGetter<Component>::IsRegistered<T>()) return false;
 
@@ -73,7 +73,7 @@ namespace Xunlan::ECS
     }
 
     template<ComponentConcept... Args>
-    inline std::tuple<Args&...> World::GetComponent(EntityID entityID)
+    inline auto World::GetComponent(EntityID entityID) -> std::tuple<Args&...>
     {
         assert(HasComponent<Args>(entityID) && ...);
         return m_componentManager.GetComponent<Args...>(entityID);

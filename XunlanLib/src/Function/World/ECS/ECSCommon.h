@@ -40,9 +40,9 @@ namespace Xunlan::ECS
     public:
 
         template<typename T>
-        static id_type GetID() { static const id_type id = ms_currID++; return id; }
+        static auto GetID() -> id_type { static const id_type id = ms_currID++; return id; }
         template<typename T>
-        static bool IsRegistered()
+        static auto IsRegistered() -> bool
         {
             const id_type currID = ms_currID;
             return GetID<T>() < currID;
