@@ -26,7 +26,7 @@
     <ClInclude Include="src\Function\Input\InputCommon.h" />
     <ClInclude Include="src\Function\Input\InputHandler.h" />
     <ClInclude Include="src\Function\Input\InputSystem.h" />
-    <ClInclude Include="src\Function\Input\Win32\Win32Input.h" />
+    <ClInclude Include="src\Function\Input\platform_win32\Win32Input.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\CBuffer.h" />
     <ClInclude Include="src\Function\Renderer\Abstract\DepthStencilState.h" />
     <ClInclude Include="src\Function\Renderer\DX12\Helper\d3dx12.h" />
@@ -114,7 +114,7 @@
   <ItemGroup>
     <ClCompile Include="src\Function\Input\InputHandler.cpp" />
     <ClCompile Include="src\Function\Input\InputSystem.cpp" />
-    <ClCompile Include="src\Function\Input\Win32\Win32Input.cpp" />
+    <ClCompile Include="src\Function\Input\platform_win32\Win32Input.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\CBuffer.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\DepthStencilState.cpp" />
     <ClCompile Include="src\Function\Renderer\Abstract\RenderContext.cpp" />

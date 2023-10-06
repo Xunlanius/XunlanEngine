@@ -83,7 +83,7 @@
     <ClInclude Include="src\Function\Input\InputSystem.h" />
     <ClInclude Include="src\Function\Input\InputCommon.h" />
     <ClInclude Include="src\Function\Input\InputHandler.h" />
-    <ClInclude Include="src\Function\Input\Win32\Win32Input.h" />
+    <ClInclude Include="src\Function\Input\platform_win32\Win32Input.h" />
     <ClInclude Include="src\Function\Script\CameraScript.h" />
     <ClInclude Include="src\Utility\Math\Vector.h" />
     <ClInclude Include="src\Utility\Math\Matrix.h" />
@@ -138,7 +138,7 @@
     <ClCompile Include="src\Function\Resource\AssetSystem.cpp" />
     <ClCompile Include="src\Function\Input\InputSystem.cpp" />
     <ClCompile Include="src\Function\Input\InputHandler.cpp" />
-    <ClCompile Include="src\Function\Input\Win32\Win32Input.cpp" />
+    <ClCompile Include="src\Function\Input\platform_win32\Win32Input.cpp" />
     <ClCompile Include="src\Function\World\Component\NativeScript.cpp" />
     <ClCompile Include="src\Utility\Math\Matrix.cpp" />
     <ClCompile Include="src\Utility\Math\Vector.cpp" />

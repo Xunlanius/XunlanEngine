@@ -1,5 +1,5 @@
 #include "WindowSystem.h"
-#include "src/Function/Input/Win32/Win32Input.h"
+#include "src/Function/Input/platform_win32/Win32Input.h"
 #include <cassert>
 #include <string>
 
